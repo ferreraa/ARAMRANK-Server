@@ -8,7 +8,7 @@ http.createServer(function (request, response) {
 
 	//send the response body as "Hello world!"
 	response.end('Hello World!');
-}).listen(8081);
+}).listen(process.env.PORT || 5000);
 
 // Console will print the message
-console.log('server runnning at localhost:8081');
+console.log('server runnning at localhost:5000 (or process.env.PORT)');
