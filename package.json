@@ -4,6 +4,8 @@
   "description": "��#\u0000 \u0000A\u0000R\u0000A\u0000M\u0000R\u0000A\u0000N\u0000K\u0000-\u0000S\u0000e\u0000r\u0000v\u0000e\u0000r\u0000\r\u0000 \u0000",
   "main": "main.js",
   "dependencies": {
+    "aws-sdk": "^2.504.0",
+    "dynamodb": "^1.2.0",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "npm": "^6.10.2",
