@@ -47,6 +47,9 @@ function putNewSummoner(summoner) {
           },
           "history": {
             L: []
+          },
+          "main": {
+          	N: summoner.mainChampId.toString()
           } 
         }, 
         ReturnConsumedCapacity: "TOTAL", 

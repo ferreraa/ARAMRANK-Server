@@ -28,15 +28,16 @@ app.use(express.static(__dirname + '/public'));
 
 
 // set the home page route
-app.get('/', function(req, res) {
+app.get('/', async function(req, res) {
 
   if(req.query.name != null) {
 
-    teemo.searchSummoner(req.query.name)
-      .then(function(sum) {
-        res.render('player', {name: sum.name, id: sum.id});
-        dynamo.putNewSummoner(sum);
-      });
+    let sum = await teemo.searchSummoner(req.query.name);
+    sum.mainChampId = await teemo.getSumMain(sum.id); 
+
+    res.render('player', {name: sum.name, id: sum.id, main: sum.mainChampId});
+    dynamo.putNewSummoner(sum);
+      
   }
   else
       res.render('index');
