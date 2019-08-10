@@ -5,16 +5,7 @@ var app = express();
 
 var dynamo = require("./server/dynamo.js");
 
-
-function handleError(err, res) {
-    res.json({ 'message': 'server side error', statusCode: 500, error: 
-    err });
-}
-
-function handleSuccess(data, res) {
-    res.json({ message: 'success', statusCode: 200, data: data })
-}
-
+var sumUtils = require("./server/summoner");
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -30,19 +21,41 @@ app.use(express.static(__dirname + '/public'));
 // set the home page route
 app.get('/', async function(req, res) {
 
-  if(req.query.name != null) {
-
-    let sum = await teemo.searchSummoner(req.query.name);
-    sum.mainChampId = await teemo.getSumMain(sum.id); 
-
-    res.render('player', {name: sum.name, id: sum.id, main: sum.mainChampId});
-    dynamo.putNewSummoner(sum);
-      
+  if(req.query.name == null) {
+    res.render('index.ejs');
+    return;
   }
-  else
-      res.render('index');
-    // ejs render automatically looks in the views folder
+
+  let sum = await teemo.searchSummoner(req.query.name);
+
+  if (sum == null) {
+    res.render('404Sum', {name: req.query.name});
+    return;
+  }
+
+  sum.mainChampId = await teemo.getSumMain(sum.id); 
+
+  let dbSum = await dynamo.getSumByAccountId(sum.accountId);
+  if(typeof dbSum.Item === 'undefined') {
+    dynamo.putNewSummoner(sum);
+  } else {
+    //check summoner name changed
+    if(sum.name != dbSum.Item.name.S) {
+      console.log("TODO change name");
+    }
+    
+    let lastTime = sumUtils.getLastTimeStamp(dbSum);
+    let matches = await teemo.getMatchList(sum.accountId, lastTime);
+    console.log(matches);
+    if(matches.length > 0) {
+      let newMatches = await teemo.processAllMatches(matches, sum);
+    }
+
+    res.render('player', {name: sum.name, id: sum.id, main: sum.mainChampId});      
+  }
 });
+
+
 
 app.listen(port, function() {
     console.log('app is running on http://localhost:' + port);

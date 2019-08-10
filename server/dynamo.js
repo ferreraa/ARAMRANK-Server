@@ -8,7 +8,26 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
+function getSumByAccountId(accountId) {
+	var params = {
+	  Key: {
+	   "accountID": { //Warning!!! TODO use id for summoner ID since accountID is not relyable
+	     S: accountId
+	    }
+	  }, 
+	  TableName: "players_test"
+	};
 
+
+	return new Promise((resolve, reject) => {
+		dynamodb.getItem(params, function(err, data) {
+		   if (err) console.log(err, err.stack); // an error occurred
+		   else     resolve(data);           // successful response
+		});
+	});
+
+
+}
 
 function putNewSummoner(summoner) {
 
@@ -63,3 +82,4 @@ function putNewSummoner(summoner) {
 
 
 module.exports.putNewSummoner = putNewSummoner;
+module.exports.getSumByAccountId = getSumByAccountId;
