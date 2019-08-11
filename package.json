@@ -8,8 +8,7 @@
     "dynamodb": "^1.2.0",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
-    "npm": "^6.10.2",
-    "pyke": "github:systeme-cardinal/Pyke",
+    "npm": "^6.10.3",
     "teemojs": "^1.3.3"
   },
   "devDependencies": {},
