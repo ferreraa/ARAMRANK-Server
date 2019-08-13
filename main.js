@@ -43,10 +43,13 @@ app.get('/', async function(req, res) {
     if(sum.name != dbSum.Item.name.S) {
       console.log("TODO change name");
     }
-    
+
+    sum.rank = dbSum.Item.rank.M;
+    sum.wins = parseInt(dbSum.Item.wins.N);
+    sum.loss = parseInt(dbSum.Item.loss.N);
     let lastTime = sumUtils.getLastTimeStamp(dbSum);
     let matches = await teemo.getMatchList(sum.accountId, lastTime);
-    console.log(matches);
+   
     if(matches.length > 0) {
       let newMatches = await teemo.processAllMatches(matches, sum);
     }

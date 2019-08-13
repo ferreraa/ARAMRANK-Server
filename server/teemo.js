@@ -7,12 +7,12 @@ function searchSummoner (name) {
   console.log(`Summoner Name is : ${data.name}, and level is : ${data.summonerLevel}`);
 }).catch(console.error);
 }*/
-var sumUtils = require("summoner.js");
+var sumUtils = require("./summoner.js");
 const fs = require("fs");
 
 
 const TeemoJS = require('teemojs');
-let api = TeemoJS('RGAPI-b0d538b9-6197-4b7e-ba14-4526e07459e0');
+let api = TeemoJS('RGAPI-e5fc4d2d-f5f8-4663-b966-24f989497b1e');
 
 //search Summoner data from summoner name
 function searchSummoner(name) {
@@ -46,6 +46,8 @@ async function processAllMatches(matches, sum) {
   var filteredMatches = newMatches.filter(function (el) {
     return el != null;
   });
+
+  console.log(filteredMatches);
 
   for (let i = filteredMatches.length - 1; i >= 0; i--) {
     sumUtils.processGameResult(sum, filteredMatches[i]); //incomplete function
