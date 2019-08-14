@@ -1,4 +1,5 @@
-let AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
+const attr = require('dynamodb-data-types').AttributeValue;
 
 AWS.config.update({
  "region": "eu-west-3",
@@ -10,21 +11,26 @@ let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 const table_name = "players_test2";
 
-function getSumByAccountId(accountId) {
+function getSumByAccountId(id) {
 	var params = {
 	  Key: {
-	   "accountID": { //Warning!!! TODO use id for summoner ID since accountID is not relyable
-	     S: accountId
+	   "id": { //Warning!!! TODO use id for summoner ID since accountID is not relyable
+	     S: id
 	    }
 	  }, 
-	  TableName: "players_test"
+	  TableName: table_name
 	};
 
 
 	return new Promise((resolve, reject) => {
 		dynamodb.getItem(params, function(err, data) {
 		   if (err) console.log(err, err.stack); // an error occurred
-		   else     resolve(data);           // successful response
+		   else {
+        if(Object.keys(data).length != 0)
+          resolve(attr.unwrap(data.Item));           // successful response
+        else
+          resolve(null);
+        } 
 		});
 	});
 
@@ -33,64 +39,41 @@ function getSumByAccountId(accountId) {
 
 function putNewSummoner(summoner) {
 
-    let date = new Date();
-    let table = "players_test";
-      var params = {
-        Item: {
-         "accountID": {
-            S: summoner.accountId
-          }, 
-         "name": {
-            S: summoner.name
-          }, 
-         "sumID": {
-            S: summoner.id
-          },
-          "puuid": {
-            S: summoner.puuid
-          },
-          "wins": {
-            N: "0"
-          },
-          "loss": {
-            N: "0"
-          },
-          "date0": {
-            S: date.getTime().toString()
-          },
-          "rank": {
-            M: {
-              "league": { N: "0" },
-              "div": { N: "0" },
-              "lp": { N: "0" },
-              "bo": { S: "ooo" }
-            }
-          },
-          "history": {
-            L: []
-          },
-          "main": {
-          	N: summoner.mainChampId.toString()
-          } 
-        }, 
-        ReturnConsumedCapacity: "TOTAL", 
-        TableName: table
-       };
-      dynamodb.putItem(params, function(err, data) {
-         if (err) console.log(err, err.stack); // an error occurred
-         else     console.log(data);           // successful response
-      });
+    summoner.date0 = Date.now();
+
+    summoner.wins = 0;
+    summoner.loss = 0;
+
+
+    dynamoItem = attr.wrap(summoner);
+
+    console.log(dynamoItem);
+
+    dynamoItem.rank = {"M": attr.wrap({
+      "league": 0,
+      "div": 0,
+      "lp": 0,
+      "bo": "ooo"
+    })};
+    dynamoItem.history = {"L": []}; //lib is bugged
+
+    console.log(dynamoItem);
+
+    var params = {
+      Item: dynamoItem, 
+      ReturnConsumedCapacity: "TOTAL", 
+      TableName: table_name
+     };
+    dynamodb.putItem(params, function(err, data) {
+       if (err) console.log(err, err.stack); // an error occurred
+       else     console.log(data);           // successful response
+    });
 }
 
 
-function preprocessData(sum) {
-  let rank = sum.rank;
-  rank.league.N = rank.league.N.toString();
-  rank.lp.N = rank.lp.N.toString();
-  rank.div.N = rank.div.N.toString();
-}
 
 function updateSum(sum) {
+  let di = attr.wrap(sum);
 
   var params = {
     ExpressionAttributeNames: {
@@ -98,30 +81,25 @@ function updateSum(sum) {
      "#R": "rank",
      "#N": "name",
      "#M": "main",
+     "#W": "wins",
+     "#L": "loss",
     }, 
     ExpressionAttributeValues: {
-     ":h": {
-       L: sum.history
-      }, 
-     ":r": {
-       M: sum.rank
-      },
-      ":n": {
-        S: sum.name
-      },
-      ":main" : {
-        N: sum.id
-      },
-
+     ":h": di.history, 
+     ":r": di.rank,
+     ":n": di.name,
+     ":m": di.id,
+     ":w": di.wins,
+     ":l": di.loss
     }, 
     Key: {
-     "accountID": {
-       S: sum.accountID
+     "id": {
+       S: sum.id
       }
     }, 
     ReturnValues: "ALL_NEW", 
-    TableName: "players_test", 
-    UpdateExpression: "SET #H = :h, #R = :r, #N = :n, #M = :m"
+    TableName: table_name, 
+    UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l"
  };
  dynamodb.updateItem(params, function(err, data) {
    if (err) console.log(err, err.stack); // an error occurred

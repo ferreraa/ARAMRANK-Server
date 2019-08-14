@@ -61,12 +61,12 @@ function processGameResult(sum, match) {
 
 
 function getLastTimeStamp(dbSum) {
-	var timestamp = dbSum.Item.date0.S;
-	let length = dbSum.Item.history.L.length;
+	var timestamp = dbSum.date0;
+	let length = dbSum.history.length;
 	
 
 	if(length > 0)
-		timestamp = dbSum.Item.history.L[length-1].timestamp.N;
+		timestamp = dbSum.history[length-1].timestamp;
 
 	return timestamp;
 }

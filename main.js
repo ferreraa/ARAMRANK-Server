@@ -27,7 +27,6 @@ app.get('/', async function(req, res) {
   }
 
   let sum = await teemo.searchSummoner(req.query.name);
-
   if (sum == null) {
     res.render('404Sum', {name: req.query.name});
     return;
@@ -35,17 +34,18 @@ app.get('/', async function(req, res) {
 
   sum.mainChampId = await teemo.getSumMain(sum.id); 
 
-  let dbSum = await dynamo.getSumByAccountId(sum.accountId);
-  if(typeof dbSum.Item === 'undefined') {
+  let dbSum = await dynamo.getSumByAccountId(sum.id);
+  if(dbSum == null) {
     dynamo.putNewSummoner(sum);
+    res.render('first_time', {sum: sum});
   } else {
 
-    sum.rank = dbSum.Item.rank.M;
-    sum.wins = parseInt(dbSum.Item.wins.N);
-    sum.loss = parseInt(dbSum.Item.loss.N);
+    sum.rank = dbSum.rank;
+    sum.wins = parseInt(dbSum.wins);
+    sum.loss = parseInt(dbSum.loss);
     let lastTime = sumUtils.getLastTimeStamp(dbSum);
     let matches = await teemo.getMatchList(sum.accountId, lastTime);
-    sum.history = dbSum.Item.history.L;
+    sum.history = [];
 
     let unchanged = true; //no need to update the db
     if(matches.length > 0) {
