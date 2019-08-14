@@ -51,9 +51,10 @@ function processGameResult(sum, match) {
     }
   }
 
-  console.log("lp=",lp) 
   league.processLPchange(lp, sum, match, isPlacement);
-  console.log(sum.rank);
+  match.lpValue = lp;
+  sum.history.push(match);
+
 }
 
 

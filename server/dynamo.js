@@ -8,6 +8,8 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
+const table_name = "players_test2";
+
 function getSumByAccountId(accountId) {
 	var params = {
 	  Key: {
@@ -81,5 +83,53 @@ function putNewSummoner(summoner) {
 }
 
 
+function preprocessData(sum) {
+  let rank = sum.rank;
+  rank.league.N = rank.league.N.toString();
+  rank.lp.N = rank.lp.N.toString();
+  rank.div.N = rank.div.N.toString();
+}
+
+function updateSum(sum) {
+
+  var params = {
+    ExpressionAttributeNames: {
+     "#H": "history", 
+     "#R": "rank",
+     "#N": "name",
+     "#M": "main",
+    }, 
+    ExpressionAttributeValues: {
+     ":h": {
+       L: sum.history
+      }, 
+     ":r": {
+       M: sum.rank
+      },
+      ":n": {
+        S: sum.name
+      },
+      ":main" : {
+        N: sum.id
+      },
+
+    }, 
+    Key: {
+     "accountID": {
+       S: sum.accountID
+      }
+    }, 
+    ReturnValues: "ALL_NEW", 
+    TableName: "players_test", 
+    UpdateExpression: "SET #H = :h, #R = :r, #N = :n, #M = :m"
+ };
+ dynamodb.updateItem(params, function(err, data) {
+   if (err) console.log(err, err.stack); // an error occurred
+   else     console.log(data);           // successful response
+
+ });
+}
+
 module.exports.putNewSummoner = putNewSummoner;
 module.exports.getSumByAccountId = getSumByAccountId;
+module.exports.updateSum = updateSum;

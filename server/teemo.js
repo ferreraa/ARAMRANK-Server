@@ -12,7 +12,7 @@ const fs = require("fs");
 
 
 const TeemoJS = require('teemojs');
-let api = TeemoJS('RGAPI-e5fc4d2d-f5f8-4663-b966-24f989497b1e');
+let api = TeemoJS('RGAPI-815cb452-f276-4008-a085-1f7739aab9a0');
 
 //search Summoner data from summoner name
 function searchSummoner(name) {

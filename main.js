@@ -39,23 +39,30 @@ app.get('/', async function(req, res) {
   if(typeof dbSum.Item === 'undefined') {
     dynamo.putNewSummoner(sum);
   } else {
-    //check summoner name changed
-    if(sum.name != dbSum.Item.name.S) {
-      console.log("TODO change name");
-    }
 
     sum.rank = dbSum.Item.rank.M;
     sum.wins = parseInt(dbSum.Item.wins.N);
     sum.loss = parseInt(dbSum.Item.loss.N);
     let lastTime = sumUtils.getLastTimeStamp(dbSum);
     let matches = await teemo.getMatchList(sum.accountId, lastTime);
-   
+    sum.history = dbSum.Item.history.L;
+
+    let unchanged = true; //no need to update the db
     if(matches.length > 0) {
+      unchanged = false; //new games => need to update the db
       let newMatches = await teemo.processAllMatches(matches, sum);
     }
 
-    res.render('player', {name: sum.name, id: sum.id, main: sum.mainChampId});      
+    dynamo.updateSum(sum);
+
+    res.render('player',
+      { 
+        sum: sum
+      }
+    );      
   }
+
+
 });
 
 
