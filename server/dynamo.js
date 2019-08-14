@@ -55,8 +55,6 @@ function putNewSummoner(summoner) {
     })};
     dynamoItem.history = {"L": []}; //lib is bugged
 
-    console.log(dynamoItem);
-
     var params = {
       Item: dynamoItem, 
       ReturnConsumedCapacity: "TOTAL", 
