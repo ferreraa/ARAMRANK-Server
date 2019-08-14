@@ -35,6 +35,7 @@ app.get('/', async function(req, res) {
   sum.mainChampId = await teemo.getSumMain(sum.id); 
 
   let dbSum = await dynamo.getSumByAccountId(sum.id);
+
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);
     res.render('first_time', {sum: sum});
@@ -44,8 +45,11 @@ app.get('/', async function(req, res) {
     sum.wins = parseInt(dbSum.wins);
     sum.loss = parseInt(dbSum.loss);
     let lastTime = sumUtils.getLastTimeStamp(dbSum);
+
     let matches = await teemo.getMatchList(sum.accountId, lastTime);
     sum.history = [];
+
+
 
     let unchanged = true; //no need to update the db
     if(matches.length > 0) {
@@ -53,7 +57,10 @@ app.get('/', async function(req, res) {
       let newMatches = await teemo.processAllMatches(matches, sum);
     }
 
-    dynamo.updateSum(sum);
+    if( !unchanged ) {
+      dynamo.updateSum(sum);
+    } 
+
 
     res.render('player',
       { 

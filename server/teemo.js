@@ -12,7 +12,7 @@ const fs = require("fs");
 
 
 const TeemoJS = require('teemojs');
-let api = TeemoJS('RGAPI-815cb452-f276-4008-a085-1f7739aab9a0');
+let api = TeemoJS('RGAPI-f99fc26e-ff74-48f6-9672-51c18090a0c0');
 
 //search Summoner data from summoner name
 function searchSummoner(name) {
@@ -36,7 +36,7 @@ function printMatchList(Accountid) {
 async function getMatchList(Accountid, beginTime) {
   //warning, make sure of the time format (string vs number)
   let data = await api.get('euw1', 'match.getMatchlist', Accountid, {queue: 450, beginTime: beginTime, season: 13});
-  return data.matches;
+  return data != null ? data.matches : [];
 }
 
 
@@ -46,8 +46,6 @@ async function processAllMatches(matches, sum) {
   var filteredMatches = newMatches.filter(function (el) {
     return el != null;
   });
-
-  console.log(filteredMatches);
 
   for (let i = filteredMatches.length - 1; i >= 0; i--) {
     sumUtils.processGameResult(sum, filteredMatches[i]); //incomplete function
@@ -94,6 +92,7 @@ async function processMatch(match, sum) {
   let newMatch = {};
   newMatch.championId = data.participants[i].championId;
   newMatch.gameId = match.gameId;
+  newMatch.timestamp = match.gameCreation;
 
   let stats = data.participants[i].stats;
   newMatch.win = stats.win;
@@ -104,21 +103,6 @@ async function processMatch(match, sum) {
   newMatch.poroFed = stats.item6 == 0;
   return newMatch;
 }
-
-// Get C9 Sneaky's games on Ezreal and Kalista for a particular season.
-//api.get('na1', 'match.getMatchlist', 78247, { champion: [81, 429], season: 8 })
-//  .then(...);
-
-//MatchDto.gameDuration (long)
-//MatchDto.participants[].championId (int)
-//MatchDto.participantIdentities[].player.summonerId (string)
-//MatchDto.participantIdentities[].stats.win (boolean)
-//MatchDto.participantIdentities[].stats.kills (int)
-//MatchDto.participantIdentities[].stats.item6 (int)
-//MatchDto.participantIdentities[].stats.firstBloodKill (boolean)
-//MatchDto.participantIdentities[].stats.pentaKills (int)
-//MatchDto.participantIdentities[].stats.deaths (int)
-//MatchDto.participantIdentities[].stats.assists (int)
 
 
 module.exports.searchSummoner = searchSummoner;
