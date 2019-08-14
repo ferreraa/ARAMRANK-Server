@@ -47,8 +47,6 @@ function putNewSummoner(summoner) {
 
     dynamoItem = attr.wrap(summoner);
 
-    console.log(dynamoItem);
-
     dynamoItem.rank = {"M": attr.wrap({
       "league": 0,
       "div": 0,
@@ -103,7 +101,7 @@ function updateSum(sum) {
  };
  dynamodb.updateItem(params, function(err, data) {
    if (err) console.log(err, err.stack); // an error occurred
-   else     console.log(data);           // successful response
+   else     console.log("updated data of", sum.name);           // successful response
 
  });
 }
