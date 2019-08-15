@@ -9,7 +9,7 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const table_name = "players_test2";
+const table_name = process.env.table_name || "players_test2";
 
 function getSumByAccountId(id) {
 	var params = {
