@@ -23,7 +23,10 @@
     </div>
   </div>
       <% } else { %>
-    <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.loss %></p>
+    <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.loss %>&nbsp;&nbsp;&nbsp;
+      <% let tot = sum.wins + sum.loss; %>
+      <%= tot < 5 ? " --  placements : "+ tot+"/5" : ""; %>
+    </p>
   </div>
 </div>
 
