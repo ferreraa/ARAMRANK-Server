@@ -1,6 +1,6 @@
 var sumUtils = require("./summoner.js");
 const fs = require("fs");
-
+const champJSON = require("./champJSONManager");
 
 const TeemoJS = require('teemojs');
 let api = TeemoJS(process.env.RITO);
@@ -25,7 +25,6 @@ function printMatchList(Accountid) {
 
 //get MatchList by account Id since given beginTime
 async function getMatchList(Accountid, beginTime) {
-  //warning, make sure of the time format (string vs number)
   let data = await api.get('euw1', 'match.getMatchlist', Accountid, {queue: 450, beginTime: beginTime, season: 13});
   return data != null ? data.matches : [];
 }
@@ -39,8 +38,7 @@ async function processAllMatches(matches, sum) {
   });
 
   for (let i = filteredMatches.length - 1; i >= 0; i--) {
-    sumUtils.processGameResult(sum, filteredMatches[i]); //incomplete function
-    
+    sumUtils.processGameResult(sum, filteredMatches[i]);  
   }
 
 }
@@ -84,6 +82,8 @@ async function processMatch(match, sum) {
   newMatch.championId = data.participants[i].championId;
   newMatch.gameId = match.gameId;
   newMatch.timestamp = data.gameCreation;
+
+  newMatch.championName = champJSON.getChampName(newMatch.championId);
 
   let stats = data.participants[i].stats;
   newMatch.win = stats.win;

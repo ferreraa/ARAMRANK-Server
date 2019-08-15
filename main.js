@@ -3,7 +3,7 @@ var dynamo = require("./server/dynamo");
 var sumUtils = require("./server/summoner");
 var league = require("./server/league");
 const visit = require("./server/visitors");
-const champJSON = require("./server/updateChampJSON");
+const champJSON = require("./server/champJSONManager");
 
 var i18n = require('i18n');
 var express = require('express');
@@ -53,8 +53,7 @@ app.get('/', async function(req, res) {
     console.log("user ignored: ", req.connection.remoteAddress);
     return;//Blacklisted for today
   }
-  champJSON.manageChampionJSON();
-
+  let version = champJSON.manageChampionJSON();
 
   if(req.query.name == null) {
     res.render('index.ejs');
@@ -101,11 +100,18 @@ app.get('/', async function(req, res) {
       dynamo.updateSum(sum);
     } 
 
-
+    let match2print = sum.history.concat(dbSum.history);
+    let l = match2print.length;
+    if(l>20) {
+      match2print = match2print.slice(l-19,19);
+    }
+    match2print.reverse();
+    sum.history = match2print;
     res.render('player',
       { 
         sum: sum,
-        rankString: league.rank2string(sum.rank)
+        rankString: league.rank2string(sum.rank),
+        version: await version
       }
     );      
   }

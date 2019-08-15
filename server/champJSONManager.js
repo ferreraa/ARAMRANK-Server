@@ -16,7 +16,7 @@ function createNewMyChampionJS(championJS) {
 }
 
 function readMyChampionJS() {
-  let jsonString = fs.readFileSync('./server/champ.json')
+  let jsonString = fs.readFileSync('./server/champ.json');
 
   return JSON.parse(jsonString);
 
@@ -69,13 +69,20 @@ async function manageChampionJSON() {
   let currentChampJS = readMyChampionJS();
   let remVer = await remoteVersion();
   if(remVer == currentChampJS.version)
-    return false;
+    return remVer;
 
   rewriteChampJSON(remVer);
   console.log('New champ.json. remote version: ', remVer);
 
-  return true;
+  return remVer;
 }
 
+//returns champion name from champion id
+function getChampName(id) {
+  var obj = readMyChampionJS();
 
+  return obj.champions[id];
+}
+
+module.exports.getChampName = getChampName;
 module.exports.manageChampionJSON = manageChampionJSON;

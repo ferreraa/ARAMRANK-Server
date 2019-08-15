@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ARAMRanking</title>
+  <meta charset="UTF-8">
+  <title>ARAMRanking</title>
 
-    <!-- CSS -->
-    <!-- load bootstrap and our own personal stylesheet -->
-    <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/superhero/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+  <!-- CSS -->
+  <!-- load bootstrap and our own personal stylesheet -->
+  <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/superhero/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 
 </head>
 <body>
 
 <div class="container">
-    <div class="jumbotron">
-        <h1><%= sum.name %>'s rank</h1>
-        <p><%= rankString %></p>
-    </div>
+  <div class="jumbotron">
+    
+    <h1>
+      <img src="http://ddragon.leagueoflegends.com/cdn/<%= version %>/img/profileicon/<%= sum.profileIconId %>.png" 
+      width="80px" height="80px"><%= sum.name %></h1>
+    <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.loss %></p>
+  </div>
 </div>
 
+<div class="container">
+  <div class="jumbotron">
+    <% sum.history.forEach(function(match){ %>
+      <%- include('./partials/historyElement', {match: match, version: version}); %>
+    <% }); %>
+  </div>
+</div>
+
+<script>
+
+</script>
 </body>
 </html>

@@ -182,7 +182,13 @@ function rank2string(rank) {
     res += " " + RomanNumbers(3 - rank.div);
   }
 
-  res += " - " + rank.lp + " lp";
+  res += " - " + rank.lp + " lp ";
+
+  if(rank.lp == maxLeagueLP(rank.league)) {
+    let bo3w = rank.bo.split('v').length - 1;
+    let bo3l = rank.bo.split('x').length -1;
+    res += " BO3: " + bo3w + " - " + bo3l;
+  }
   return res;
 }
 

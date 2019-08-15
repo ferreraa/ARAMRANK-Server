@@ -3,4 +3,4 @@ npm-debug.log
 .DS_Store
 /*.env
 clients.json
-champ.json
+/server/champ.json
