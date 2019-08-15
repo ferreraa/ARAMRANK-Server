@@ -3,6 +3,7 @@ var dynamo = require("./server/dynamo");
 var sumUtils = require("./server/summoner");
 var league = require("./server/league");
 
+var i18n = require('i18n');
 var express = require('express');
 var app = express();
 
@@ -16,6 +17,26 @@ app.set('view engine', 'ejs');
 
 // make express look in the public directory for assets (css/js/img)
 app.use(express.static(__dirname + '/public'));
+
+
+i18n.configure({
+  // setup some locales - other locales default to en silently
+  locales: ['en', 'fr'],
+
+  // sets a custom cookie name to parse locale settings from
+  cookie: 'yourcookiename',
+
+  // where to store json files - defaults to './locales'
+  directory: __dirname + '/locales'
+})
+
+
+
+  // you will need to use cookieParser to expose cookies to req.cookies
+//app.use(express.cookieParser());
+
+  // i18n init parses req for language headers, cookies, etc.
+app.use(i18n.init);
 
 
 // set the home page route
