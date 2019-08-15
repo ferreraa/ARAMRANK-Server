@@ -18,6 +18,11 @@
     <h1>
       <img src="http://ddragon.leagueoflegends.com/cdn/<%= version %>/img/profileicon/<%= sum.profileIconId %>.png" 
       width="80px" height="80px"><%= sum.name %></h1>
+      <% if(sum.history.length == 0) { %>
+      <p>Vous avez été inscrit au magnifique système ALL RANDOM ALL RANK. A partir de maintenant vos parties d'ARAM seront comptabilisées dans un classement officieux conçu par mes soins... Parviendrez vous à atteindre la ligue challenger ?</p>
+    </div>
+  </div>
+      <% } else { %>
     <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.loss %></p>
   </div>
 </div>
@@ -29,9 +34,7 @@
     <% }); %>
   </div>
 </div>
+<% } %>
 
-<script>
-
-</script>
 </body>
 </html>
