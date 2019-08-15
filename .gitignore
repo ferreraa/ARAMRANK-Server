@@ -4,3 +4,4 @@ npm-debug.log
 /*.env
 clients.json
 /server/champ.json
+.env
