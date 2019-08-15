@@ -24,7 +24,9 @@ i18n.configure({
   locales: ['en', 'fr'],
 
   // sets a custom cookie name to parse locale settings from
-  cookie: 'yourcookiename',
+  cookie: 'aramrank',
+
+  queryParameter: 'lang',
 
   // where to store json files - defaults to './locales'
   directory: __dirname + '/locales'
