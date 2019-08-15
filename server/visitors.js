@@ -8,7 +8,7 @@ function sameDay(d1, d2) {
 }
 
 
-function handleFirstVisitor(file, ip) {
+function handleFirstVisitor(file, ip, date) {
     var data = {};
     data[ip] = {
       "latestDate": date,
@@ -30,7 +30,7 @@ function storeVisit(ip) {
 
 
   if( !fs.existsSync(file) ) {
-    handleFirstVisitor(file, ip);
+    handleFirstVisitor(file, ip, date);
     return 1;
   }
 
