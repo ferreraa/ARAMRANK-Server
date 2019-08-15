@@ -3,8 +3,8 @@ const attr = require('dynamodb-data-types').AttributeValue;
 
 AWS.config.update({
  "region": "eu-west-3",
- "accessKeyId": "AKIAWVUBBVS4GUPVW64P",
- "secretAccessKey": "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"
+ "accessKeyId": process.env.AKI,
+ "secretAccessKey": process.env.SAK
 });
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});

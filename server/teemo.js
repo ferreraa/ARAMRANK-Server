@@ -1,18 +1,9 @@
-/*const {DDragon, Pyke} = require('pyke');
-
-const pyke = new Pyke('RGAPI-d7f09129-6464-4a1f-b3bd-371be842b491', "10");
-  
-function searchSummoner (name) {
-  pyke.summoner.getBySummonerName(name, "euw1").then(data => {
-  console.log(`Summoner Name is : ${data.name}, and level is : ${data.summonerLevel}`);
-}).catch(console.error);
-}*/
 var sumUtils = require("./summoner.js");
 const fs = require("fs");
 
 
 const TeemoJS = require('teemojs');
-let api = TeemoJS('RGAPI-f99fc26e-ff74-48f6-9672-51c18090a0c0');
+let api = TeemoJS(process.env.RITO);
 
 //search Summoner data from summoner name
 function searchSummoner(name) {
