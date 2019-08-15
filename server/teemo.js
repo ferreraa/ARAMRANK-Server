@@ -92,7 +92,7 @@ async function processMatch(match, sum) {
   let newMatch = {};
   newMatch.championId = data.participants[i].championId;
   newMatch.gameId = match.gameId;
-  newMatch.timestamp = match.gameCreation;
+  newMatch.timestamp = data.gameCreation;
 
   let stats = data.participants[i].stats;
   newMatch.win = stats.win;

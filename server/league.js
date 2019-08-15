@@ -163,5 +163,45 @@ function promoUpdate(win, sum) {
   }
 }
 
+//returns the message to be displayed as the rank of the player
+function rank2string(rank) {
+  let res = "";
+  switch(rank.league) {
+    case 0: res+="Challenger"; break;
+    case 1: res+="Noob"; break;
+    case 2: res+="Papier"; break;
+    case 3: res+="Carton"; break;
+    case 4: res+="Plâtre"; break;
+    case 5: res+="Bois"; break;
+    case 6: res+="Plastique"; break;
+    case 7: res+="Grand Plastique"; break;
+    case 8: res+="Bronze V"; break;
+  }
 
+  if(rank.league < 6 && rank.league > 0) {
+    res += " " + RomanNumbers(3 - rank.div);
+  }
+
+  res += " - " + rank.lp + " lp";
+  return res;
+}
+
+
+function RomanNumbers(arabNum) {
+  switch(arabNum) {
+    case 1: return "I";
+    case 2: return "II";
+    case 3: return "III";
+    case 4: return "IV";
+    case 5: return "V";
+    case 6: return "VI";
+    case 7: return "VII";
+    case 8: return "VIII";
+    case 9: return "IX";
+    case 10: return "X";
+    default: return arabNum.toString();
+  }
+}
+
+module.exports.rank2string = rank2string;
 module.exports.processLPchange = processLPchange;

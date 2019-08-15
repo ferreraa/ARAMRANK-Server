@@ -63,7 +63,6 @@ function processGameResult(sum, match) {
 function getLastTimeStamp(dbSum) {
 	var timestamp = dbSum.date0;
 	let length = dbSum.history.length;
-	
 
 	if(length > 0)
 		timestamp = dbSum.history[length-1].timestamp;

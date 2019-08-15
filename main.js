@@ -1,11 +1,11 @@
-var teemo = require("./server/teemo.js");
+var teemo = require("./server/teemo");
+var dynamo = require("./server/dynamo");
+var sumUtils = require("./server/summoner");
+var league = require("./server/league");
 
 var express = require('express');
 var app = express();
 
-var dynamo = require("./server/dynamo.js");
-
-var sumUtils = require("./server/summoner");
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -44,7 +44,12 @@ app.get('/', async function(req, res) {
     sum.rank = dbSum.rank;
     sum.wins = parseInt(dbSum.wins);
     sum.loss = parseInt(dbSum.loss);
-    let lastTime = sumUtils.getLastTimeStamp(dbSum);
+    let lastTime = sumUtils.getLastTimeStamp(dbSum) +1;
+
+    if(lastTime == null) {
+      res.render('error');
+      return;
+    }
 
     let matches = await teemo.getMatchList(sum.accountId, lastTime);
     sum.history = [];
@@ -64,7 +69,8 @@ app.get('/', async function(req, res) {
 
     res.render('player',
       { 
-        sum: sum
+        sum: sum,
+        rankString: league.rank2string(sum.rank)
       }
     );      
   }
