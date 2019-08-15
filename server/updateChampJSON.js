@@ -11,7 +11,7 @@ function createNewMyChampionJS(championJS) {
   }
 
   fs.writeFile('./server/champ.json', JSON.stringify(data2write),
-   function(){ readMyChampionJS(); });
+   function(){ console.log("new champ.json file"); });
 
 }
 

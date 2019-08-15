@@ -2,6 +2,8 @@ var teemo = require("./server/teemo");
 var dynamo = require("./server/dynamo");
 var sumUtils = require("./server/summoner");
 var league = require("./server/league");
+const visit = require("./server/visitors");
+const champJSON = require("./server/updateChampJSON");
 
 var i18n = require('i18n');
 var express = require('express');
@@ -43,6 +45,16 @@ app.use(i18n.init);
 
 // set the home page route
 app.get('/', async function(req, res) {
+
+
+  let daily = visit.storeVisit(res.connection.remoteAddress);
+
+  if(daily > 100) {
+    console.log("user ignored: ", req.connection.remoteAddress);
+    return;//Blacklisted for today
+  }
+  champJSON.manageChampionJSON();
+
 
   if(req.query.name == null) {
     res.render('index.ejs');
