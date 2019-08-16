@@ -11,13 +11,15 @@
 
 </head>
 <body>
+<%- include('./partials/myNavbar'); %>
 
 <div class="container">
     <div class="jumbotron">
-        <h1><%= name %> was not found :(</h1>
-        <p>I'm afraid this is a 404 error...</p>
+        <h1><%= name %> n'a pas été trouvé :(</h1>
+        <p>Le nom d'invocateur est erroné ou provient d'une autre région que EUW.</p>
     </div>
 </div>
 
+<%- include('./partials/myFooter'); %>
 </body>
 </html>

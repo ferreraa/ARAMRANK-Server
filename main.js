@@ -32,7 +32,7 @@ i18n.configure({
 
   // where to store json files - defaults to './locales'
   directory: __dirname + '/locales'
-})
+});
 
 
 
@@ -43,16 +43,21 @@ i18n.configure({
 app.use(i18n.init);
 
 
+function manageBlackList(req, res) {
+  let daily = visit.storeVisit(req.connection.remoteAddress);
+
+  if(daily > 100 && process.env.NODE_ENV == 'production') {
+    console.log("user ignored: ", req.connection.remoteAddress);
+    return true;//Blacklisted for today
+  }
+}
+
 // set the home page route
 app.get('/', async function(req, res) {
 
+  if(manageBlackList(req, res)) 
+    return;
 
-  let daily = visit.storeVisit(res.connection.remoteAddress);
-
-  if(daily > 100) {
-    console.log("user ignored: ", req.connection.remoteAddress);
-    return;//Blacklisted for today
-  }
   let version = champJSON.manageChampionJSON();
 
   if(req.query.name == null) {
@@ -94,6 +99,9 @@ app.get('/', async function(req, res) {
     if(matches.length > 0) {
       unchanged = false; //new games => need to update the db
       let newMatches = await teemo.processAllMatches(matches, sum);
+    } 
+    else if (dbSum.history.length == 0) {
+      res.render('first_time', {sum: sum, version: await version});
     }
 
     if( !unchanged ) {
@@ -115,10 +123,21 @@ app.get('/', async function(req, res) {
       }
     );      
   }
-
-
 });
 
+app.get('/about', function (req, res) {
+  if(manageBlackList(req, res)) 
+    return;
+
+  res.render('about');
+});
+
+app.get('/contact', function (req, res) {
+  if(manageBlackList(req, res)) 
+    return;
+
+  res.render('contact');
+});
 
 
 app.listen(port, function() {
