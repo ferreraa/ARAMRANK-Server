@@ -1,17 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ARAMRanking</title>
-
-  <!-- CSS -->
-  <!-- load bootstrap and our own personal stylesheet -->
-  <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/superhero/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-
+<%- include('./partials/head'); %>
 </head>
 <body>
-<%- include('./partials/myNavbar'); %>
+<%- include('./partials/myNavbar', {lang: lang}); %>
 
 <div class="container">
   <div class="jumbotron">
@@ -33,6 +26,6 @@
     <% }); %>
   </div>
 </div>
-<%- include('./partials/myFooter'); %>
+<%- include('./partials/myFooter', {lang: lang}); %>
 </body>
 </html>

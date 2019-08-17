@@ -17,7 +17,11 @@
             function navSearch() {
                 let name = document.getElementById('sumName').value;
                 if(name != null) {
-                    window.location.href = '../?name='+name;
+                  let lang = "<%= lang %>";
+                  if(lang == "en")
+                    window.location.href = '/player/'+name;
+                  else
+                    window.location.href = '/'+lang+'/player/'+name;
                 }                
             }
         </script>
@@ -27,7 +31,21 @@
         </li>
         <li id="about"><a href="../about">A PROPOS</a></li>
         <li id="contact"><a href="/contact">CONTACT</a></li>
+        
+        <li id="lang" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">EN</a></li>
+            <li class="divider"></li>
+            <li><a href="#">FR</a></li>
+
+
+
+
+          </ul>
+        </li>
       </ul>
+
     </div>
   </div>
 </nav>

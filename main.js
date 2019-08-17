@@ -1,18 +1,25 @@
-var teemo = require("./server/teemo");
-var dynamo = require("./server/dynamo");
-var sumUtils = require("./server/summoner");
-var league = require("./server/league");
 const visit = require("./server/visitors");
 const champJSON = require("./server/champJSONManager");
+const player = require('./server/player');
 
 var i18n = require('i18n');
 var express = require('express');
 var app = express();
+var schedule = require('node-schedule');
+ 
 
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
 var port = process.env.PORT || 8080;
+
+champJSON.manageChampionJSON()
+  .then((version) => {process.env.RIOT_VERSION = version});
+
+
+schedule.scheduleJob('0 */2 * * *', function(){
+  process.env.RIOT_VERSION = champJSON.manageChampionJSON();
+});
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -20,10 +27,10 @@ app.set('view engine', 'ejs');
 // make express look in the public directory for assets (css/js/img)
 app.use(express.static(__dirname + '/public'));
 
+app.use('/en', express.static(__dirname + '/public'));
+app.use('/fr', express.static(__dirname + '/public'));
 
 i18n.configure({
-  // setup some locales - other locales default to en silently
-  locales: ['en', 'fr'],
 
   // sets a custom cookie name to parse locale settings from
   cookie: 'aramrank',
@@ -43,6 +50,7 @@ i18n.configure({
 app.use(i18n.init);
 
 
+
 function manageBlackList(req, res) {
   let daily = visit.storeVisit(req.connection.remoteAddress);
 
@@ -50,94 +58,71 @@ function manageBlackList(req, res) {
     console.log("user ignored: ", req.connection.remoteAddress);
     return true;//Blacklisted for today
   }
+
+  return false;
 }
 
-// set the home page route
-app.get('/', async function(req, res) {
 
-  if(manageBlackList(req, res)) 
-    return;
-
-  let version = champJSON.manageChampionJSON();
-
-  if(req.query.name == null) {
-    res.render('index.ejs');
-    return;
-  }
-
-  let sum = await teemo.searchSummoner(req.query.name);
-  if (sum == null) {
-    res.render('404Sum', {name: req.query.name});
-    return;
-  }
-
-  sum.mainChampId = await teemo.getSumMain(sum.id); 
-
-  let dbSum = await dynamo.getSumByAccountId(sum.id);
-
-  if(dbSum == null) {
-    dynamo.putNewSummoner(sum);
-    res.render('first_time', {sum: sum});
-  } else {
-
-    sum.rank = dbSum.rank;
-    sum.wins = parseInt(dbSum.wins);
-    sum.loss = parseInt(dbSum.loss);
-    let lastTime = sumUtils.getLastTimeStamp(dbSum) +1;
-
-    if(lastTime == null) {
-      res.render('error');
-      return;
-    }
-
-    let matches = await teemo.getMatchList(sum.accountId, lastTime);
-    sum.history = [];
-
-
-
-    let unchanged = true; //no need to update the db
-    if(matches.length > 0) {
-      unchanged = false; //new games => need to update the db
-      let newMatches = await teemo.processAllMatches(matches, sum);
-    } 
-    else if (dbSum.history.length == 0) {
-      res.render('first_time', {sum: sum, version: await version});
-    }
-
-    if( !unchanged ) {
-      dynamo.updateSum(sum);
-    } 
-
-    let match2print = sum.history.concat(dbSum.history);
-    let l = match2print.length;
-    if(l>20) {
-      match2print = match2print.slice(l-19,19);
-    }
-    match2print.reverse();
-    sum.history = match2print;
-    res.render('player',
-      { 
-        sum: sum,
-        rankString: league.rank2string(sum.rank),
-        version: await version
-      }
-    );      
-  }
+app.all('*', function (req, res, next) {
+  res.locals.lang = "en";
+  res.locals.version = process.env.RIOT_VERSION;
+  console.log(res.locals.version);
+  if(  !manageBlackList(req, res) )
+    next();
 });
 
-app.get('/about', function (req, res) {
-  if(manageBlackList(req, res)) 
-    return;
+app.param('lang', function (req, res, next, lang) {
+  res.locals.lang = lang;
+  next();
+});
 
+app.param('name', function (req, res, next, name) {
+  res.locals.name = name;
+  next();
+});
+
+
+// set the home page route
+app.get('/', function(req, res) {
+  res.render('index.ejs', res.locals);
+});
+
+app.get('/:lang([a-z]{2})/', function(req, res) {
+  res.render('index.ejs', res.locals);
+});
+
+
+
+app.get('/player/:name', function(req, res) {
+  player.searchPlayer(req, res);
+});
+
+
+app.get('/:lang([a-z]{2})/player/:name', function(req, res) {
+  player.searchPlayer(req, res);
+});
+
+
+
+app.get('/:lang([a-z]{2})/about', function (req, res) {
   res.render('about');
 });
 
-app.get('/contact', function (req, res) {
-  if(manageBlackList(req, res)) 
-    return;
-
-  res.render('contact');
+app.get('/about', function (req, res) {
+  res.render('about');
 });
+
+
+
+app.get('/:lang([a-z]{2})/contact', function (req, res) {
+  res.render('contact', res.locals);
+});
+
+app.get('/contact', function (req, res) {
+  res.render('contact', res.locals);
+});
+
+
 
 
 app.listen(port, function() {

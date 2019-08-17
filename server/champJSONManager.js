@@ -84,5 +84,10 @@ function getChampName(id) {
   return obj.champions[id];
 }
 
+function getLocalVersion() {
+  return readMyChampionJS().version;
+}
+
+module.exports.getLocalVersion = getLocalVersion;
 module.exports.getChampName = getChampName;
 module.exports.manageChampionJSON = manageChampionJSON;

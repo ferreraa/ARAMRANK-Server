@@ -42,8 +42,15 @@ function storeVisit(ip) {
   }
 
   let res = 1;
-  var obj = JSON.parse(data); //data as object
-  
+
+  try {
+    var obj = JSON.parse(data); //data as object
+  } catch(e) {
+    console.log("error parsing clients.json: ",e)
+    return 0;
+  }
+
+
   //modify content
   if(typeof obj[ip] === 'undefined') //new user
     obj[ip] = {"latestDate": date, "globalCount": 1, "dailyCount": 1};

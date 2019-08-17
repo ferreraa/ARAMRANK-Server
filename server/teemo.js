@@ -41,6 +41,7 @@ async function processAllMatches(matches, sum) {
     return el != null;
   });
 
+  //reverse 
   for (let i = filteredMatches.length - 1; i >= 0; i--) {
     sumUtils.processGameResult(sum, filteredMatches[i]);  
   }
