@@ -7,12 +7,21 @@
 
 <%- include('./partials/myNavbar', {lang: lang}); %>
 <div class="container">
-    <div class="jumbotron">
-        <h1>ALL RANDOM ALL RANK!</h1>
-        <form action="/">
-            <p>Entrez votre joli petit nom <input type="text" placeholder="Pseudo" name="name"><input type="submit" value="GO"></p>
-        </form>
-    </div>
+  <div class="jumbotron">
+    <h1>ALL RANDOM ALL RANK!</h1>
+    <script type="text/javascript">
+      function search() {
+        let name = document.getElementById('name').value;
+        let lang = "<%= lang %>";
+        if(lang == "en") 
+          window.location.href = '/player/'+name;
+        else
+          window.location.href = '/'+lang+'/player/'+name;
+      }
+    </script>
+
+    <p>Entrez votre joli petit nom <input type="text" placeholder="Pseudo" id="name"><button style="color:black" onclick="search()">GO</button></p>
+  </div>
 </div>
 
 
