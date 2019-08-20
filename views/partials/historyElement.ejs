@@ -3,8 +3,14 @@
   width="50px" height="50px">
 
 <% if(match.win) { %>
-  <span style="color:green;font-weight:bold">Victoire ! -</span><span>&nbsp; Score : <%= match.k %>/<%= match.d %>/<%= match.a %> - valeur : <span style="color:green;font-weight:bold">+<%= match.lpValue %></span> date : <%= new Date(match.timestamp).toLocaleString() %></span>
+  <span style="color:green;font-weight:bold">Victoire ! -</span><span>&nbsp; Score : <%= match.k %>/<%= match.d %>/<%= match.a %> - valeur : <span style="color:green;font-weight:bold">+<%= match.lpValue %></span> date : <span id="dateGame<%= match.timestamp %>"><%= new Date(match.timestamp).toLocaleString() %></span></span>
 <% } else {%>
-  <span style="color:red">Défaite ! -</span><span>&nbsp; Score : <%= match.k %>/<%= match.d %>/<%= match.a %> - valeur : <span style="color:red">-<%= match.lpValue %></span> date : <%= new Date(match.timestamp).toLocaleString() %></span>
+  <span style="color:red">Défaite ! -</span><span>&nbsp; Score : <%= match.k %>/<%= match.d %>/<%= match.a %> - valeur : <span style="color:red"><%= match.lpValue == 0 ? "-0" : match.lpValue %></span> date : <span id="dateGame<%= match.timestamp %>"><%= new Date(match.timestamp).toLocaleString() %></span></span>
   <% } %>
+
+  <script type="text/javascript">
+    dateGame = new Date(<%= match.timestamp %>)
+    document.getElementById('dateGame<%= match.timestamp %>').innerHTML = dateGame.toLocaleString();
+
+  </script>
 </p>
