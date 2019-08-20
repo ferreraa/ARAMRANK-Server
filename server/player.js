@@ -7,7 +7,7 @@ const league = require("./league");
 
 async function searchPlayer(req, res) {
   let sum = await teemo.searchSummoner(res.locals.name);
-  if (sum == null) {
+  if (sum == null || typeof sum.id == 'undefined') {
     res.render('404Sum', res.locals);
     return;
   }
