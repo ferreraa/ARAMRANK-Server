@@ -98,7 +98,6 @@ async function processMatch(match, sum) {
   newMatch.a = stats.assists;
   newMatch.firstBlood = stats.firstBloodKill;
   newMatch.poroFed = stats.item6 == 0;
-  console.log(newMatch.pentaKills);
   return newMatch;
 }
 
