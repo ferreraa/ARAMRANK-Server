@@ -91,12 +91,14 @@ async function processMatch(match, sum) {
   newMatch.championName = champJSON.getChampName(newMatch.championId);
 
   let stats = data.participants[i].stats;
+  newMatch.pentaKills = stats.pentaKills;
   newMatch.win = stats.win;
   newMatch.k = stats.kills;
   newMatch.d = stats.deaths;
   newMatch.a = stats.assists;
   newMatch.firstBlood = stats.firstBloodKill;
   newMatch.poroFed = stats.item6 == 0;
+  console.log(newMatch.pentaKills);
   return newMatch;
 }
 

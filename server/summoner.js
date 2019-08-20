@@ -26,9 +26,11 @@ function processGameResult(sum, match) {
   let Pf = 2.5 * match.poroFed ? 1 : -1;
   let kda = 0.5*(match.k - match.d + 0.2 * match.a);
   let mainFactor = sum.mainChampId == match.championId ? 2.5 : 1;
+  let penta = match.pentaKills * 5;
 
 
-  let lp = (R*20 + randomLP + Pf + kda) * mainFactor * winFactor * placementFactor;
+  let lp = (R*20 + randomLP) * mainFactor * winFactor * placementFactor;
+  lp += kda + Pf + penta;
   lp = Math.round(lp);
 
   if (match.win) {
