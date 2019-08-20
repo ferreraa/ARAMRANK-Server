@@ -16,7 +16,7 @@
         <script>
             function navSearch() {
                 let name = document.getElementById('sumName').value;
-                if(name != null) {
+                if(name != "") {
                   let lang = "<%= lang %>";
                   if(lang == "en")
                     window.location.href = '/player/'+name;

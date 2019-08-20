@@ -12,6 +12,9 @@
     <script type="text/javascript">
       function search() {
         let name = document.getElementById('name').value;
+        if(name == "")
+          return;
+        
         let lang = "<%= lang %>";
         if(lang == "en") 
           window.location.href = '/player/'+name;
