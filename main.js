@@ -17,7 +17,7 @@ champJSON.manageChampionJSON()
   .then((version) => {process.env.RIOT_VERSION = version});
 
 
-schedule.scheduleJob('0 */2 * * *', function(){
+schedule.scheduleJob('0 0 */2 * * *', function(){
   process.env.RIOT_VERSION = champJSON.manageChampionJSON();
 });
 
