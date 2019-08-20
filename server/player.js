@@ -53,7 +53,7 @@ async function searchPlayer(req, res) {
   let match2print = dbSum.history.concat(sum.history);
   let l = match2print.length;
   if(l>20) {
-    match2print = match2print.slice(l-19,19);
+    match2print = match2print.slice(l-19,l);
   }
   match2print.reverse();
   sum.history = match2print;
