@@ -122,6 +122,9 @@ app.get('/contact', function (req, res) {
   res.render('contact', res.locals);
 });
 
+app.get('*', function (req, res) {
+  res.status(404).send('quatre cent quatre. T\'es déçu ?');
+});
 
 
 
