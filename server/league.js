@@ -128,8 +128,7 @@ function demoteUpdate(win, sum, lp) {
     return;
   }
 
-  let currentBO = sum.rank.bo;
-  let newBO = currentBO.replace('o', 'x');
+  let newBO = sum.rank.bo.replace('o', 'x');
   if(newBO == "xxx") {
     sum.rank.league--;
     sum.rank.lp = demoteLP(sum.rank.league);
