@@ -6,7 +6,7 @@ function processGameResult(sum, match) {
   let nb_of_games = sum.wins + sum.loss; //number of games already played
   let isPlacement = nb_of_games < 5;
 
-  let winFactor = match.win ? 1 : isPlacement ? 0 : -1;
+  let winFactor = match.win ? 1 : -1;
   //win => 1. Lose => -1 if not placements
 
   let placementFactor = 1;
@@ -14,6 +14,9 @@ function processGameResult(sum, match) {
     case 0: case 1: placementFactor = 3; break;
     case 2: case 3: placementFactor = 2; break;
   }
+  if(!match.win && isPlacement)
+    placementFactor = 0; 
+
 
   let R = 1;
   if(!isPlacement) {
@@ -29,8 +32,9 @@ function processGameResult(sum, match) {
   let penta = match.pentaKills * 5;
 
 
-  let lp = (R*20 + randomLP) * mainFactor * winFactor * placementFactor;
+  let lp = (R*20 + randomLP) * mainFactor * winFactor;
   lp += kda + Pf + penta;
+  lp *= placementFactor;
   lp = Math.round(lp);
 
   if (match.win) {
