@@ -28,7 +28,6 @@ function processLPchange(lp, sum, match, isPlacement) {
 }
   
 
-  
 function needPromoteBO(sum) {
   if(sum.rank.league == 0 || sum.rank.league > 5) {
     return true;
@@ -61,7 +60,7 @@ function promote(sum) {
   else {
     if(sum.rank.div == 2) {
       sum.rank.league++;
-      sum.rank.div = "0";
+      sum.rank.div = 0;
     } else 
       sum.rank.div++;
   }
@@ -74,7 +73,7 @@ function demote(sum) {
     else {
       sum.rank.league--;
       if(sum.rank.league == 0)
-        sum.rank.div = "0";
+        sum.rank.div = 0;
     }
   }
 }
@@ -86,7 +85,7 @@ function slowClimbing(sum, lp) {
   if(sum.rank.lp >= maxLp) {
     sum.rank.lp = maxLp;
   } else if(sum.rank.lp < 0) {
-      sum.rank.lp = "0";
+      sum.rank.lp = 0;
   }
 }
 
@@ -101,7 +100,7 @@ function fastClimbing(sum, lp) {
     sum.rank.lp -= maxLp;
     promote(sum);
   } else if(sum.rank.lp < 0) {
-    sum.rank.lp = "0";
+    sum.rank.lp = 0;
   }
 }
 
@@ -134,9 +133,9 @@ function demoteUpdate(win, sum, lp) {
     sum.rank.lp = demoteLP(sum.rank.league);
     sum.rank.bo = "ooo";
     if(sum.rank.league == 0 || sum.rank.league > 5)
-      sum.rank.div = "0";
+      sum.rank.div = 0;
     else 
-      sum.rank.div = "2";
+      sum.rank.div = 2;
   } else {
     sum.rank.bo = newBO;
   }
@@ -151,7 +150,7 @@ function promoUpdate(win, sum) {
   if(nbWins >= 2) {
     sum.rank.lp = 0;
     sum.rank.bo = "ooo";
-    sum.rank.div = "0";
+    sum.rank.div = 0;
     sum.rank.league++;
   } else if(nbLoss >= 2) {
     sum.rank.lp -= 15*(nbLoss-nbWins);
