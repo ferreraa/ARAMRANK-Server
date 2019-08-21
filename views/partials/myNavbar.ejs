@@ -27,7 +27,16 @@
         </script>
 
             <input type="text" id="sumName" placeholder="Search.." name="search">
-            <button type="button" onclick="navSearch()" class="nav-search-button">GO</button>
+            <button type="button" id="navGo" onclick="navSearch()" class="nav-search-button">GO</button>
+            <script>
+          var navInput = document.getElementById("sumName");
+          navInput.addEventListener("keyup", function(event) {
+          if (event.keyCode === 13) {
+           event.preventDefault();
+           document.getElementById("navGo").click();
+          }
+          });
+          </script>
         </li>
         <li id="about"><a href="../about">A PROPOS</a></li>
         <li id="contact"><a href="/contact">CONTACT</a></li>

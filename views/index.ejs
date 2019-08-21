@@ -14,7 +14,7 @@
         let name = document.getElementById('name').value;
         if(name == "")
           return;
-        
+
         let lang = "<%= lang %>";
         if(lang == "en") 
           window.location.href = '/player/'+name;
@@ -23,7 +23,15 @@
       }
     </script>
 
-    <p>Entrez votre joli petit nom <input type="text" placeholder="Pseudo" id="name"><button style="color:black" onclick="search()">GO</button></p>
+    <p>Entrez votre joli petit nom <input type="text" placeholder="Pseudo" id="name"><button style="color:black" id="indexGo" onclick="search()">GO</button></p>
+        <script type="text/javascript">
+      var indexInput = document.getElementById("name");
+      indexInput.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+       event.preventDefault();
+       document.getElementById("indexGo").click();
+      }
+    });</script>
   </div>
 </div>
 
