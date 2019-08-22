@@ -77,7 +77,7 @@ function updateSum(sum) {
      "#H": "history", 
      "#R": "rank",
      "#N": "name",
-     "#M": "main",
+     "#M": "mainChampId",
      "#W": "wins",
      "#L": "loss",
     }, 
@@ -85,7 +85,7 @@ function updateSum(sum) {
      ":h": di.history, 
      ":r": di.rank,
      ":n": di.name,
-     ":m": di.id,
+     ":m": di.mainChampId,
      ":w": di.wins,
      ":l": di.loss
     }, 
