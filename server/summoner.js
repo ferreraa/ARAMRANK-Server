@@ -53,7 +53,7 @@ function processGameResult(sum, match) {
   if( match.win )
   { //blackList
      switch(match.championId) {
-      case 412: case 103: case 114: case 202: case 10: lp = 1;  
+      case 412: case 103: case 114: case 202: case 141: lp = 1;  
     }
   }
 
