@@ -17,8 +17,9 @@ champJSON.manageChampionJSON()
   .then((version) => {process.env.RIOT_VERSION = version});
 
 
-schedule.scheduleJob('0 0 */2 * * *', function(){
-  process.env.RIOT_VERSION = champJSON.manageChampionJSON();
+schedule.scheduleJob('0 0 */2 * * *', async function(){
+  process.env.RIOT_VERSION = await champJSON.manageChampionJSON();
+  console.log(new Date().toISOString());
 });
 
 // set the view engine to ejs
