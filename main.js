@@ -32,11 +32,14 @@ app.use('/en', express.static(__dirname + '/public'));
 app.use('/fr', express.static(__dirname + '/public'));
 
 i18n.configure({
+
+  locales: ['en', 'fr'],
+
   // sets a custom cookie name to parse locale settings from
   cookie: 'aramrank',
 
   // where to store json files - defaults to './locales'
-  directory: __dirname + '/locales'
+  directory: __dirname + '/public/locales',
 });
 
 
@@ -46,7 +49,6 @@ i18n.configure({
 
   // i18n init parses req for language headers, cookies, etc.
 app.use(i18n.init);
-
 
 
 function manageBlackList(req, res) {
@@ -62,15 +64,22 @@ function manageBlackList(req, res) {
 
 
 app.all('*', function (req, res, next) {
-  res.locals.lang = "en";
+  var arr_url = req.url.split('/');
+  if(arr_url[1] == 'en' || arr_url[1] == 'fr') {
+    arr_url.splice(1,1);
+    res.locals.currentURL = arr_url.join('/');
+  }
+  else {
+    res.locals.currentURL = req.url;
+  }
+  res.locals.locale = 'en';
   res.locals.version = process.env.RIOT_VERSION;
-  console.log(res.locals.version);
   if(  !manageBlackList(req, res) )
     next();
 });
 
 app.param('lang', function (req, res, next, lang) {
-  res.locals.lang = lang;
+  res.locals.locale = lang;
   next();
 });
 
