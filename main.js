@@ -84,11 +84,11 @@ app.param('name', function (req, res, next, name) {
 
 // set the home page route
 app.get('/', function(req, res) {
-  res.render('index.ejs', res.locals);
+  res.render('index.ejs');
 });
 
 app.get('/:lang([a-z]{2})/', function(req, res) {
-  res.render('index.ejs', res.locals);
+  res.render('index.ejs');
 });
 
 
@@ -115,11 +115,11 @@ app.get('/about', function (req, res) {
 
 
 app.get('/:lang([a-z]{2})/contact', function (req, res) {
-  res.render('contact', res.locals);
+  res.render('contact');
 });
 
 app.get('/contact', function (req, res) {
-  res.render('contact', res.locals);
+  res.render('contact');
 });
 
 app.get('*', function (req, res) {

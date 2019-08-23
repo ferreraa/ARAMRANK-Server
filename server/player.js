@@ -43,7 +43,7 @@ async function searchPlayer(req, res) {
     let newMatches = await teemo.processAllMatches(matches, sum);
   } 
   else if (dbSum.history.length == 0) {
-    res.render('first_time', res.locals);
+    res.render('first_time');
   }
 
   if( !unchanged ) {
@@ -58,7 +58,7 @@ async function searchPlayer(req, res) {
   match2print.reverse();
   sum.history = match2print;
   res.locals.rankString = league.rank2string(sum.rank)
-  res.render('player', res.locals);      
+  res.render('player');      
 }
 
 
