@@ -31,11 +31,8 @@ app.use('/en', express.static(__dirname + '/public'));
 app.use('/fr', express.static(__dirname + '/public'));
 
 i18n.configure({
-
   // sets a custom cookie name to parse locale settings from
   cookie: 'aramrank',
-
-  queryParameter: 'lang',
 
   // where to store json files - defaults to './locales'
   directory: __dirname + '/locales'
