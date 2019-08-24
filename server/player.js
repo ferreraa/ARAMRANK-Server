@@ -57,7 +57,7 @@ async function searchPlayer(req, res) {
   }
   match2print.reverse();
   sum.history = match2print;
-  res.locals.rankString = league.rank2string(sum.rank)
+  res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
   res.render('player');      
 }
 

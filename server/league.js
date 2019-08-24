@@ -161,31 +161,34 @@ function promoUpdate(win, sum) {
   }
 }
 
-//returns the message to be displayed as the rank of the player
-function rank2string(rank) {
-  let res = "";
+/* returns the message to be displayed as the rank of the player
+ * @rank is the rank object from the sum object
+ * @t is the translate function res.locals.__()
+ */
+function rank2string(rank, t) {
+  let res = '';
   switch(rank.league) {
-    case 0: res+="Challenger"; break;
-    case 1: res+="Noob"; break;
-    case 2: res+="Papier"; break;
-    case 3: res+="Carton"; break;
-    case 4: res+="Plâtre"; break;
-    case 5: res+="Bois"; break;
-    case 6: res+="Plastique"; break;
-    case 7: res+="Grand Plastique"; break;
-    case 8: res+="Bronze V"; break;
+    case 0: res+=t('Challenger'); break;
+    case 1: res+=t('Noob'); break;
+    case 2: res+=t('Papier'); break;
+    case 3: res+=t('Carton'); break;
+    case 4: res+=t('Plâtre'); break;
+    case 5: res+=t('Bois'); break;
+    case 6: res+=t('Plastique'); break;
+    case 7: res+=t('Grand Plastique'); break;
+    case 8: res+=t('Bronze V'); break;
   }
 
   if(rank.league < 6 && rank.league > 0) {
-    res += " " + RomanNumbers(3 - rank.div);
+    res += ' ' + RomanNumbers(3 - rank.div);
   }
 
-  res += " - " + rank.lp + " lp ";
+  res += ' - ' + rank.lp + ' lp ';
 
   if(rank.lp == maxLeagueLP(rank.league)) {
     let bo3w = rank.bo.split('v').length - 1;
     let bo3l = rank.bo.split('x').length -1;
-    res += " BO3: " + bo3w + " - " + bo3l;
+    res += ' - BO3: ' + bo3w + ' - ' + bo3l;
   }
   return res;
 }
