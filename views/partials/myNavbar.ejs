@@ -6,7 +6,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand" href="/">HOME</a>
+      <a class="navbar-brand" href="/<%= locale %>/">HOME</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
@@ -17,7 +17,7 @@
             function navSearch() {
                 let name = document.getElementById('sumName').value;
                 if(name != "") {
-                  let lang = "<%= lang %>";
+                  let lang = "<%= locale %>";
                   if(lang == "en")
                     window.location.href = '/player/'+name;
                   else
@@ -26,7 +26,7 @@
             }
         </script>
 
-            <input type="text" id="sumName" placeholder="Search.." name="search">
+            <input type="text" id="sumName" placeholder="<%= __('pseudo') %>" name="search">
             <button type="button" id="navGo" onclick="navSearch()" class="nav-search-button">GO</button>
             <script>
           var navInput = document.getElementById("sumName");
@@ -38,19 +38,15 @@
           });
           </script>
         </li>
-        <li id="about"><a href="../about">A PROPOS</a></li>
-        <li id="contact"><a href="/contact">CONTACT</a></li>
+        <li id="about"><a href="/<%= locale %>/about"><%= __('about') %></a></li>
+        <li id="contact"><a href="/<%= locale %>/contact"><%= __('contact') %></a></li>
         
         <li id="lang" class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><%= locale %> <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="#">EN</a></li>
+            <li><a href="<%= '/en' + currentURL %>">EN</a></li>
             <li class="divider"></li>
-            <li><a href="#">FR</a></li>
-
-
-
-
+            <li><a href="<%= '/fr' + currentURL %>">FR</a></li>
           </ul>
         </li>
       </ul>

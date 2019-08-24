@@ -8,9 +8,9 @@
 <%- include('./partials/myNavbar'); %>
 <div class="container">
     <div class="jumbotron">
-        <h1>Contact</h1>
-        <p>Pour toute demande/remarque/suggestion, vous pouvez me contacter par email.</p>
-        <a href = "mailto:all.random.all.rank@gmail.com?subject=Le%20 Couscous&body=J'aime%20le%20couscous.">
+        <h1><%= __('contact') %></h1>
+        <p><%= __('contact_p1') %></p>
+        <a href = "mailto:all.random.all.rank@gmail.com?subject=<%= __('mail') %>">
             all.random.all.rank@gmail.com
         </a>
     </div>
