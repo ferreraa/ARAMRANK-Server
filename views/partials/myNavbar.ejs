@@ -42,7 +42,7 @@
         <li id="contact"><a href="/<%= locale %>/contact"><%= __('contact') %></a></li>
         
         <li id="lang" class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><%= locale %> <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><%= locale.toUpperCase(); %> <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="<%= '/en' + currentURL %>">EN</a></li>
             <li class="divider"></li>
