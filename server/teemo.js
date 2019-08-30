@@ -18,6 +18,8 @@ function searchSummoner(name) {
 //Get highest mastery score champ by summoner Id
 async function getSumMain(id) {
   let data = await api.get('euw1', 'championMastery.getAllChampionMasteries', id);
+  if(data.length == 0)
+    return -1;
   return data[0].championId;
 }
 
