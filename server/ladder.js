@@ -9,10 +9,9 @@ async function updateLadder() {
   list = list.filter((sum) => {
     return sum.wins + sum.loss >= 5;
   }).sort((sum1, sum2) => {
-    return league.compare(sum1.rank, sum2.rank);
+    return league.compare(sum1.rank, sum2.rank) == 1 ? -1 : 1;
   })
 
-  let allowed = ['profileIconId', 'rank', 'badges', 'name']
   let data2write = [];
 
   list.forEach(e => {
@@ -31,7 +30,7 @@ async function updateLadder() {
   fs.writeFile(path, data2write, err => {
     if(err) console.log(err);
     else console.log("ladder.json updated");
-  })
+  });
 }
 
 
