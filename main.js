@@ -1,6 +1,7 @@
 const visit = require("./server/visitors");
 const champJSON = require("./server/champJSONManager");
 const player = require('./server/player');
+const ladder = require('./server/ladder');
 
 var i18n = require('i18n');
 var express = require('express');
@@ -13,12 +14,19 @@ var schedule = require('node-schedule');
 // process.env.PORT lets the port be set by Heroku
 var port = process.env.PORT || 8080;
 
+ladder.updateLadder();
+
 champJSON.manageChampionJSON()
   .then((version) => {process.env.RIOT_VERSION = version});
 
 
 schedule.scheduleJob('0 0 */2 * * *', async function(){
   process.env.RIOT_VERSION = await champJSON.manageChampionJSON();
+  console.log(new Date().toISOString());
+});
+
+schedule.scheduleJob('0 0 */1 * * *', function(){
+  ladder.updateLadder();
   console.log(new Date().toISOString());
 });
 
@@ -109,6 +117,16 @@ app.get('/:lang([a-z]{2})/player/:name', function(req, res) {
   player.searchPlayer(req, res);
 });
 
+
+app.get('/:lang([a-z]{2})/ladder', function (req, res) {
+  res.locals.ladder = ladder.readLadder();
+  res.render('ladder');
+});
+
+app.get('/ladder', function (req, res) {
+  res.locals.ladder = ladder.readLadder();
+  res.render('ladder');
+});
 
 
 app.get('/:lang([a-z]{2})/about', function (req, res) {

@@ -161,6 +161,20 @@ function promoUpdate(win, sum) {
   }
 }
 
+/** returns true if the first given rank is higher or equal to the second
+ * @rank1 rank of first player
+ * @rank2 rank of second player
+ */
+function compare(rank1, rank2) {
+  if(rank1.league < rank2.league)
+    return false;
+
+  if(rank1.div < rank2.div)
+    return false;
+
+  return rank1.lp < rank2.lp;
+}
+
 /* returns the message to be displayed as the rank of the player
  * @rank is the rank object from the sum object
  * @t is the translate function res.locals.__()
@@ -210,5 +224,6 @@ function RomanNumbers(arabNum) {
   }
 }
 
+module.exports.compare = compare;
 module.exports.rank2string = rank2string;
 module.exports.processLPchange = processLPchange;

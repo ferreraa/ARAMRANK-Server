@@ -105,6 +105,33 @@ function updateSum(sum) {
  });
 }
 
+
+async function getAllUsers() {
+  res = [];
+  await recScan(res, null);
+  return res;
+}
+
+function recScan(prevData, lastEvaluatedKey) {
+  var params = { 
+    TableName: table_name,
+  };
+
+  return new Promise((resolve, reject) => {
+    dynamodb.scan(params, function(err, data) {
+      if (err) reject(console.log(err, err.stack)); // an error occurred
+      else     
+        resolve(  // successful response
+          data.Items.forEach(function(e) {
+            prevData.push(attr.unwrap(e));
+          })
+        );           
+    });
+  });
+}
+
+
+module.exports.getAllUsers = getAllUsers;
 module.exports.putNewSummoner = putNewSummoner;
 module.exports.getSumByAccountId = getSumByAccountId;
 module.exports.updateSum = updateSum;
