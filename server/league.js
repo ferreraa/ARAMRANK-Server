@@ -168,9 +168,13 @@ function promoUpdate(win, sum) {
 function compare(rank1, rank2) {
   if(rank1.league < rank2.league)
     return -1;
+  else if(rank1.league > rank2.league)
+    return 1;
 
   if(rank1.div < rank2.div)
     return -1;
+  else if(rank1.div > rank2.div)
+    return 1;
 
   return rank1.lp < rank2.lp ? -1 : 1;
 }
