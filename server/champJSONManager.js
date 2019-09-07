@@ -15,8 +15,18 @@ function createNewMyChampionJS(championJS) {
 
 }
 
-function readMyChampionJS() {
-  let jsonString = fs.readFileSync('./server/champ.json');
+async function readMyChampionJS() {
+  try {
+    var jsonString = fs.readFileSync('./server/champ.json');
+  } catch (error) {
+    if(error.code == 'ENOENT') {
+      console.log("champ.json not fount. creating one...");
+      rewriteChampJSON(await remoteVersion());
+    }
+    else
+      console.log(error);
+    return;
+  }
 
   return JSON.parse(jsonString);
 
