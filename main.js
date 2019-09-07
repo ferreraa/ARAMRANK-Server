@@ -128,6 +128,11 @@ app.get('/ladder', function (req, res) {
   res.render('ladder');
 });
 
+app.get('/pico', async function(req, res) {
+  await ladder.updateLadder();
+  res.send(ladder.readLadder());
+})
+
 
 app.get('/:lang([a-z]{2})/about', function (req, res) {
   res.render('about');
