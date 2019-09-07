@@ -16,8 +16,12 @@ function createNewMyChampionJS(championJS) {
 }
 
 function readMyChampionJS() {
-  let jsonString = fs.readFileSync('./server/champ.json');
-
+  try {
+    var jsonString = fs.readFileSync('./server/champ.json');
+  } catch (error) {
+    console.log(error);
+    return '9.16.1';
+  }
   return JSON.parse(jsonString);
 }
 
