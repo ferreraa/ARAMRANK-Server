@@ -2,6 +2,7 @@ const visit = require("./server/visitors");
 const champJSON = require("./server/champJSONManager");
 const player = require('./server/player');
 const ladder = require('./server/ladder');
+const league = require('./server/league');
 
 var i18n = require('i18n');
 var express = require('express');
@@ -120,11 +121,13 @@ app.get('/:lang([a-z]{2})/player/:name', function(req, res) {
 
 app.get('/:lang([a-z]{2})/ladder', function (req, res) {
   res.locals.ladder = ladder.readLadder();
+  res.locals.leaguejs = league;
   res.render('ladder');
 });
 
 app.get('/ladder', function (req, res) {
   res.locals.ladder = ladder.readLadder();
+  res.locals.leaguejs = league;
   res.render('ladder');
 });
 
