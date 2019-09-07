@@ -167,12 +167,12 @@ function promoUpdate(win, sum) {
  */
 function compare(rank1, rank2) {
   if(rank1.league < rank2.league)
-    return false;
+    return -1;
 
   if(rank1.div < rank2.div)
-    return false;
+    return -1;
 
-  return rank1.lp < rank2.lp;
+  return rank1.lp < rank2.lp ? -1 : 1;
 }
 
 /* returns the message to be displayed as the rank of the player
