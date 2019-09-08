@@ -2,9 +2,8 @@ const teemo = require("./teemo");
 const dynamo = require("./dynamo");
 const sumUtils = require("./summoner");
 const league = require("./league");
-
-
-
+const ddragonManager = require("./ddragonManager");
+  
 async function searchPlayer(req, res) {
   let sum = await teemo.searchSummoner(res.locals.name);
 
@@ -17,6 +16,8 @@ async function searchPlayer(req, res) {
   }
 
   res.locals.sum = sum;
+  await ddragonManager.manageProfileIcon(sum.profileIconId);
+
 
   sum.mainChampId = await teemo.getSumMain(sum.id); 
 
@@ -24,7 +25,7 @@ async function searchPlayer(req, res) {
 
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);
-    res.render('first_time', res.locals);
+    res.render('first_time');
     return;
   } 
 
@@ -48,6 +49,7 @@ async function searchPlayer(req, res) {
   } 
   else if (dbSum.history.length == 0) {
     res.render('first_time');
+    return;
   }
 
   if( !unchanged ) {
@@ -61,7 +63,15 @@ async function searchPlayer(req, res) {
   }
   match2print.reverse();
   sum.history = match2print;
+
+
   res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
+
+  let iconDownloadPromises = [];
+  sum.history.forEach(e => {
+    iconDownloadPromises.push(ddragonManager.manageChampionIcon(e.championName));
+  });
+  await Promise.all(iconDownloadPromises);
   res.render('player');      
 }
 

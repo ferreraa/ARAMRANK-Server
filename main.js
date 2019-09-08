@@ -3,6 +3,7 @@ const champJSON = require("./server/champJSONManager");
 const player = require('./server/player');
 const ladder = require('./server/ladder');
 const league = require('./server/league');
+const ddragonManager = require('./server/ddragonManager');
 
 var i18n = require('i18n');
 var express = require('express');
@@ -120,16 +121,23 @@ app.get('/:lang([a-z]{2})/player/:name', function(req, res) {
 
 
 app.get('/:lang([a-z]{2})/ladder', function (req, res) {
-  res.locals.ladder = ladder.readLadder();
-  res.locals.leaguejs = league;
-  res.render('ladder');
+  getLadder(res);
 });
 
 app.get('/ladder', function (req, res) {
+  getLadder(res);
+});
+
+async function getLadder(res) {
   res.locals.ladder = ladder.readLadder();
   res.locals.leaguejs = league;
+  let iconDownloadPromises = [];
+  res.locals.ladder.forEach(e => {
+    iconDownloadPromises.push(ddragonManager.manageProfileIcon(e.iconId))
+  });
+  await Promise.all(iconDownloadPromises);
   res.render('ladder');
-});
+}
 
 app.get('/pico', async function(req, res) {
   await ladder.updateLadder();
@@ -154,6 +162,7 @@ app.get('/:lang([a-z]{2})/contact', function (req, res) {
 app.get('/contact', function (req, res) {
   res.render('contact');
 });
+
 
 app.get('*', function (req, res) {
   res.status(404).send('quatre cent quatre. T\'es déçu ?');
