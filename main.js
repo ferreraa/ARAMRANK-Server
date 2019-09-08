@@ -10,7 +10,7 @@ var express = require('express');
 var app = express();
 var schedule = require('node-schedule');
  
-
+const path = require('path');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -163,6 +163,10 @@ app.get('/contact', function (req, res) {
   res.render('contact');
 });
 
+
+app.get('/riot.txt', function(req, res) {
+  res.sendFile(path.join(__dirname,'./riot.txt'));
+});
 
 app.get('*', function (req, res) {
   res.status(404).send('quatre cent quatre. T\'es déçu ?');
