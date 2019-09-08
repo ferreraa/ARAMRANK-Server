@@ -43,12 +43,6 @@ function processGameResult(sum, match) {
     sum.loss++;
   }
 
-  if(lp > 100)
-    lp = 100;
-  if(lp < -100)
-    lp = -100;
-  if( (match.win && lp<0) || (!match.win && lp>0) )
-    lp=0;
 
   if( match.win )
   { //blackList
@@ -56,6 +50,14 @@ function processGameResult(sum, match) {
       case 412: case 103: case 114: case 202: case 141: lp = 1;  
     }
   }
+
+  if(lp > 100)
+    lp = 100;
+  if(lp < -100)
+    lp = -100;
+  if( (match.win && lp<0) || (!match.win && lp>0) )
+    lp=0;
+
 
   league.processLPchange(lp, sum, match, isPlacement);
   match.lpValue = lp;
