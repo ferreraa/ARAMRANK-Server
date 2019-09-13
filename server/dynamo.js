@@ -9,7 +9,7 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const table_name = process.env.table_name || "players_test2";
+const table_name = process.env.table_name || "players_test";
 
 
 function getSumByAccountId(id) {
@@ -112,7 +112,7 @@ async function getAllUsers() {
   return res;
 }
 
-function recScan(prevData, lastEvaluatedKey) {
+function recScan(prevData, lastEvaluatedKey) { //TODO not recursive yet
   var params = { 
     TableName: table_name,
   };
@@ -129,6 +129,8 @@ function recScan(prevData, lastEvaluatedKey) {
     });
   });
 }
+
+
 
 
 module.exports.getAllUsers = getAllUsers;
