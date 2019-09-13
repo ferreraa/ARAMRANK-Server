@@ -7,7 +7,9 @@ const TeemoJS = require('teemojs');
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
-let api = TeemoJS(process.env.RITO);
+
+const api = TeemoJS(process.env.RITO);
+
 
 //search Summoner data from summoner name
 function searchSummoner(name) {
