@@ -5,6 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "aws-sdk": "^2.504.0",
+    "cookie-parser": "^1.4.4",
     "dotenv": "^8.0.0",
     "dynamodb": "^1.2.0",
     "dynamodb-data-types": "^3.0.1",

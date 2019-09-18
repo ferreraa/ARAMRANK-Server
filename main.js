@@ -5,10 +5,11 @@ const ladder = require('./server/ladder');
 const league = require('./server/league');
 const ddragonManager = require('./server/ddragonManager');
 
-var i18n = require('i18n');
-var express = require('express');
-var app = express();
-var schedule = require('node-schedule');
+const i18n = require('i18n');
+const express = require('express');
+const app = express();
+const schedule = require('node-schedule');
+const cookieParser = require('cookie-parser');
  
 const path = require('path');
 
@@ -41,6 +42,8 @@ app.use(express.static(__dirname + '/public'));
 app.use('/en', express.static(__dirname + '/public'));
 app.use('/fr', express.static(__dirname + '/public'));
 
+app.use(cookieParser());
+
 i18n.configure({
 
   locales: ['en', 'fr'],
@@ -72,14 +75,35 @@ function manageBlackList(req, res) {
   return false;
 }
 
+/**
+ *  set cookie 'locale' using the given response object
+ */
+function setLocaleCookie(locale, response) {
+    response.cookie('locale',locale, { maxAge: 900000, httpOnly: true });
+}
+
+/**
+ *  retrieves the 'locale' cookie from the given request object
+ */
+function getLocaleCookie(request) {
+  return request.cookies.locale;
+}
 
 app.all('*', function (req, res, next) {
   var arr_url = req.url.split('/');
-  if(arr_url[1] == 'en' || arr_url[1] == 'fr') {
+  var loc = arr_url[1];
+  if(loc == 'en' || loc == 'fr') {
     arr_url.splice(1,1);
     res.locals.currentURL = arr_url.join('/');
+    setLocaleCookie(loc, res);
+    if(loc =='en') 
+      res.redirect(res.locals.currentURL);
   }
   else {
+    loc = getLocaleCookie(req);
+    if(loc != 'en') {
+      res.redirect('/'+loc+req.url)
+    }
     res.locals.currentURL = req.url;
   }
   res.locals.locale = 'en';
