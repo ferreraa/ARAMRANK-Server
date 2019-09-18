@@ -1,57 +1,57 @@
-<nav class="navbar navbar-default">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="/<%= locale %>/">HOME</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  
+  <!-- HOME button -->
+  <a class="navbar-brand" href="/<%= locale %>/">HOME</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Search Field -->
+  <div class="collapse navbar-collapse justify-content-between" id="navbarColor01">
+    <div class="form-inline my-2 my-lg-0" abineguid="A6DAF699A22A49E9B52DEC9A89F5014B">
+      <script>
+        function navSearch() {
+          let name = document.getElementById('sumName').value;
+          if(name != "") {
+            let lang = "<%= locale %>";
+            if(lang == "en")
+              window.location.href = '/player/'+name;
+            else
+              window.location.href = '/'+lang+'/player/'+name;
+          }                
+        }
+      </script>
+      <input class="form-control mr-sm-2" id="sumName" type="text" placeholder="<%= __('pseudo') %>" name="search">
+      <button class="btn btn-secondary my-2 my-sm-0" onclick="navSearch()">GO</button>
+      <script>
+        var navInput = document.getElementById("sumName");
+        navInput.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+         event.preventDefault();
+         document.getElementById("navGo").click();
+        }
+        });
+      </script>
     </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-right">
-
-      <li class="navSearch">
-
-        <script>
-            function navSearch() {
-                let name = document.getElementById('sumName').value;
-                if(name != "") {
-                  let lang = "<%= locale %>";
-                  if(lang == "en")
-                    window.location.href = '/player/'+name;
-                  else
-                    window.location.href = '/'+lang+'/player/'+name;
-                }                
-            }
-        </script>
-
-            <input type="text" id="sumName" placeholder="<%= __('pseudo') %>" name="search">
-            <button type="button" id="navGo" onclick="navSearch()" class="nav-search-button">GO</button>
-            <script>
-          var navInput = document.getElementById("sumName");
-          navInput.addEventListener("keyup", function(event) {
-          if (event.keyCode === 13) {
-           event.preventDefault();
-           document.getElementById("navGo").click();
-          }
-          });
-          </script>
-        </li>
-        <li id="ladder"><a href="/<%= locale %>/ladder">LADDER</a></li>
-        <li id="about"><a href="/<%= locale %>/about"><%= __('about') %></a></li>
-        <li id="contact"><a href="/<%= locale %>/contact"><%= __('contact') %></a></li>
-        
-        <li id="lang" class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><%= locale.toUpperCase(); %> <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="<%= '/en' + currentURL %>">EN</a></li>
-            <li class="divider"></li>
-            <li><a href="<%= '/fr' + currentURL %>">FR</a></li>
-          </ul>
-        </li>
-      </ul>
-
-    </div>
+    
+    <ul class="nav navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/<%= locale %>/ladder">LADDER</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/<%= locale %>/about">ABOUT</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/<%= locale %>/contact"><%= __('contact') %></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><%= locale.toUpperCase(); %></a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="<%= '/en' + currentURL %>">EN</a>
+          <a class="dropdown-item" href="<%= '/fr' + currentURL %>">FR</a>
+      </li>
+    </ul>
+    
   </div>
 </nav>
+
