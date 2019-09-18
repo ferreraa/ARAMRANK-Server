@@ -96,13 +96,16 @@ app.all('*', function (req, res, next) {
     arr_url.splice(1,1);
     res.locals.currentURL = arr_url.join('/');
     setLocaleCookie(loc, res);
-    if(loc =='en') 
+    if(loc == 'en') {
       res.redirect(res.locals.currentURL);
+      return;
+    }
   }
   else {
-    loc = getLocaleCookie(req);
+    loc = getLocaleCookie(req) || 'en';
     if(loc != 'en') {
       res.redirect('/'+loc+req.url)
+      return;
     }
     res.locals.currentURL = req.url;
   }
