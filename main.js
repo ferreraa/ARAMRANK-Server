@@ -188,10 +188,6 @@ app.get('/contact', function (req, res) {
 });
 
 
-app.get('/riot.txt', function(req, res) {
-  res.sendFile(path.join(__dirname,'./riot.txt'));
-});
-
 app.get('*', function (req, res) {
   res.status(404).send('quatre cent quatre. T\'es déçu ?');
 });
