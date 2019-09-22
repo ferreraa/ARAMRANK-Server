@@ -79,7 +79,7 @@ function manageBlackList(req, res) {
  *  set cookie 'locale' using the given response object
  */
 function setLocaleCookie(locale, response) {
-    response.cookie('locale',locale, { maxAge: 900000, httpOnly: true });
+    response.cookie('locale',locale, { expires: new Date(Date.now() + 864000000), httpOnly: true });
 }
 
 /**
