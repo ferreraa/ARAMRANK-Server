@@ -98,10 +98,12 @@ function updateSum(sum) {
     TableName: table_name, 
     UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l"
  };
- dynamodb.updateItem(params, function(err, data) {
-   if (err) console.log(err, err.stack); // an error occurred
-   else     console.log("updated data of", sum.name);           // successful response
 
+ return new Promise( (resolve, reject) => {
+   dynamodb.updateItem(params, function(err, data) {
+     if (err) reject(console.log(err, err.stack)); // an error occurred
+     else     resolve(console.log("updated data of", sum.name));           // successful response
+   });
  });
 }
 

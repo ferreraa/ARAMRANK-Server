@@ -3,7 +3,8 @@ const dynamo = require("./dynamo");
 const sumUtils = require("./summoner");
 const league = require("./league");
 const ddragonManager = require("./ddragonManager");
-  
+const fs = require('fs');
+
 async function searchPlayer(req, res) {
   let sum = await teemo.searchSummoner(res.locals.name);
 
@@ -76,4 +77,69 @@ async function searchPlayer(req, res) {
 }
 
 
+
+function updatePlayer(dbSum) {
+
+  return new Promise( async (resolve, reject) => {
+
+    let sum = await teemo.searchSummoner(dbSum.name);
+
+    if (sum == null) {
+      let message = new Date().toISOString() + ' - summoner not found';
+      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
+      reject(console.log('couldn\'t update the player'));
+    } else if(typeof sum.id == 'undefined') {
+      let message = new Date().toISOString() + ' - an error occured with the teemo request';
+      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
+      reject(console.log('couldn\'t update the player'));
+    }
+
+
+    sum.mainChampId = await teemo.getSumMain(sum.id); 
+
+    sum.rank = dbSum.rank;
+    sum.wins = parseInt(dbSum.wins);
+    sum.loss = parseInt(dbSum.loss);
+    let lastTime = sumUtils.getLastTimeStamp(dbSum) +1;
+
+    if(lastTime == null) {
+      let message = new Date().toISOString() + ' - lastTime == null within the row';
+      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
+      return;
+    }
+
+    let matches = await teemo.getMatchList(sum.accountId, lastTime);
+    sum.history = [];
+
+    let unchanged = true; //no need to update the db
+    if(matches.length > 0) {
+      unchanged = false; //new games => need to update the db
+      let newMatches = await teemo.processAllMatches(matches, sum);
+    }
+
+    if( !unchanged ) {
+      resolve(await dynamo.updateSum(sum));
+    }
+  });
+}
+
+
+
+function updatePlayers() {
+  
+  return new Promise( async (resolve) => 
+  {
+    dbUsers = await dynamo.getAllUsers();
+    
+    updatePromises = [];
+
+    dbUsers.forEach(e => {
+      updatePromises.push(updatePlayer(e));
+    });
+
+    Promise.all(updatePromises).then(resolve());
+  });
+}
+
+module.exports.updatePlayers = updatePlayers;
 module.exports.searchPlayer = searchPlayer;

@@ -25,13 +25,13 @@ champJSON.manageChampionJSON()
 
 schedule.scheduleJob('0 0 */2 * * *', async function(){
   process.env.RIOT_VERSION = await champJSON.manageChampionJSON();
-  console.log(new Date().toISOString());
+  console.log(new Date().toISOString() + ' - riot version = ' + process.env.RIOT_VERSION);
 });
 
-schedule.scheduleJob('0 0 */1 * * *', function(){
-  ladder.updateLadder();
-  console.log(new Date().toISOString());
+schedule.scheduleJob('0 */10 * * * *', function(){
+  player.updatePlayers().then(ladder.updateLadder());
 });
+
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
