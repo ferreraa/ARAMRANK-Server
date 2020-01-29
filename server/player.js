@@ -5,6 +5,16 @@ const league = require("./league");
 const ddragonManager = require("./ddragonManager");
 const fs = require('fs');
 
+
+/**
+ * Uses the client's request in order to look the player up the DB and the API. 
+ * Render the response to the client.
+ * If the player doesn't exist at all, renders 404Sum.ejs
+ * If riot's API is at strawberries, renders error.ejs
+ * If the player exists but doesn't appear in my DB, upload it to my DB and render first_time.ejs
+ * If the player exists in my DB but hasn't played any game since he was uploaded, render first_time.ejs
+ * If the player exists and has played games, update the player accordingly, and render player.ejs
+ */
 async function searchPlayer(req, res) {
   let sum = await teemo.searchSummoner(res.locals.name);
 
