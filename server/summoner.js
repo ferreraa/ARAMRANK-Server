@@ -11,8 +11,9 @@ function processGameResult(sum, match) {
 
   let placementFactor = 1;
   switch(nb_of_games) {
-    case 0: case 1: placementFactor = 3; break;
-    case 2: case 3: placementFactor = 2; break;
+    case 0: case 1: placementFactor = 3.5; break;
+    case 2: case 3: placementFactor = 2.7; break;
+    case 4: placementFactor = 2; break;
   }
   if(!match.win && isPlacement)
     placementFactor = 0; 
@@ -20,7 +21,10 @@ function processGameResult(sum, match) {
 
   let R = 1;
   if(!isPlacement) {
-    R = match.loss > 0 ? Math.max(Math.min(sum.wins/sum.loss, 2),0.5) : 2;
+    if(nb_of_games <20)
+      R=2;
+    else
+      R = sum.loss > 0 ? Math.max(Math.min(2*sum.wins/nb_of_games, 2),0.5) : 2;
     if(!match.win)
       R = 1/R;
   }
@@ -28,12 +32,12 @@ function processGameResult(sum, match) {
   let randomLP = Math.random() * 3 * R * Math.random()>0.5 ? 1 : -1;
   let Pf = 2.5 * match.poroFed ? 1 : -1;
   let kda = 0.5*(match.k - match.d + 0.2 * match.a);
-  let mainFactor = sum.mainChampId == match.championId ? 2.5 : 1;
+  let mainFactor = sum.mainChampId == match.championId && match.win ? 2.5 : 1;
   let penta = match.pentaKills * 5;
-
+  let fb = match.firstBlood ? 3 : 0;
 
   let lp = (R*20 + randomLP) * mainFactor * winFactor;
-  lp += kda + Pf + penta;
+  lp += kda + Pf + penta + fb;
   lp *= placementFactor;
   lp = Math.round(lp);
 
