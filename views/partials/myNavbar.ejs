@@ -22,14 +22,14 @@
         }
       </script>
       <input class="form-control mr-sm-2" id="sumName" type="text" placeholder="<%= __('pseudo') %>" name="search">
-      <button class="btn btn-secondary my-2 my-sm-0" onclick="navSearch()">GO</button>
+      <button class="btn btn-secondary my-2 my-sm-0" id="navGo" onclick="navSearch()">GO</button>
       <script>
         var navInput = document.getElementById("sumName");
         navInput.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-         event.preventDefault();
-         document.getElementById("navGo").click();
-        }
+          if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("navGo").click();
+          }
         });
       </script>
     </div>
