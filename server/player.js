@@ -16,7 +16,14 @@ const fs = require('fs');
  * If the player exists and has played games, update the player accordingly, and render player.ejs
  */
 async function searchPlayer(req, res) {
-  let sum = await teemo.searchSummoner(res.locals.name);
+  try {
+    let sum = await teemo.searchSummoner(res.locals.name)
+  } catch(error) {
+    console.error(error);
+    res.render('riotKO');
+    return;
+  }
+
 
   if (sum == null) {
     res.render('404Sum');
