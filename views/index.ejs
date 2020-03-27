@@ -24,15 +24,21 @@
         }
       </script>
 
-      <p><%= __('enter_sumName') %><input type="text" placeholder="<%= __('pseudo') %>" id="name"><button style="color:black" id="indexGo" onclick="search()">GO</button></p>
-          <script type="text/javascript">
-        var indexInput = document.getElementById("name");
-        indexInput.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-         event.preventDefault();
-         document.getElementById("indexGo").click();
-        }
-      });</script>
+      <div style="display:flex ; flex-direction:row ; justify-content:center ; align-items:center" class="form-group">
+        <label style="margin-right:2px" class="col-form-label" for="name"><%= __('enter_sumName') %></label>
+        <input style="width:240px ; margin-right:2px" type="text" class="form-control" placeholder="<%= __('pseudo') %>" id="name"/>
+        <button style="color:#e6dfdf" class="btn btn-primary" id="indexGo" onclick="search()">GO</button>
+        <script type="text/javascript">
+          var indexInput = document.getElementById("name");
+          indexInput.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+             event.preventDefault();
+             document.getElementById("indexGo").click();
+            }
+          });
+        </script>
+      </div>
+
     </div>
   </div>
 </div>
