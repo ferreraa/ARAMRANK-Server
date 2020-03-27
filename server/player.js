@@ -17,7 +17,7 @@ const fs = require('fs');
  */
 async function searchPlayer(req, res) {
   try {
-    let sum = await teemo.searchSummoner(res.locals.name)
+    var sum = await teemo.searchSummoner(res.locals.name)
   } catch(error) {
     console.error(error);
     res.render('riotKO');
