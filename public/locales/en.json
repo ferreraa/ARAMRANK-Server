@@ -24,5 +24,6 @@
 	"404_title": " could not be found :(",
 	"404_p1": "The provided name might contain a typo or correspond to a summoner not from EUW. This issue might be due to an internal issue though.",
 	"firstTime_welcome": "Welcome ",
-	"firstTime_p1": "You have been registered to the awesome ALL RANDOM ALL RANK! From now on, your ARAM games will be used as part of an unofficial ranking system that I personally made... Will you manage to reach the Challenger league?"
+	"firstTime_p1": "You have been registered to the awesome ALL RANDOM ALL RANK! From now on, you are part of an unofficial ranking system that I personally made... Will you manage to reach the Challenger league?",
+	"clickHere2Reload": "Click here to check your rank!"
 }
