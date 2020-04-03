@@ -22,7 +22,8 @@
 	"Bronze V": "Bronze V",
 	"mail": "Le%20 Couscous&body=J'aime%20le%20couscous.",
 	"firstTime_welcome": "Bienvenue ",
-	"firstTime_p1": "Vous avez été inscrit au magnifique système ALL RANDOM ALL RANK ! A partir de maintenant vos parties d'ARAM seront comptabilisées dans un classement officieux conçu par mes soins... Parviendrez vous à atteindre la ligue challenger ?",
+	"firstTime_p1": "Vous avez été inscrit au magnifique système ALL RANDOM ALL RANK ! Vous faites désormais partie d'un classement officieux conçu par mes soins... Parviendrez vous à atteindre la ligue challenger ?",
 	"404_title": "n'a pas été trouvé :(",
-	"404_p1": "Le nom d'invocateur est erroné ou provient d'une autre région que EUW. (possiblement un problème interne)"
+	"404_p1": "Le nom d'invocateur est erroné ou provient d'une autre région que EUW. (possiblement un problème interne)",
+	"clickHere2Reload": "Cliquez ici pour voir votre rang !"
 }
