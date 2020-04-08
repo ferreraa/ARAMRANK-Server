@@ -166,9 +166,10 @@ async function getLadder(res) {
   res.render('ladder');
 }
 
-app.get('/pico', async function(req, res) {
-  await ladder.updateLadder();
-  res.send(ladder.readLadder());
+app.get('/pico', function(req, res) {
+  player.updatePlayers()
+    .then(ladder.updateLadder())
+    .then( res.render('pico') );
 })
 
 
