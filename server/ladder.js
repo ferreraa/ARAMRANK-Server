@@ -27,10 +27,14 @@ async function updateLadder() {
 
   data2write = JSON.stringify(data2write);
 
-  fs.writeFile(path, data2write, err => {
-    if(err) console.log(err);
-    else console.log("ladder.json updated");
-  });
+  try {
+    fs.writeFileSync(path, data2write);/*, err => {
+      if(err) console.log(err);
+      else console.log("ladder.json updated");
+    });*/
+  } catch( error ) {
+    console.error(error);
+  }
 }
 
 
@@ -39,7 +43,7 @@ function readLadder() {
     var data = fs.readFileSync(path);
   }
   catch( error ) {
-    console.log(error);
+    console.error(error);
   }
 
   return JSON.parse(data);
