@@ -115,11 +115,13 @@ app.all('*', function (req, res, next) {
     next();
 });
 
+//the 'lang' parameter defines the locale used on client side.
 app.param('lang', function (req, res, next, lang) {
   res.locals.locale = lang;
   next();
 });
 
+//The 'name' parameter corresponds to the name of the player. This avoids using the get parameters
 app.param('name', function (req, res, next, name) {
   res.locals.name = name;
   next();
@@ -127,31 +129,18 @@ app.param('name', function (req, res, next, name) {
 
 
 // set the home page route
-app.get('/', function(req, res) {
+// (:lang[a-z]{2})|) uses the parameter :lang or no parameters. This is used in every query handler.
+app.get('(/:lang([a-z]{2})|)/', function(req, res) {
   res.render('index.ejs');
 });
 
-app.get('/:lang([a-z]{2})/', function(req, res) {
-  res.render('index.ejs');
-});
 
-
-
-app.get('/player/:name', function(req, res) {
+app.get('(/:lang([a-z]{2})|)/player/:name', function(req, res) {
   player.searchPlayer(req, res);
 });
 
 
-app.get('/:lang([a-z]{2})/player/:name', function(req, res) {
-  player.searchPlayer(req, res);
-});
-
-
-app.get('/:lang([a-z]{2})/ladder', function (req, res) {
-  getLadder(res);
-});
-
-app.get('/ladder', function (req, res) {
+app.get('(/:lang([a-z]{2})|)/ladder', function (req, res) {
   getLadder(res);
 });
 
@@ -166,28 +155,19 @@ async function getLadder(res) {
   res.render('ladder');
 }
 
-app.get('/pico', function(req, res) {
+app.get('*/pico', function(req, res) {
   player.updatePlayers()
     .then(ladder.updateLadder())
     .then( res.render('pico') );
 })
 
 
-app.get('/:lang([a-z]{2})/about', function (req, res) {
-  res.render('about');
-});
-
-app.get('/about', function (req, res) {
+app.get('(/:lang([a-z]{2})|)/about', function (req, res) {
   res.render('about');
 });
 
 
-
-app.get('/:lang([a-z]{2})/contact', function (req, res) {
-  res.render('contact');
-});
-
-app.get('/contact', function (req, res) {
+app.get('(/:lang([a-z]{2})|)/contact', function (req, res) {
   res.render('contact');
 });
 
