@@ -28,10 +28,7 @@ async function updateLadder() {
   data2write = JSON.stringify(data2write);
 
   try {
-    fs.writeFileSync(path, data2write);/*, err => {
-      if(err) console.log(err);
-      else console.log("ladder.json updated");
-    });*/
+    fs.writeFileSync(path, data2write);
   } catch( error ) {
     console.error(error);
   }
