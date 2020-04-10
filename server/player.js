@@ -75,6 +75,10 @@ async function searchPlayer(req, res) {
     return;
   }
 
+  if( !unchanged ) {
+    let updateSumPromise = dynamo.updateSum(sum);
+  } 
+
 
   let match2print = dbSum.history.concat(sum.history);
   let l = match2print.length;
@@ -94,9 +98,7 @@ async function searchPlayer(req, res) {
   await Promise.all(promises);
   res.render('player');
 
-  if( !unchanged ) {
-    await dynamo.updateSum(sum);
-  } 
+  await updateSumPromise;
 }
 
 
