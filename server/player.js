@@ -98,7 +98,8 @@ async function searchPlayer(req, res) {
   await Promise.all(promises);
   res.render('player');
 
-  await updateSumPromise;
+  if( !unchanged )
+    await updateSumPromise;
 }
 
 
