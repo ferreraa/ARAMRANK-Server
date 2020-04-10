@@ -16,6 +16,9 @@ const fs = require('fs');
  * If the player exists and has played games, update the player accordingly, and render player.ejs
  */
 async function searchPlayer(req, res) {
+  //promises that need to be awaited before rendering first_time or player
+  let promises = [];
+
   try {
     var sum = await teemo.searchSummoner(res.locals.name)
   } catch(error) {
@@ -34,7 +37,7 @@ async function searchPlayer(req, res) {
   }
 
   res.locals.sum = sum;
-  await ddragonManager.manageProfileIcon(sum.profileIconId);
+  promises.push(ddragonManager.manageProfileIcon(sum.profileIconId));
 
 
   sum.mainChampId = await teemo.getSumMain(sum.id); 
@@ -43,6 +46,7 @@ async function searchPlayer(req, res) {
 
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);
+    await promises;
     res.render('first_time');
     return;
   } 
@@ -66,12 +70,13 @@ async function searchPlayer(req, res) {
     let newMatches = await teemo.processAllMatches(matches, sum);
   } 
   else if (dbSum.history.length == 0) {
+    await promises;
     res.render('first_time');
     return;
   }
 
   if( !unchanged ) {
-    dynamo.updateSum(sum);
+    promises.push(dynamo.updateSum(sum));
   } 
 
   let match2print = dbSum.history.concat(sum.history);
@@ -85,11 +90,11 @@ async function searchPlayer(req, res) {
 
   res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
 
-  let iconDownloadPromises = [];
+
   sum.history.forEach(e => {
-    iconDownloadPromises.push(ddragonManager.manageChampionIcon(e.championName));
+    promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
-  await Promise.all(iconDownloadPromises);
+  await Promise.all(promises);
   res.render('player');      
 }
 
