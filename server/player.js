@@ -75,9 +75,6 @@ async function searchPlayer(req, res) {
     return;
   }
 
-  if( !unchanged ) {
-    promises.push(dynamo.updateSum(sum));
-  } 
 
   let match2print = dbSum.history.concat(sum.history);
   let l = match2print.length;
@@ -95,7 +92,11 @@ async function searchPlayer(req, res) {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
   await Promise.all(promises);
-  res.render('player');      
+  res.render('player');
+
+  if( !unchanged ) {
+    await dynamo.updateSum(sum);
+  } 
 }
 
 
