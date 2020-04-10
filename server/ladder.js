@@ -6,7 +6,9 @@ const path = './server/ladder.json';
 
 async function updateLadder() {
   list = await db.getAllUsers();
-  list = list.sort((sum1, sum2) => {
+  list = list.filter((sum) => {
+    return sum.wins + sum.loss >= 5;
+  }).sort((sum1, sum2) => {
     return league.compare(sum1.rank, sum2.rank) == 1 ? -1 : 1;
   })
 
