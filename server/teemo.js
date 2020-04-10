@@ -34,14 +34,22 @@ function printMatchList(Accountid) {
 //get MatchList by account Id since given beginTime
 async function getMatchList(Accountid, beginTime) {
   let result = [];
-  let index = 0;
+  let parameters = {
+    queue: 450, //ARAM
+    beginTime: beginTime,
+    season: 13, //season 2019
+  }
   do{
-    let data = await api.get('euw1', 'match.getMatchlist', Accountid, {queue: 450, beginTime: beginTime, season: 13, beginIndex: index});
+    let data = await api.get('euw1', 'match.getMatchlist', Accountid, parameters);
     if(data == null)
       return [];
-    result = result.concat(data.matches);
-    index+=100;
-  } while(result.length == index)
+    var nb_matches = data.matches.length;
+    if(nb_matches == 100)
+      parameters.beginIndex = data.endIndex+1;
+
+    result = result.concat(data.matches);    
+
+  } while(nb_matches == 100)
 
   return result;
 }
