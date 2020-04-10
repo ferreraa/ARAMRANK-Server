@@ -33,8 +33,17 @@ function printMatchList(Accountid) {
 
 //get MatchList by account Id since given beginTime
 async function getMatchList(Accountid, beginTime) {
-  let data = await api.get('euw1', 'match.getMatchlist', Accountid, {queue: 450, beginTime: beginTime, season: 13});
-  return data != null ? data.matches : [];
+  let result = [];
+  let index = 0;
+  do{
+    let data = await api.get('euw1', 'match.getMatchlist', Accountid, {queue: 450, beginTime: beginTime, season: 13, beginIndex: index});
+    if(data == null)
+      return [];
+    result = result.concat(data.matches);
+    index+=100;
+  } while(result.length == index)
+
+  return result;
 }
 
 
@@ -66,7 +75,7 @@ function getAllMatches(matches, sum) {
 async function processMatch(match, sum) {
   let data = await api.get('euw1', 'match.getMatch', match.gameId);
 
-  if(data.gameDuration < 360) {
+  if(data == null || data.gameDuration < 360) {
     return null;
   }
 
