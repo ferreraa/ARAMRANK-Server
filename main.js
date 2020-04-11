@@ -29,7 +29,7 @@ schedule.scheduleJob('0 0 */2 * * *', async function(){
 });
 
 schedule.scheduleJob('0 */10 * * * *', function(){
-  player.updatePlayers().then(ladder.updateLadder());
+  player.updatePlayers().then(ladder.updateLadder);
 });
 
 
@@ -157,8 +157,8 @@ async function getLadder(res) {
 
 app.get('*/pico', function(req, res) {
   player.updatePlayers()
-    .then(ladder.updateLadder())
-    .then( res.render('pico') );
+    .then(ladder.updateLadder)
+    .then( () => res.render('pico') );
 })
 
 
