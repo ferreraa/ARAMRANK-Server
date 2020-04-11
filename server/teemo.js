@@ -81,7 +81,12 @@ function getAllMatches(matches, sum) {
 }
 
 async function processMatch(match, sum) {
-  let data = await api.get('euw1', 'match.getMatch', match.gameId);
+  try{
+    var data = await api.get('euw1', 'match.getMatch', match.gameId);
+  } catch(error) {
+    console.error("processMatch error: ",error);
+    return null;
+  }
 
   if(data == null || data.gameDuration < 360) {
     return null;
