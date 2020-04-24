@@ -128,7 +128,7 @@ function updatePlayer(dbSum) {
 
     if(lastTime == null) {
       let message = new Date().toISOString() + ' - lastTime == null within the row';
-      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
+      reject(console.error(message));
       return;
     }
 
