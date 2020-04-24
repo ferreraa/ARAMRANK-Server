@@ -72,22 +72,13 @@ function putNewSummoner(summoner) {
 function updateSum(sum) {
   let di = attr.wrap(sum);
 
+  //at least push the name
   var params = {
     ExpressionAttributeNames: {
-     "#H": "history", 
-     "#R": "rank",
-     "#N": "name",
-     "#M": "mainChampId",
-     "#W": "wins",
-     "#L": "loss",
+     "#N": "name"
     }, 
     ExpressionAttributeValues: {
-     ":h": di.history, 
-     ":r": di.rank,
-     ":n": di.name,
-     ":m": di.mainChampId,
-     ":w": di.wins,
-     ":l": di.loss
+     ":n": di.name
     }, 
     Key: {
      "id": {
@@ -96,8 +87,38 @@ function updateSum(sum) {
     }, 
     ReturnValues: "ALL_NEW", 
     TableName: table_name, 
-    UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l"
- };
+    UpdateExpression: "SET #N = :n"
+  };
+
+  //if there are new games, push them
+  if(sum.history.length>0) {
+    params = {
+      ExpressionAttributeNames: {
+       "#H": "history", 
+       "#R": "rank",
+       "#N": "name",
+       "#M": "mainChampId",
+       "#W": "wins",
+       "#L": "loss",
+      }, 
+      ExpressionAttributeValues: {
+       ":h": di.history, 
+       ":r": di.rank,
+       ":n": di.name,
+       ":m": di.mainChampId,
+       ":w": di.wins,
+       ":l": di.loss
+      }, 
+      Key: {
+       "id": {
+         S: sum.id
+        }
+      }, 
+      ReturnValues: "ALL_NEW", 
+      TableName: table_name, 
+      UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l"
+    };
+  }
 
  return new Promise( (resolve, reject) => {
    dynamodb.updateItem(params, function(err, data) {
