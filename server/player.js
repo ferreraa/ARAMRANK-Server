@@ -113,9 +113,11 @@ function updatePlayer(dbSum) {
     if (sum == null) {
       let message = new Date().toISOString() + ' - summoner not found';
       reject(console.error(message));
+      return;
     } else if(typeof sum.id == 'undefined') {
       let message = new Date().toISOString() + ' - an error occured with the teemo request';
       reject(console.error(message));
+      return;
     }
 
 
