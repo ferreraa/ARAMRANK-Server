@@ -20,7 +20,7 @@ async function searchPlayer(req, res) {
   let promises = [];
 
   try {
-    var sum = await teemo.searchSummoner(res.locals.name)
+    var sum = await teemo.searchSummonerByName(res.locals.name)
   } catch(error) {
     console.error(error);
     res.render('riotKO');
@@ -42,7 +42,7 @@ async function searchPlayer(req, res) {
 
   sum.mainChampId = await teemo.getSumMain(sum.id); 
 
-  let dbSum = await dynamo.getSumByAccountId(sum.id);
+  let dbSum = await dynamo.getSumBySummonerId(sum.id);
 
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);
@@ -108,14 +108,16 @@ function updatePlayer(dbSum) {
 
   return new Promise( async (resolve, reject) => {
 
-    let sum = await teemo.searchSummoner(dbSum.name);
+    let sum = await teemo.searchSummonerByName(dbSum.name);
 
     if (sum == null) {
       let message = new Date().toISOString() + ' - summoner not found';
       reject(console.error(message));
+      return;
     } else if(typeof sum.id == 'undefined') {
       let message = new Date().toISOString() + ' - an error occured with the teemo request';
       reject(console.error(message));
+      return;
     }
 
 
@@ -128,7 +130,7 @@ function updatePlayer(dbSum) {
 
     if(lastTime == null) {
       let message = new Date().toISOString() + ' - lastTime == null within the row';
-      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
+      reject(console.error(message));
       return;
     }
 
