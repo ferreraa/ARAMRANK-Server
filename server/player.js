@@ -20,7 +20,7 @@ async function searchPlayer(req, res) {
   let promises = [];
 
   try {
-    var sum = await teemo.searchSummoner(res.locals.name)
+    var sum = await teemo.searchSummonerByName(res.locals.name)
   } catch(error) {
     console.error(error);
     res.render('riotKO');
@@ -108,7 +108,7 @@ function updatePlayer(dbSum) {
 
   return new Promise( async (resolve, reject) => {
 
-    let sum = await teemo.searchSummoner(dbSum.name);
+    let sum = await teemo.searchSummonerByName(dbSum.name);
 
     if (sum == null) {
       let message = new Date().toISOString() + ' - summoner not found';

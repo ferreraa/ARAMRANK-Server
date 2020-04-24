@@ -12,8 +12,14 @@ const api = TeemoJS(process.env.RITO);
 
 
 //search Summoner data from summoner name
-function searchSummoner(name) {
+function searchSummonerByName(name) {
   let data = api.get('euw1', 'summoner.getBySummonerName', name);
+  return data;
+}
+
+//search Summoner data from summoner id
+function searchSummonerByID(id) {
+  let data = api.get('euw1', 'summoner.getBySummonerId', id);
   return data;
 }
 
@@ -128,7 +134,8 @@ async function processMatch(match, sum) {
 }
 
 
-module.exports.searchSummoner = searchSummoner;
+module.exports.searchSummonerByID = searchSummonerByID;
+module.exports.searchSummonerByName = searchSummonerByName;
 module.exports.getSumMain = getSumMain;
 module.exports.printMatchList = printMatchList;
 module.exports.getMatchList = getMatchList;
