@@ -144,6 +144,11 @@ function updatePlayer(dbSum) {
       console.log(`A summoner changed his name: ${dbSum.name} -> ${sum.name}`);
     }
 
+    if(sum.profileIconId != dbSum.profileIconId) { //if the profile icon changed, it will be necessary to update the DB
+      unchanged = false;
+      console.log(`A summoner changed his icon: ${dbSum.profileIconId} -> ${sum.profileIconId}`);
+    }
+
     if(matches.length > 0) {
       unchanged = false; //new games => need to update the db
       let newMatches = await teemo.processAllMatches(matches, sum);
