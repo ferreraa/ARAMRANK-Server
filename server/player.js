@@ -42,7 +42,7 @@ async function searchPlayer(req, res) {
 
   sum.mainChampId = await teemo.getSumMain(sum.id); 
 
-  let dbSum = await dynamo.getSumByAccountId(sum.id);
+  let dbSum = await dynamo.getSumBySummonerId(sum.id);
 
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);

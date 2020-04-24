@@ -12,10 +12,10 @@ let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 const table_name = process.env.table_name || "players_test";
 
 
-function getSumByAccountId(id) {
+function getSumBySummonerId(id) {
 	var params = {
 	  Key: {
-	   "id": { //Warning!!! TODO use id for summoner ID since accountID is not relyable
+	   "id": {
 	     S: id
 	    }
 	  }, 
@@ -137,5 +137,5 @@ function recScan(prevData, lastEvaluatedKey) { //TODO not recursive yet
 
 module.exports.getAllUsers = getAllUsers;
 module.exports.putNewSummoner = putNewSummoner;
-module.exports.getSumByAccountId = getSumByAccountId;
+module.exports.getSumBySummonerId = getSumBySummonerId;
 module.exports.updateSum = updateSum;
