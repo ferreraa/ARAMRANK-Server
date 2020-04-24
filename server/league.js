@@ -201,7 +201,7 @@ function rank2string(rank, t) {
     res += ' ' + RomanNumbers(3 - rank.div);
   }
 
-  res += ' - ' + rank.lp + ' lp ';
+  res += ' - ' + rank.lp + ' LP ';
 
   if(rank.lp == maxLeagueLP(rank.league)) {
     let bo3w = rank.bo.split('v').length - 1;
