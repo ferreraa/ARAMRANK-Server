@@ -75,10 +75,12 @@ function updateSum(sum) {
   //at least push the name
   var params = {
     ExpressionAttributeNames: {
-     "#N": "name"
+     "#N": "name",
+     "#P": "profileIconId"
     }, 
     ExpressionAttributeValues: {
-     ":n": di.name
+     ":n": di.name,
+     ":p": di.profileIconId
     }, 
     Key: {
      "id": {
@@ -87,7 +89,7 @@ function updateSum(sum) {
     }, 
     ReturnValues: "ALL_NEW", 
     TableName: table_name, 
-    UpdateExpression: "SET #N = :n"
+    UpdateExpression: "SET #N = :n, #P = :p"
   };
 
   //if there are new games, push them
@@ -100,6 +102,7 @@ function updateSum(sum) {
        "#M": "mainChampId",
        "#W": "wins",
        "#L": "loss",
+       "#P": "profileIconId"
       }, 
       ExpressionAttributeValues: {
        ":h": di.history, 
@@ -107,7 +110,8 @@ function updateSum(sum) {
        ":n": di.name,
        ":m": di.mainChampId,
        ":w": di.wins,
-       ":l": di.loss
+       ":l": di.loss,
+       ":p": di.profileIconId
       }, 
       Key: {
        "id": {
@@ -116,7 +120,7 @@ function updateSum(sum) {
       }, 
       ReturnValues: "ALL_NEW", 
       TableName: table_name, 
-      UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l"
+      UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l, #P = :p"
     };
   }
 
