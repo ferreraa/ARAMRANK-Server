@@ -76,7 +76,7 @@ async function searchPlayer(req, res) {
   }
 
   if( !unchanged ) {
-    let updateSumPromise = dynamo.updateSum(sum);
+    var updateSumPromise = dynamo.updateSum(sum);
   } 
 
 
