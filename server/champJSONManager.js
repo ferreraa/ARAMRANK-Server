@@ -19,7 +19,6 @@ function readMyChampionJS() {
   try {
     var jsonString = fs.readFileSync('./server/champ.json');
   } catch (error) {
-    console.log(error);
     return {version: '9.16.1'};
   }
   return JSON.parse(jsonString);
