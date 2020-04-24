@@ -112,12 +112,10 @@ function updatePlayer(dbSum) {
 
     if (sum == null) {
       let message = new Date().toISOString() + ' - summoner not found';
-      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
-      reject(console.log('couldn\'t update the player'));
+      reject(console.error(message));
     } else if(typeof sum.id == 'undefined') {
       let message = new Date().toISOString() + ' - an error occured with the teemo request';
-      fs.writeFile('./logs/updatePlayerLogs', message, error => console.log('ERROR - can\'t log to updatePlayerLogs'));
-      reject(console.log('couldn\'t update the player'));
+      reject(console.error(message));
     }
 
 
