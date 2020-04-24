@@ -108,7 +108,7 @@ function updatePlayer(dbSum) {
 
   return new Promise( async (resolve, reject) => {
 
-    let sum = await teemo.searchSummonerByName(dbSum.name);
+    let sum = await teemo.searchSummonerByID(dbSum.id);
 
     if (sum == null) {
       let message = new Date().toISOString() + ' - summoner not found';
@@ -138,6 +138,12 @@ function updatePlayer(dbSum) {
     sum.history = [];
 
     let unchanged = true; //no need to update the db
+
+    if(sum.name != dbSum.name) { //if the name changed, it will be necessary to update the DB
+      unchanged = false;
+      console.log(`A summoner changed his name: ${dbSum.name} -> ${sum.name}`);
+    }
+
     if(matches.length > 0) {
       unchanged = false; //new games => need to update the db
       let newMatches = await teemo.processAllMatches(matches, sum);
