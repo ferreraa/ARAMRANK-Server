@@ -139,20 +139,27 @@ async function getAllUsers() {
   return res;
 }
 
-function recScan(prevData, lastEvaluatedKey) { //TODO not recursive yet
+function recScan(prevData, lastEvaluatedKey) {
   var params = { 
     TableName: table_name,
   };
 
+  if(lastEvaluatedKey != null)  //This is not the first scan
+    params.ExclusiveStartKey = lastEvaluatedKey;
+
   return new Promise((resolve, reject) => {
-    dynamodb.scan(params, function(err, data) {
+    dynamodb.scan(params, async function(err, data) {
       if (err) reject(console.log(err, err.stack)); // an error occurred
-      else     
-        resolve(  // successful response
+      else {   // successful response
+        if(typeof data.LastEvaluatedKey != "undefined") { //more items to scan
+          await recScan(prevData, data.LastEvaluatedKey);
+        }
+        resolve(
           data.Items.forEach(function(e) {
             prevData.push(attr.unwrap(e));
           })
-        );           
+        ); 
+      }          
     });
   });
 }
