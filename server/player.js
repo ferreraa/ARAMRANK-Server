@@ -155,8 +155,10 @@ function updatePlayer(dbSum) {
     }
 
     if( !unchanged ) {
-      resolve(await dynamo.updateSum(sum));
+      await dynamo.updateSum(sum)
+      
     }
+    resolve(sum);
   });
 }
 
@@ -174,7 +176,7 @@ function updatePlayers() {
       updatePromises.push(updatePlayer(e));
     });
 
-    Promise.all(updatePromises).then(resolve());
+    Promise.all(updatePromises).then(resolve(dbUsers));
   });
 }
 

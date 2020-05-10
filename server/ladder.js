@@ -4,8 +4,14 @@ const db = require('./dynamo'),
 
 const path = './server/ladder.json';
 
-async function updateLadder() {
-  list = await db.getAllUsers();
+/** Retrieve all the players, filter out those who played < 5 games and sort them.
+/*  update ./server/ladder.json, which will be used to render the Ladder page.
+/*  @param users List of players to sort by rank. If not provided, the database users will be taken
+*/
+async function updateLadder(users = null) {
+  let list = users;
+  if(list == null)
+    list = await db.getAllUsers();
   list = list.filter((sum) => {
     return sum.wins + sum.loss >= 5;
   }).sort((sum1, sum2) => {
@@ -19,7 +25,7 @@ async function updateLadder() {
       iconId: e.profileIconId,
       rank: e.rank,
       name: e.name,
-      badges: e.badges
+      //badges: e.badges
     };
 
     data2write.push(e2write);
