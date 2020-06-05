@@ -62,8 +62,13 @@ function processGameResult(sum, match) {
   if( (match.win && lp<0) || (!match.win && lp>0) )
     lp=0;
 
+  //yuumi is a spectator. If the player decided to spectate, the game doesn't count.
+  if(match.championId == 350) {
+    lp=0;
+  } else {
+    league.processLPchange(lp, sum, match, isPlacement);
+  }
 
-  league.processLPchange(lp, sum, match, isPlacement);
   match.lpValue = lp;
   sum.history.push(match);
 
