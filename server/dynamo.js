@@ -25,7 +25,7 @@ function getSumBySummonerId(id) {
 
 	return new Promise((resolve, reject) => {
 		dynamodb.getItem(params, function(err, data) {
-		   if (err) console.log(err, err.stack); // an error occurred
+		   if (err) reject(err); // an error occurred
 		   else {
         if(Object.keys(data).length != 0)
           resolve(attr.unwrap(data.Item));           // successful response
@@ -126,7 +126,7 @@ function updateSum(sum) {
 
  return new Promise( (resolve, reject) => {
    dynamodb.updateItem(params, function(err, data) {
-     if (err) reject(console.log(err, err.stack)); // an error occurred
+     if (err) reject(err); // an error occurred
      else     resolve(console.log("updated data of", sum.name));           // successful response
    });
  });
@@ -135,7 +135,7 @@ function updateSum(sum) {
 
 async function getAllUsers() {
   res = [];
-  await recScan(res, null);
+  await recScan(res, null).catch(err => console.error(err, err.stack));
   return res;
 }
 
@@ -149,10 +149,10 @@ function recScan(prevData, lastEvaluatedKey) {
 
   return new Promise((resolve, reject) => {
     dynamodb.scan(params, async function(err, data) {
-      if (err) reject(console.log(err, err.stack)); // an error occurred
+      if (err) reject(err); // an error occurred
       else {   // successful response
         if(typeof data.LastEvaluatedKey != "undefined") { //more items to scan
-          await recScan(prevData, data.LastEvaluatedKey);
+          await recScan(prevData, data.LastEvaluatedKey).catch(err => reject(err));
         }
         resolve(
           data.Items.forEach(function(e) {

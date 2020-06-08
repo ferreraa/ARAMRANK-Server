@@ -42,11 +42,18 @@ async function searchPlayer(req, res) {
 
   sum.mainChampId = await teemo.getSumMain(sum.id); 
 
-  let dbSum = await dynamo.getSumBySummonerId(sum.id);
+  let dbSum;
+  try {
+    dbSum = await dynamo.getSumBySummonerId(sum.id);
+  } catch(err) {
+    console.error(err, err.stack);
+    res.render('error');
+    return;
+  } 
 
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);
-    await promises;
+    await promises.catch(err => console.error(err, err.stack));
     res.render('first_time');
     return;
   } 
@@ -95,11 +102,14 @@ async function searchPlayer(req, res) {
   sum.history.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
-  await Promise.all(promises);
+
+  await Promise.all(promises).catch(err => console.error(err, err.stack));
+
   res.render('player');
 
-  if( !unchanged )
-    await updateSumPromise;
+  if( !unchanged ) {
+    await updateSumPromise.catch(err => console.error(err, err.stack));
+  }
 }
 
 
@@ -154,10 +164,9 @@ function updatePlayer(dbSum) {
       let newMatches = await teemo.processAllMatches(matches, sum);
     }
 
-    if( !unchanged ) {
-      await dynamo.updateSum(sum)
-      
-    }
+    if( !unchanged )
+      await dynamo.updateSum(sum).catch(err => console.error(err, err.stack));
+
     resolve(sum);
   });
 }
