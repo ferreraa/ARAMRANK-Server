@@ -95,11 +95,22 @@ async function searchPlayer(req, res) {
   sum.history.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
-  await Promise.all(promises);
+
+  try {
+    await Promise.all(promises);
+  } catch(err) {
+    console.error("error in 'searchPlayer': ", err);
+  }
+
   res.render('player');
 
-  if( !unchanged )
-    await updateSumPromise;
+  if( !unchanged ) {
+    try {
+      await updateSumPromise;      
+    } catch(err) {
+      console.error("error in 'searchPlayer' when updating summoner: ", err);
+    }
+  }
 }
 
 
