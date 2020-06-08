@@ -1,3 +1,14 @@
+.navbar-nav .nav-item:last-child {
+   border-left: 1px solid silver;
+   margin-left: 10px;
+   padding-left: 10px
+}
+
+@media (max-width: 768px) {
+  .navbar-nav .nav-item:last-child {
+    border-left: none;
+  }
+}
 .navbar    { margin-bottom: 10px; }
 .selectpicker  { padding-top:10px; }
 .nav-search-button { color:black; }
