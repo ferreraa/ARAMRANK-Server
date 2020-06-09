@@ -40,7 +40,7 @@ function downloadIcon(path, url) {
   return new Promise((resolve, reject) => https.get(url,
     response => {
       response.pipe(file).on('finish', resolve)
-        .on('error', reject);
+        .on('error', err => reject(err));
     }
   ));
 }

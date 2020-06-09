@@ -40,11 +40,10 @@ async function searchPlayer(req, res) {
   promises.push(ddragonManager.manageProfileIcon(sum.profileIconId));
 
 
-  sum.mainChampId = await teemo.getSumMain(sum.id); 
+  sum.mainChampId = await teemo.getSumMain(sum.id).catch(err => console.log(err, err.stack)); 
 
-  let dbSum;
   try {
-    dbSum = await dynamo.getSumBySummonerId(sum.id);
+    var dbSum = await dynamo.getSumBySummonerId(sum.id);
   } catch(err) {
     console.error(err, err.stack);
     res.render('error');
