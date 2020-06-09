@@ -53,7 +53,7 @@ async function searchPlayer(req, res) {
 
   if(dbSum == null) {
     dynamo.putNewSummoner(sum);
-    await promises.catch(err => console.error(err, err.stack));
+    await Promise.all(promises).catch(err => console.error(err, err.stack));
     res.render('first_time');
     return;
   } 
