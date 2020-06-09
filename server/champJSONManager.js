@@ -61,7 +61,7 @@ function remoteVersion() {
       });
 
       resp.on("error", (err) => {
-        reject("Error: " + err.message);
+        reject(err);
       });
     });
   });
@@ -69,7 +69,15 @@ function remoteVersion() {
 
 async function manageChampionJSON() {
   let currentChampJS = readMyChampionJS();
-  let remVer = await remoteVersion();
+  let remVer;
+
+  try{
+    remver = await remoteVersion();
+  } catch(err) {
+    console.error(err, err.stack);
+    return currentChampJS.version;
+  }
+
   if(remVer == currentChampJS.version)
     return remVer;
 

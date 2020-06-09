@@ -151,7 +151,7 @@ async function getLadder(res) {
   res.locals.ladder.forEach(e => {
     iconDownloadPromises.push(ddragonManager.manageProfileIcon(e.iconId))
   });
-  await Promise.all(iconDownloadPromises);
+  await Promise.all(iconDownloadPromises).catch(err => console.error(err, err.stack));
   res.render('ladder');
 }
 
