@@ -69,10 +69,9 @@ function remoteVersion() {
 
 async function manageChampionJSON() {
   let currentChampJS = readMyChampionJS();
-  let remVer;
 
   try{
-    remver = await remoteVersion();
+    var remVer = await remoteVersion();
   } catch(err) {
     console.error(err, err.stack);
     return currentChampJS.version;
