@@ -10,11 +10,13 @@
   <div class="jumbotron">
     
     <h1>
-      <img src="/ddragonData/img/profileicon/<%= sum.profileIconId %>.png" width="80px" height="80px"><%= __('firstTime_welcome') %> <%= sum.name %></h1>
-      <p><%= __('firstTime_p1') %></p>
-      <p><a href="<%= sum.name %>"><%= __('clickHere2Reload') %></a></p>
-    </div>
+      <img src="/ddragonData/img/profileicon/<%= sum.profileIconId %>.png" width="80px" height="80px">
+      <%= __('firstTime_welcome') %> <%= sum.name %>
+    </h1>
+    <p><%= __('firstTime_p1') %></p>
+    <p><a href="<%= sum.name %>"><%= __('clickHere2Reload') %></a></p>
   </div>
+</div>
 
 <%- include('./partials/myFooter'); %>
 </body>
