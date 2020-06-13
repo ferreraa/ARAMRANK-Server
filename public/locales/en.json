@@ -26,5 +26,7 @@
 	"firstTime_welcome": "Welcome ",
 	"firstTime_p1": "You have been registered to the awesome ALL RANDOM ALL RANK! From now on, you are part of an unofficial ranking system that I personally made... Will you manage to reach the Challenger league?",
 	"clickHere2Reload": "Click here to check your rank!",
-	"spectator": "SPECTATOR"
+	"spectator": "SPECTATOR",
+	"ladder_update": "The ladder will be updated in: ",
+	"clickHere2Reload_2": "Click here to update the ladder"
 }
