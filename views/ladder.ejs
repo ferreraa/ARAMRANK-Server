@@ -9,6 +9,10 @@
 <div class="container">
     <div class="jumbotron">
         <h1>Ladder</h1>
+        <p>
+          <%= __('ladder_update') %>
+          <span id="ladderTimer">...</span>
+        </p>
         <div>
           <% var i = 0; %>
           <% ladder.forEach(e => { %>
@@ -19,6 +23,25 @@
         </div>
     </div>
 </div>
+
+<script>
+  let x = setInterval(() => {
+    let now = new Date().getTime();
+
+    //ladder updated every 10 minutes <=> 600 000 milliseconds
+    let timeLeft = 600000 - now%600000;
+    timeLeft /= 1000;
+    document.getElementById('ladderTimer').innerHTML = 
+      Math.floor(timeLeft/60)
+      + ':'
+      + Math.floor(timeLeft%60).toString().padStart(2,'0');
+  
+    if(timeLeft < 1) {
+      clearInterval(x);
+      document.getElementById('ladderTimer').innerHTML = `<a href="${window.location.href}"><%= __('clickHere2Reload_2') %></a>`;
+    }
+  }, 1000);
+</script>
 
 <%- include('./partials/myFooter'); %>
 </body>
