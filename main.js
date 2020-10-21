@@ -28,7 +28,7 @@ schedule.scheduleJob('0 0 */2 * * *', async function(){
   console.log(new Date().toISOString() + ' - riot version = ' + process.env.RIOT_VERSION);
 });
 
-schedule.scheduleJob('0 */10 * * * *', function(){
+schedule.scheduleJob('0 */25 * * * *', function(){
   player.updatePlayers().then(players => ladder.updateLadder(players));
 });
 
@@ -157,7 +157,6 @@ async function getLadder(res) {
 
 app.get('*/pico', function(req, res) {
   player.updatePlayers()
-    .then(players => ladder.updateLadder(players))
     .then( () => res.render('pico') );
 })
 
