@@ -19,7 +19,8 @@ function getSumBySummonerId(id) {
 	     S: id
 	    }
 	  }, 
-	  TableName: table_name
+	  TableName: table_name,
+    ConsistentRead: true,
 	};
 
 
@@ -142,6 +143,7 @@ async function getAllUsers() {
 function recScan(prevData, lastEvaluatedKey) {
   var params = { 
     TableName: table_name,
+    ConsistentRead: true,
   };
 
   if(lastEvaluatedKey != null)  //This is not the first scan
