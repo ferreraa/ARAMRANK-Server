@@ -13,28 +13,28 @@ const table_name = process.env.table_name || "players_S10_dev";
 
 
 function getSumBySummonerId(id) {
-	var params = {
-	  Key: {
-	   "id": {
-	     S: id
-	    }
-	  }, 
-	  TableName: table_name,
+  var params = {
+    Key: {
+     "id": {
+       S: id
+      }
+    }, 
+    TableName: table_name,
     ConsistentRead: true,
-	};
+  };
 
 
-	return new Promise((resolve, reject) => {
-		dynamodb.getItem(params, function(err, data) {
-		   if (err) reject(err); // an error occurred
-		   else {
+  return new Promise((resolve, reject) => {
+    dynamodb.getItem(params, function(err, data) {
+       if (err) reject(err); // an error occurred
+       else {
         if(Object.keys(data).length != 0)
           resolve(attr.unwrap(data.Item));           // successful response
         else
           resolve(null);
         } 
-		});
-	});
+    });
+  });
 
 
 }
