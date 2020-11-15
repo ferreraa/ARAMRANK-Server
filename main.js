@@ -1,3 +1,5 @@
+'use strict';
+
 const visit = require("./server/visitors");
 const champJSON = require("./server/champJSONManager");
 const player = require('./server/player');
@@ -10,8 +12,6 @@ const express = require('express');
 const app = express();
 const schedule = require('node-schedule');
 const cookieParser = require('cookie-parser');
- 
-const path = require('path');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku

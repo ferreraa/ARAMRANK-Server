@@ -1,3 +1,5 @@
+'use strict';
+
 var sumUtils = require("./summoner.js");
 const fs = require("fs");
 const champJSON = require("./champJSONManager");

@@ -1,3 +1,5 @@
+'use strict';
+
 const AWS = require('aws-sdk');
 const attr = require('dynamodb-data-types').AttributeValue;
 
@@ -47,7 +49,7 @@ function putNewSummoner(summoner) {
     summoner.loss = 0;
 
 
-    dynamoItem = attr.wrap(summoner);
+    let dynamoItem = attr.wrap(summoner);
 
     dynamoItem.rank = {"M": attr.wrap({
       "league": 0,
@@ -135,7 +137,7 @@ function updateSum(sum) {
 
 
 async function getAllUsers() {
-  res = [];
+  let res = [];
   await recScan(res, null).catch(err => console.error(err, err.stack));
   return res;
 }

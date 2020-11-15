@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 
 
@@ -63,7 +65,7 @@ function storeVisit(ip) {
 
     obj[ip].latestDate = date;
   }
-  json = JSON.stringify(obj); //convert it back to json
+  let json = JSON.stringify(obj); //convert it back to json
   fs.writeFile(file, json, 'utf8', (err) => {
     if(err) console.log("error updating clients.json");
   }); // write it back  

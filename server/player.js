@@ -1,3 +1,5 @@
+'use strict';
+
 const teemo = require("./teemo");
 const dynamo = require("./dynamo");
 const sumUtils = require("./summoner");

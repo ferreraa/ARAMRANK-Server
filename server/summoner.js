@@ -1,3 +1,5 @@
+'use strict';
+
 const league = require("./league.js");
 
 function processGameResult(sum, match) {
