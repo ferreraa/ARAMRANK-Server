@@ -1,3 +1,4 @@
+'use strict';
 
 function processLPchange(lp, sum, match, isPlacement) {
   let win = match.win;

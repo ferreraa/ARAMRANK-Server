@@ -1,3 +1,5 @@
+'use strict';
+
 const db = require('./dynamo'),
   league = require('./league'),
   fs = require("fs");
@@ -21,7 +23,7 @@ async function updateLadder(users = null) {
   let data2write = [];
 
   list.forEach(e => {
-    e2write = { 
+    let e2write = { 
       iconId: e.profileIconId,
       rank: e.rank,
       name: e.name,
