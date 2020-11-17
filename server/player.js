@@ -34,6 +34,7 @@ async function searchPlayer(req, res) {
     res.render('404Sum');
     return;
   } else if(typeof sum.id == 'undefined') {
+    console.error('sum id undefined');
     res.render('error');
     return;
   }
@@ -85,7 +86,7 @@ async function searchPlayer(req, res) {
   }
 
   if( !unchanged ) {
-    var updateSumPromise = dynamo.updateSum(sum);
+    var updateSumPromise = dynamo.updateSum(sum, dbSum.wins+dbSum.loss);
   } 
 
   let match2print = await dynamo.getSumHistory(dbSum.id);
@@ -93,16 +94,16 @@ async function searchPlayer(req, res) {
 
   let l = match2print.length;
   if(l>20) {
-    match2print = match2print.slice(l-19,l);
+    match2print = match2print.slice(l-20,l);
   }
   match2print.reverse();
-  sum.history = match2print;
+  sum.history2print = match2print;
 
 
   res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
 
 
-  sum.history.forEach(e => {
+  sum.history2print.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
 
@@ -168,7 +169,7 @@ function updatePlayer(dbSum) {
     }
 
     if( !unchanged )
-      await dynamo.updateSum(sum)
+      await dynamo.updateSum(sum, dbSum.wins + dbSum.loss)
         .catch(errors => errors.forEach(err => console.error(err, err.stack)));
 
       resolve(sum);

@@ -213,14 +213,55 @@ function fullyUpdatePlayerRow(sum) {
 
 }
 
+/**
+ * limit history size in history table by erasing games older than the 20 first ones
+ * takes the summoner's stats (sum) and the previous size of the history
+ */
+function limitHistorySize(sum, oldHistorySize) {
+
+  let spotsLeft = maxHistorySize - oldHistorySize;
+  let games2remove = sum.history.length - spotsLeft;
+
+  console.log(spotsLeft);
+  console.log(games2remove);
+  console.log(oldHistorySize);
+  console.log(sum.history.length);
+
+  if(games2remove < 0) {
+    return;
+  }
+
+  let removeExpression = "REMOVE history[0]";
+  for(let i = 1 ; i < games2remove ; i++) {
+    removeExpression += `, history[${i}]`;
+  }
+
+  console.log(removeExpression);
+
+  let params = {
+    Key: {
+     "id": {
+       S: sum.id
+      }
+    }, 
+    TableName: histories_table, 
+    UpdateExpression: removeExpression,
+  };
+
+  dynamodb.updateItem(params, function(err, data) {
+    if(err) console.error(err);
+    else console.log(data);
+  });
+}
 
 /**
- * Uptades the given summoner in the players database.
+ * Uptades the given summoner in the players database. uses the oldHistorySize to keep
+ * the history table field from going beyond 20 games
  * If there are new games to store, these are pushed into both histories tables
  * returns a promise resolving into console logs or rejects as an array of errors
  */
-function updateSum(sum) {
-
+function updateSum(sum, oldHistorySize) {
+  console.log('updateSum oldHistorySize='+oldHistorySize);
   if(sum.history.length == 0) {
     //only push the name and profileIcon  
     updateNameAndIcon(sum);
@@ -257,6 +298,8 @@ function updateSum(sum) {
     dynamodb.updateItem(params, function(err, data) {
       if (err) reject(err); // an error occurred
       else {
+        //only keep 20 more recent games in history table
+        limitHistorySize(sum, oldHistorySize);
         resolve(console.log("updated history of", sum.name)); // successful response  
       }
     });
