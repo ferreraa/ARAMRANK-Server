@@ -15,7 +15,7 @@ const players_table = process.env.table_name || "players_S10_dev";
 const histories_table = process.env.histories_table || "Histories_S10_dev";
 const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S10_dev";
 
-const beginning_of_season = process.env.beginning_of_season || 1578632400000;
+const beginning_of_season = process.env.beginning_of_season || 1610076600000; //2021/01/08 - 04:30:00
 
 //Size of history to be stored in histories_table
 const maxHistorySize = 20;
