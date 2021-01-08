@@ -21,7 +21,7 @@
 
 <div class="container">
   <div class="jumbotron">
-    <% sum.history.forEach(function(match){ %>
+    <% sum.history2print.forEach(function(match){ %>
       <%- include('./partials/historyElement', {match: match, version: version}); %>
     <% }); %>
   </div>

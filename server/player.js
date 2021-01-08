@@ -34,6 +34,7 @@ async function searchPlayer(req, res) {
     res.render('404Sum');
     return;
   } else if(typeof sum.id == 'undefined') {
+    console.error('sum id undefined');
     res.render('error');
     return;
   }
@@ -63,7 +64,7 @@ async function searchPlayer(req, res) {
   sum.rank = dbSum.rank;
   sum.wins = parseInt(dbSum.wins);
   sum.loss = parseInt(dbSum.loss);
-  let lastTime = sumUtils.getLastTimeStamp(dbSum) +1;
+  let lastTime = dbSum.lastGameTime+1;
 
   if(lastTime == null) {
     res.render('error');
@@ -78,30 +79,31 @@ async function searchPlayer(req, res) {
     unchanged = false; //new games => need to update the db
     let newMatches = await teemo.processAllMatches(matches, sum);
   } 
-  else if (dbSum.history.length == 0) {
+  else if (sum.wins + sum.loss == 0) {
     await promises;
     res.render('first_time');
     return;
   }
 
   if( !unchanged ) {
-    var updateSumPromise = dynamo.updateSum(sum);
+    var updateSumPromise = dynamo.updateSum(sum, dbSum.wins+dbSum.loss);
   } 
 
+  let match2print = await dynamo.getSumHistory(dbSum.id);
+  match2print = match2print.concat(sum.history);
 
-  let match2print = dbSum.history.concat(sum.history);
   let l = match2print.length;
   if(l>20) {
-    match2print = match2print.slice(l-19,l);
+    match2print = match2print.slice(l-20,l);
   }
   match2print.reverse();
-  sum.history = match2print;
+  sum.history2print = match2print;
 
 
   res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
 
 
-  sum.history.forEach(e => {
+  sum.history2print.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
 
@@ -110,7 +112,8 @@ async function searchPlayer(req, res) {
   res.render('player');
 
   if( !unchanged ) {
-    await updateSumPromise.catch(err => console.error(err, err.stack));
+    await updateSumPromise
+      .catch(errors => errors.forEach(err => console.error(err, err.stack)));
   }
 }
 
@@ -132,13 +135,12 @@ function updatePlayer(dbSum) {
       return;
     }
 
-
     sum.mainChampId = await teemo.getSumMain(sum.id); 
 
     sum.rank = dbSum.rank;
     sum.wins = parseInt(dbSum.wins);
     sum.loss = parseInt(dbSum.loss);
-    let lastTime = sumUtils.getLastTimeStamp(dbSum) +1;
+    let lastTime = dbSum.lastGameTime +1;
 
     if(lastTime == null) {
       let message = new Date().toISOString() + ' - lastTime == null within the row';
@@ -167,9 +169,10 @@ function updatePlayer(dbSum) {
     }
 
     if( !unchanged )
-      await dynamo.updateSum(sum).catch(err => console.error(err, err.stack));
+      await dynamo.updateSum(sum, dbSum.wins + dbSum.loss)
+        .catch(errors => errors.forEach(err => console.error(err, err.stack)));
 
-    resolve(sum);
+      resolve(sum);
   });
 }
 
@@ -179,9 +182,9 @@ function updatePlayers() {
   
   return new Promise( async (resolve) => 
   {
-    dbUsers = await dynamo.getAllUsers();
+    let dbUsers = await dynamo.getAllUsers();
     
-    updatePromises = [];
+    let updatePromises = [];
 
     dbUsers.forEach(e => {
       updatePromises.push(updatePlayer(e));
