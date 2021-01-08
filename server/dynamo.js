@@ -11,8 +11,14 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const table_name = process.env.table_name || "players_S10_dev";
+const players_table = process.env.table_name || "players_S10_dev";
+const histories_table = process.env.histories_table || "Histories_S10_dev";
+const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S10_dev";
 
+const beginning_of_season = process.env.beginning_of_season || 1610076600000; //2021/01/08 - 04:30:00
+
+//Size of history to be stored in histories_table
+const maxHistorySize = 20;
 
 function getSumBySummonerId(id) {
   var params = {
@@ -21,7 +27,7 @@ function getSumBySummonerId(id) {
        S: id
       }
     }, 
-    TableName: table_name,
+    TableName: players_table,
     ConsistentRead: true,
   };
 
@@ -37,17 +43,43 @@ function getSumBySummonerId(id) {
         } 
     });
   });
+}
 
+/*
+ *  Retrieves the list of matches corresponding to the given summoner's id
+ *  from the Histoies table.
+ *  Returns a promise resolving in a list object
+ */
+function getSumHistory(id) {
+  var params = {
+    Key: {
+      "id": {
+        S: id
+      }
+    },
+    TableName: histories_table,
+    ConsistentRead: true,
+  };
 
+  return new Promise((resolve, reject) => {
+    dynamodb.getItem(params, function(err, data) {
+      if (err) reject(err);
+      else {
+        if(Object.keys(data).length != 0)
+          resolve(attr.unwrap(data.Item).history);
+        else
+          resolve(null);
+      }
+    });
+  });
 }
 
 function putNewSummoner(summoner) {
 
     summoner.date0 = Date.now();
-
     summoner.wins = 0;
     summoner.loss = 0;
-
+    summoner.lastGameTime = +beginning_of_season;
 
     let dynamoItem = attr.wrap(summoner);
 
@@ -57,25 +89,51 @@ function putNewSummoner(summoner) {
       "lp": 0,
       "bo": "ooo"
     })};
-    dynamoItem.history = {"L": []}; //lib is bugged
 
     var params = {
       Item: dynamoItem, 
-      ReturnConsumedCapacity: "TOTAL", 
-      TableName: table_name
+      TableName: players_table
      };
     dynamodb.putItem(params, function(err, data) {
        if (err) console.log(err, err.stack); // an error occurred
        else     console.log(data);           // successful response
     });
+
+    //New row in players created. Now creating a new row in histories table
+
+    let historyObject = {
+      id: summoner.id
+    }
+
+    dynamoItem = attr.wrap(historyObject);
+    dynamoItem.history = {"L": []}; //attr.wrap is bugged
+
+    params = {
+      Item: dynamoItem,
+      TableName: histories_table
+    };
+
+    dynamodb.putItem(params, function(err, data) {
+       if (err) console.log(err, err.stack); // an error occurred
+       else     console.log(data);           // successful response
+    });
+
+    //New row in histories created. Now creating a new row in archived histories table
+    params.TableName = archived_histories_table;
+
+    dynamodb.putItem(params, function(err, data) {
+       if (err) console.log(err, err.stack); // an error occurred
+       else     console.log(data);           // successful response
+    });
+
 }
 
-
-
-function updateSum(sum) {
+/**
+ * Updates the name and profileIcon of the given sum.
+ */
+function updateNameAndIcon(sum) {
   let di = attr.wrap(sum);
 
-  //at least push the name
   var params = {
     ExpressionAttributeNames: {
      "#N": "name",
@@ -91,48 +149,173 @@ function updateSum(sum) {
       }
     }, 
     ReturnValues: "ALL_NEW", 
-    TableName: table_name, 
+    TableName: players_table, 
     UpdateExpression: "SET #N = :n, #P = :p"
   };
 
+  
+  dynamodb.updateItem(params, function(err, data) {
+    if (err) console.error(err); // an error occurred - array
+    else     console.log("updated data of", sum.name); // successful response
+  });
+}
+
+
+/**
+ * Called when new games are being pushed. Uptades the given summoner 
+ * in the players database.
+ * 
+ * returns a promise resolving into console logs or rejects as an error
+ */
+function fullyUpdatePlayerRow(sum) {
   //if there are new games, push them
-  if(sum.history.length>0) {
-    params = {
-      ExpressionAttributeNames: {
-       "#H": "history", 
-       "#R": "rank",
-       "#N": "name",
-       "#M": "mainChampId",
-       "#W": "wins",
-       "#L": "loss",
-       "#P": "profileIconId"
-      }, 
-      ExpressionAttributeValues: {
-       ":h": di.history, 
-       ":r": di.rank,
-       ":n": di.name,
-       ":m": di.mainChampId,
-       ":w": di.wins,
-       ":l": di.loss,
-       ":p": di.profileIconId
-      }, 
-      Key: {
-       "id": {
-         S: sum.id
-        }
-      }, 
-      ReturnValues: "ALL_NEW", 
-      TableName: table_name, 
-      UpdateExpression: "SET #H = list_append(#H,:h), #R = :r, #N = :n, #M = :m, #W = :w, #L = :l, #P = :p"
-    };
+  sum.lastGameTime = sum.history[sum.history.length-1].timestamp;
+
+  let di = attr.wrap(sum);
+
+  let params = {
+    ExpressionAttributeNames: {
+     "#R": "rank",
+     "#N": "name",
+     "#M": "mainChampId",
+     "#W": "wins",
+     "#L": "loss",
+     "#P": "profileIconId",
+     "#T": "lastGameTime",
+    }, 
+    ExpressionAttributeValues: {
+     ":r": di.rank,
+     ":n": di.name,
+     ":m": di.mainChampId,
+     ":w": di.wins,
+     ":l": di.loss,
+     ":p": di.profileIconId,
+     ":t": di.lastGameTime,
+    }, 
+    Key: {
+     "id": {
+       S: sum.id
+      }
+    }, 
+    ReturnValues: "ALL_NEW", 
+    TableName: players_table, 
+    UpdateExpression: "SET #R = :r, #N = :n, #M = :m, #W = :w, #L = :l, #P = :p, #T = :t"
+  };
+
+  let promises = [];
+
+  return new Promise( (resolve, reject) => {
+    dynamodb.updateItem(params, function(err, data) {
+      if (err) reject(err); // an error occurred
+      else     resolve(console.log("updated data of", sum.name)); // successful response
+    });
+  });
+
+}
+
+/**
+ * limit history size in history table by erasing games older than the 20 first ones
+ * takes the summoner's stats (sum) and the previous size of the history
+ */
+function limitHistorySize(sum, oldHistorySize) {
+
+  let spotsLeft = maxHistorySize - oldHistorySize;
+  let games2remove = sum.history.length - spotsLeft;
+
+  console.log(spotsLeft);
+  console.log(games2remove);
+  console.log(oldHistorySize);
+  console.log(sum.history.length);
+
+  if(games2remove < 0) {
+    return;
   }
 
- return new Promise( (resolve, reject) => {
-   dynamodb.updateItem(params, function(err, data) {
-     if (err) reject(err); // an error occurred
-     else     resolve(console.log("updated data of", sum.name));           // successful response
-   });
- });
+  let removeExpression = "REMOVE history[0]";
+  for(let i = 1 ; i < games2remove ; i++) {
+    removeExpression += `, history[${i}]`;
+  }
+
+  console.log(removeExpression);
+
+  let params = {
+    Key: {
+     "id": {
+       S: sum.id
+      }
+    }, 
+    TableName: histories_table, 
+    UpdateExpression: removeExpression,
+  };
+
+  dynamodb.updateItem(params, function(err, data) {
+    if(err) console.error(err);
+    else console.log(data);
+  });
+}
+
+/**
+ * Uptades the given summoner in the players database. uses the oldHistorySize to keep
+ * the history table field from going beyond 20 games
+ * If there are new games to store, these are pushed into both histories tables
+ * returns a promise resolving into console logs or rejects as an array of errors
+ */
+function updateSum(sum, oldHistorySize) {
+  console.log('updateSum oldHistorySize='+oldHistorySize);
+  if(sum.history.length == 0) {
+    //only push the name and profileIcon  
+    updateNameAndIcon(sum);
+    return new Promise((res, rej) => resolve());
+  }
+
+  let promises = [];
+
+  //if there are new games, push them
+  sum.lastGameTime = sum.history[sum.history.length-1].timestamp;
+
+  promises.push(fullyUpdatePlayerRow(sum));
+
+  let di = attr.wrap(sum);
+
+  let params = {
+    ExpressionAttributeNames: {
+     "#H": "history", 
+    }, 
+    ExpressionAttributeValues: {
+     ":h": di.history,
+    }, 
+    Key: {
+     "id": {
+       S: sum.id
+      }
+    }, 
+    ReturnValues: "ALL_NEW", 
+    TableName: histories_table, 
+    UpdateExpression: "SET #H = list_append(#H,:h)"
+  };
+
+  promises.push(new Promise( (resolve, reject) => {
+    dynamodb.updateItem(params, function(err, data) {
+      if (err) reject(err); // an error occurred
+      else {
+        //only keep 20 more recent games in history table
+        limitHistorySize(sum, oldHistorySize);
+        resolve(console.log("updated history of", sum.name)); // successful response  
+      }
+    });
+  }));
+
+  //Same thig for archived histories table
+  params.TableName = archived_histories_table;
+
+  promises.push(new Promise( (resolve, reject) => {
+    dynamodb.updateItem(params, function(err, data) {
+      if (err) reject(err); // an error occurred
+      else     resolve(console.log("updated archived history of", sum.name)); // successful response
+    });
+  }));
+
+  return Promise.all(promises);
 }
 
 
@@ -144,7 +327,7 @@ async function getAllUsers() {
 
 function recScan(prevData, lastEvaluatedKey) {
   var params = { 
-    TableName: table_name,
+    TableName: players_table,
     ConsistentRead: true,
   };
 
@@ -172,6 +355,7 @@ function recScan(prevData, lastEvaluatedKey) {
 
 
 module.exports.getAllUsers = getAllUsers;
+module.exports.getSumHistory = getSumHistory;
 module.exports.putNewSummoner = putNewSummoner;
 module.exports.getSumBySummonerId = getSumBySummonerId;
 module.exports.updateSum = updateSum;
