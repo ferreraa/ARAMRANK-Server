@@ -11,9 +11,9 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const players_table = process.env.table_name || "players_S10_dev";
-const histories_table = process.env.histories_table || "Histories_S10_dev";
-const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S10_dev";
+const players_table = process.env.table_name || "players_S11_dev";
+const histories_table = process.env.histories_table || "Histories_S11_dev";
+const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S11_dev";
 
 const beginning_of_season = process.env.beginning_of_season || 1610076600000; //2021/01/08 - 04:30:00
 
@@ -148,7 +148,6 @@ function updateNameAndIcon(sum) {
        S: sum.id
       }
     }, 
-    ReturnValues: "ALL_NEW", 
     TableName: players_table, 
     UpdateExpression: "SET #N = :n, #P = :p"
   };
@@ -197,7 +196,6 @@ function fullyUpdatePlayerRow(sum) {
        S: sum.id
       }
     }, 
-    ReturnValues: "ALL_NEW", 
     TableName: players_table, 
     UpdateExpression: "SET #R = :r, #N = :n, #M = :m, #W = :w, #L = :l, #P = :p, #T = :t"
   };
@@ -222,11 +220,6 @@ function limitHistorySize(sum, oldHistorySize) {
   let spotsLeft = maxHistorySize - oldHistorySize;
   let games2remove = sum.history.length - spotsLeft;
 
-  console.log(spotsLeft);
-  console.log(games2remove);
-  console.log(oldHistorySize);
-  console.log(sum.history.length);
-
   if(games2remove < 0) {
     return;
   }
@@ -235,8 +228,6 @@ function limitHistorySize(sum, oldHistorySize) {
   for(let i = 1 ; i < games2remove ; i++) {
     removeExpression += `, history[${i}]`;
   }
-
-  console.log(removeExpression);
 
   let params = {
     Key: {
@@ -261,7 +252,6 @@ function limitHistorySize(sum, oldHistorySize) {
  * returns a promise resolving into console logs or rejects as an array of errors
  */
 function updateSum(sum, oldHistorySize) {
-  console.log('updateSum oldHistorySize='+oldHistorySize);
   if(sum.history.length == 0) {
     //only push the name and profileIcon  
     updateNameAndIcon(sum);
@@ -289,7 +279,6 @@ function updateSum(sum, oldHistorySize) {
        S: sum.id
       }
     }, 
-    ReturnValues: "ALL_NEW", 
     TableName: histories_table, 
     UpdateExpression: "SET #H = list_append(#H,:h)"
   };
@@ -305,7 +294,7 @@ function updateSum(sum, oldHistorySize) {
     });
   }));
 
-  //Same thig for archived histories table
+  //Same thing for archived histories table
   params.TableName = archived_histories_table;
 
   promises.push(new Promise( (resolve, reject) => {
