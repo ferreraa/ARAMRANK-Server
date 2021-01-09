@@ -86,22 +86,17 @@ async function searchPlayer(req, res) {
   }
 
   if( !unchanged ) {
-    var updateSumPromise = dynamo.updateSum(sum, dbSum.wins+dbSum.loss);
+    await dynamo.updateSum(sum, dbSum.wins+dbSum.loss)
+      .catch(errors => errors.forEach(err => console.error(err, err.stack)));
   } 
 
-  let match2print = await dynamo.getSumHistory(dbSum.id);
-  match2print = match2print.concat(sum.history);
+  let match2print = await dynamo.getSumHistory(dbSum.id)
+                      .catch(err=>console.log(err, err.stack));
 
-  let l = match2print.length;
-  if(l>20) {
-    match2print = match2print.slice(l-20,l);
-  }
   match2print.reverse();
   sum.history2print = match2print;
 
-
   res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
-
 
   sum.history2print.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
@@ -110,11 +105,6 @@ async function searchPlayer(req, res) {
   await Promise.all(promises).catch(err => console.error(err, err.stack));
 
   res.render('player');
-
-  if( !unchanged ) {
-    await updateSumPromise
-      .catch(errors => errors.forEach(err => console.error(err, err.stack)));
-  }
 }
 
 

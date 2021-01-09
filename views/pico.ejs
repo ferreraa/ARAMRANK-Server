@@ -4,9 +4,19 @@
 <%- include('./partials/head'); %>
 </head>
 <body>
-  <a href="ladder">
-         <img alt="waf" src="img/pico.jpg"
-         width="1154" height="866">
-  </a>
+  <a id="link"></a>
+  <script type="text/javascript">
+    var base_url = window.location.origin;
+
+    var img = document.createElement("img");
+    img.alt = "waf";
+    img.width = 1154;
+    img.height = 866;
+    img.src = base_url + "/img/pico.jpg";
+
+    var link = document.getElementById('link');
+    link.href = base_url + "/ladder";
+    link.appendChild(img); 
+  </script>
 </body>
 </html>
