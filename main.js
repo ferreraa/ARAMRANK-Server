@@ -156,6 +156,7 @@ async function getLadder(res) {
 }
 
 app.get('*/pico', function(req, res) {
+  ladder.updateLadder();
   player.updatePlayers()
     .then( () => res.render('pico') );
 })
