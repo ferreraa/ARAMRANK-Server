@@ -220,7 +220,7 @@ function limitHistorySize(sum, oldHistorySize) {
   let spotsLeft = maxHistorySize - oldHistorySize;
   let games2remove = sum.history.length - spotsLeft;
 
-  if(games2remove < 0) {
+  if(games2remove <= 0) {
     return;
   }
 
