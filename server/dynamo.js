@@ -218,6 +218,7 @@ function fullyUpdatePlayerRow(sum) {
 function limitHistorySize(sum, oldHistorySize) {
 
   let spotsLeft = maxHistorySize - oldHistorySize;
+  spotsLeft = spotsLeft < 0 ? 0 : spotsLeft;
   let games2remove = sum.history.length - spotsLeft;
 
   if(games2remove <= 0) {
