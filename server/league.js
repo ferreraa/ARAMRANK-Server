@@ -118,7 +118,11 @@ function demoteLP(league) {
 function demoteUpdate(win, sum, lp) {
   if(win) {
     sum.rank.bo = "ooo";
-    sum.rank.lp = +sum.rank.lp + lp; //manage the string number
+    if(needPromoteBO(sum)) {
+      slowClimbing(sum, lp);
+    } else {
+      fastClimbing(sum, lp);
+    }
     return;
   }
 
