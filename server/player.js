@@ -7,6 +7,29 @@ const league = require("./league");
 const ddragonManager = require("./ddragonManager");
 const fs = require('fs');
 
+// Map of individual locks in order to prevent a specific player from getting updated
+var locksMap = new Map();
+
+/**
+ * Locked this specific player's lock is taken
+ */
+function isLocked(sumId) {
+  return locksMap.has(sumId) && locksMap.get(sumId);
+}
+
+/**
+ * Lock this specific player
+ */
+function lock(sumId) {
+  locksMap.set(sumId, true);
+}
+
+/**
+ * Specific lock removed for this player
+ */
+function free(sumId) {
+  locksMap.set(sumId, false);
+}
 
 /**
  * Uses the client's request in order to look the player up the DB and the API. 
@@ -71,7 +94,18 @@ async function searchPlayer(req, res) {
     return;
   }
 
-  let matches = await teemo.getMatchList(sum.accountId, lastTime);
+  let matches = [];
+
+  //matchList must be fetched if the sum isn't locked
+  if( !isLocked(sum.id) ) {
+    lock(sum.id);
+    matches = await teemo.getMatchList(sum.accountId, lastTime);
+
+    // no new game => no need to keep the lock
+    if (matches.length === 0)
+      free(sum.id);
+  }
+
   sum.history = [];
 
   let unchanged = true; //no need to update the db
@@ -87,7 +121,8 @@ async function searchPlayer(req, res) {
 
   if( !unchanged ) {
     await dynamo.updateSum(sum, dbSum.wins+dbSum.loss)
-      .catch(errors => errors.forEach(err => console.error(err, err.stack)));
+      .catch(errors => errors.forEach(err => console.error(err, err.stack)))
+      .finally(free(sum.id)); //!unchanged => the lock was taken. Time to free it.
   } 
 
   let match2print = await dynamo.getSumHistory(dbSum.id)
@@ -138,7 +173,18 @@ function updatePlayer(dbSum) {
       return;
     }
 
-    let matches = await teemo.getMatchList(sum.accountId, lastTime);
+    let matches = [];
+    
+    //Only get matches if player free
+    if( !isLocked(sum.id) ) {
+      lock(sum.id);
+      matches = await teemo.getMatchList(sum.accountId, lastTime);
+    
+      // no new game => no need to lock
+      if (matches.length === 0) 
+        free(sum.id);
+    }
+
     sum.history = [];
 
     let unchanged = true; //no need to update the db
@@ -160,8 +206,12 @@ function updatePlayer(dbSum) {
 
     if( !unchanged )
       await dynamo.updateSum(sum, dbSum.wins + dbSum.loss)
-        .catch(errors => errors.forEach(err => console.error(err, err.stack)));
-
+        .catch(errors => errors.forEach(err => console.error(err, err.stack)))
+        .finally(() => {
+          //matches.length > 0 => the lock was taken and must be freed
+          if(matches.length > 0) 
+            free(sum.id);
+        });
       resolve(sum);
   });
 }
