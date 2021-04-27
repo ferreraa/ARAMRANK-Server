@@ -93,7 +93,7 @@ function putNewSummoner(summoner) {
     var params = {
       Item: dynamoItem, 
       TableName: players_table
-     };
+    };
     dynamodb.putItem(params, function(err, data) {
        if (err) console.log(err, err.stack); // an error occurred
        else     console.log(data);           // successful response
@@ -219,31 +219,41 @@ function limitHistorySize(sum, oldHistorySize) {
 
   let spotsLeft = maxHistorySize - oldHistorySize;
   spotsLeft = spotsLeft < 0 ? 0 : spotsLeft;
-  let games2remove = sum.history.length - spotsLeft;
+  let totalGames2remove = sum.history.length - spotsLeft;
 
-  if(games2remove <= 0) {
+  if(totalGames2remove <= 0) {
     return;
   }
 
-  let removeExpression = "REMOVE history[0]";
-  for(let i = 1 ; i < games2remove ; i++) {
-    removeExpression += `, history[${i}]`;
+  //Expression size's limit exceeded when trying to remove more than 19 items at once
+  let mostElementsRemovedAtOnce = 19;
+
+  while(totalGames2remove > 0) {
+
+    //build a remove expression conaining the right number of games for this call
+    let games2remove = totalGames2remove > 19 ? 19 : totalGames2remove;
+    let removeExpression = "REMOVE history[0]";
+    for(let i = 1 ; i < games2remove ; i++) {
+      removeExpression += `, history[${i}]`;
+    }
+
+    totalGames2remove -= mostElementsRemovedAtOnce;
+
+    let params = {
+      Key: {
+       "id": {
+         S: sum.id
+        }
+      }, 
+      TableName: histories_table, 
+      UpdateExpression: removeExpression,
+    };
+
+    dynamodb.updateItem(params, function(err, data) {
+      if(err) console.error(err);
+      else console.log(data);
+    });
   }
-
-  let params = {
-    Key: {
-     "id": {
-       S: sum.id
-      }
-    }, 
-    TableName: histories_table, 
-    UpdateExpression: removeExpression,
-  };
-
-  dynamodb.updateItem(params, function(err, data) {
-    if(err) console.error(err);
-    else console.log(data);
-  });
 }
 
 /**
@@ -268,12 +278,14 @@ function updateSum(sum, oldHistorySize) {
 
   let di = attr.wrap(sum);
 
+  let recentHistory = getRecentHistory(di.history);
+
   let params = {
     ExpressionAttributeNames: {
      "#H": "history", 
     }, 
     ExpressionAttributeValues: {
-     ":h": di.history,
+     ":h": recentHistory,
     }, 
     Key: {
      "id": {
@@ -308,6 +320,20 @@ function updateSum(sum, oldHistorySize) {
   return Promise.all(promises);
 }
 
+/**
+ *  @param dynamodbHistory an history of games in dynamoDB list format
+ *  @returns the same history but only <maxHistorySize> most recent games
+ *    whithout modifying the input array
+ */
+function getRecentHistory(dynamodbHistory) {
+  const historyLength = dynamodbHistory.L.length;
+
+  if(historyLength > maxHistorySize) {
+    return {L : dynamodbHistory.L.slice(historyLength-20, historyLength)};
+  } else {
+    return dynamodbHistory;
+  }
+}
 
 async function getAllUsers() {
   let res = [];

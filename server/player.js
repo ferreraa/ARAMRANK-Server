@@ -121,7 +121,7 @@ async function searchPlayer(req, res) {
 
   if( !unchanged ) {
     await dynamo.updateSum(sum, dbSum.wins+dbSum.loss)
-      .catch(errors => errors.forEach(err => console.error(err, err.stack)))
+      .catch(err => console.error(err, err.stack))
       .finally(free(sum.id)); //!unchanged => the lock was taken. Time to free it.
   } 
 

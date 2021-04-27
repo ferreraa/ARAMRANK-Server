@@ -46,7 +46,7 @@ async function getMatchList(Accountid, beginTime) {
     queue: 450, //ARAM
     beginTime: beginTime,
     season: 13, //season 2019
-  }
+  };
   do{
     let data = await api.get('euw1', 'match.getMatchlist', Accountid, parameters);
     if(data == null)
