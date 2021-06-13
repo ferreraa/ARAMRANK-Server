@@ -1,6 +1,7 @@
 'use strict';
 
 var sumUtils = require("./summoner.js");
+const fs = require("fs");
 const champJSON = require("./champJSONManager");
 
 const TeemoJS = require('teemojs');
@@ -101,6 +102,10 @@ async function processMatch(match, sum) {
 
   let i = -1;
   for (let j = data.participantIdentities.length - 1; j >= 0; j--) {
+    if(typeof data.participantIdentities[j].player === 'undefined') {
+      console.error(data.participantIdentities[j]);
+      continue;
+    }
     if(data.participantIdentities[j].player.summonerId == sum.id) {
       i = j;
       break;
@@ -108,8 +113,13 @@ async function processMatch(match, sum) {
   }
 
   if(i == -1) {
-    console.log((new Date()).toISOString() + '-could not find player '
-      + sum.name + ' in match ' + match.gameId);
+    fs.appendFile('logs/processMatchLogs', (new Date()).toISOString() +
+     '-could not find player '+sum.name+' in match '+match.gameId , function (err) {
+      if (err) throw err;
+      console.log(new Date().toISOString() + '-could not find player '
+        + sum.name + ' in match ' + match.gameId);
+      }
+    );
     return null;
   }
 
