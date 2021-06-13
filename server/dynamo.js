@@ -266,7 +266,7 @@ function updateSum(sum, oldHistorySize) {
   if(sum.history.length == 0) {
     //only push the name and profileIcon  
     updateNameAndIcon(sum);
-    return new Promise((res, rej) => resolve());
+    return new Promise((res, rej) => res());
   }
 
   let promises = [];
