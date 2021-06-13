@@ -206,7 +206,7 @@ function updatePlayer(dbSum) {
 
     if( !unchanged )
       await dynamo.updateSum(sum, dbSum.wins + dbSum.loss)
-        .catch(errors => errors.forEach(err => console.error(err, err.stack)))
+        .catch(console.log)
         .finally(() => {
           //matches.length > 0 => the lock was taken and must be freed
           if(matches.length > 0) 
