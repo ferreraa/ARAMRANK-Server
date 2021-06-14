@@ -12,3 +12,7 @@
 .navbar    { margin-bottom: 10px; }
 .selectpicker  { padding-top:10px; }
 .nav-search-button { color:black; }
+
+body {
+  padding-top: 80px;
+}
