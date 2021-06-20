@@ -59,7 +59,7 @@ function remoteVersion() {
 
       // The whole response has been received. Print out the result.
       resp.on('end', () => {
-        resolve(JSON.parse(data)[0]);
+        resolve(JSON.parse(data.join(''))[0]);
       });
 
       resp.on("error", (err) => {

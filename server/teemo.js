@@ -52,6 +52,11 @@ async function getMatchList(Accountid, beginTime) {
     if(data == null)
       return [];
     var nb_matches = data.matches.length;
+    
+    // Filter out matches not from EUW 
+    // because otherwise it won't fetch the right match data later on
+    data.matches = data.matches.filter(m => m.platformId == 'EUW1');
+
     if(nb_matches == 100)
       parameters.beginIndex = data.endIndex+1;
 
