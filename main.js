@@ -137,7 +137,7 @@ app.param('name', function (req, res, next, name) {
 
 // set the home page route
 // (:lang[a-z]{2})|) uses the parameter :lang or no parameters. This is used in every query handler.
-app.get('(/:lang([a-z]{2})|)/', function(req, res) {
+app.get('(/:lang([a-z]{2})|)', function(req, res) {
   res.render('index.ejs');
 });
 
