@@ -28,8 +28,8 @@
   let x = setInterval(() => {
     let now = new Date().getTime();
 
-    //ladder updated every 25 minutes <=> 1 800 000 milliseconds
-    let timeLeft = 1800000 - now%1800000;
+    //ladder updated every hour
+    let timeLeft = 3_600_000 - now%3_600_000;
     timeLeft /= 1000;
     document.getElementById('ladderTimer').innerHTML = 
       Math.floor(timeLeft/60)

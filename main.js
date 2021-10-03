@@ -25,12 +25,12 @@ champJSON.manageChampionJSON()
   .then((version) => {process.env.RIOT_VERSION = version});
 
 
-schedule.scheduleJob('0 0 */2 * * *', async function(){
+schedule.scheduleJob('0 0 */2 * * *', async () => {
   process.env.RIOT_VERSION = await champJSON.manageChampionJSON();
   console.log(new Date().toISOString() + ' - riot version = ' + process.env.RIOT_VERSION);
 });
 
-schedule.scheduleJob('0 */25 * * * *', function(){
+schedule.scheduleJob('0 0 * * * *', () => {
   player.updatePlayers()
     .then(ladder.updateLadder)
     .catch(console.error);
