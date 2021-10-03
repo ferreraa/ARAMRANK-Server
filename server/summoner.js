@@ -33,7 +33,7 @@ function processGameResult(sum, match) {
   let randomLP = Math.random() * 3 * R * (Math.random() > 0.5 ? 1 : -1);
   let Pf = 2.5 * match.poroFed ? 1 : -1;
   let kda = 0.5*(match.k - match.d + 0.2 * match.a);
-  let mainFactor = sum.mainChampId == match.championId && match.win ? 2.5 : 1;
+  const mainFactor = sum.mainChampId == match.championId && match.win ? 2.5 : 1;
   let penta = match.pentaKills * 5;
   let fb = match.firstBlood ? 3 : 0;
 
@@ -52,7 +52,7 @@ function processGameResult(sum, match) {
   if( match.win )
   { //blackList
      switch(match.championId) {
-      case 412: case 103: case 114: case 202: case 141: lp = 1;  
+      case 412: case 103: case 114: case 202: case 141: lp = 1 * mainFactor;
     }
   }
 
@@ -60,8 +60,10 @@ function processGameResult(sum, match) {
     lp = 100;
   if(lp < -100)
     lp = -100;
-  if ((match.win && lp<0) || (!match.win && lp>0))
-    lp=0;
+  if (match.win && lp <= 0)
+    lp = 1;
+  else if (!match.win && lp>=0)
+    lp = -1;
 
   //yuumi is a spectator. If the player decided to spectate, the game doesn't count.
   if (match.championId == 350) {
@@ -74,18 +76,4 @@ function processGameResult(sum, match) {
   sum.history.push(match);
 }
 
-
-
-
-function getLastTimeStamp(dbSum) {
-	var timestamp = 1578632400000; //begining of S10
-	let length = dbSum.history.length;
-
-	if(length > 0)
-		timestamp = dbSum.history[length-1].timestamp;
-
-	return timestamp;
-}
-
-module.exports.getLastTimeStamp = getLastTimeStamp;
 module.exports.processGameResult = processGameResult;
