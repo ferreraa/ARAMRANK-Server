@@ -97,20 +97,26 @@ function getLocaleCookie(request) {
 }
 
 app.all('*', function (req, res, next) {
+  console.log(req.url);
   var arr_url = req.url.split('/');
   var loc = arr_url[1];
+  console.log(arr_url);
   if (loc === 'en' || loc === 'fr') {
     arr_url.splice(1,1);
     res.locals.currentURL = arr_url.join('/');
+    console.log(res.locals.currenURL);
     setLocaleCookie(loc, res);
     if (loc === 'en') {
+      console.log('redirect to ', res.locals.currentURL)
       res.redirect(res.locals.currentURL);
       return;
     }
   }
   else {
     loc = getLocaleCookie(req) || 'en';
+    console.log('no loc found => loc = ' + loc);
     if (loc !== 'en') {
+      console.log('/'+loc+req.url)
       res.redirect('/'+loc+req.url);
       return;
     }
