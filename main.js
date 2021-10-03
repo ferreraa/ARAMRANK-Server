@@ -29,7 +29,9 @@ schedule.scheduleJob('0 0 */2 * * *', async function(){
 });
 
 schedule.scheduleJob('0 */25 * * * *', function(){
-  player.updatePlayers().then(players => ladder.updateLadder(players));
+  player.updatePlayers()
+    .then(ladder.updateLadder)
+    .catch(console.error);
 });
 
 
@@ -121,7 +123,7 @@ app.param('lang', function (req, res, next, lang) {
   next();
 });
 
-//The 'name' parameter corresponds to the name of the player. This avoids using the get parameters
+//The 'name' parameter corresponds to the name of the player.
 app.param('name', function (req, res, next, name) {
   res.locals.name = name;
   next();

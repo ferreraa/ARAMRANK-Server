@@ -4,7 +4,6 @@ const league = require("./league.js");
 
 function processGameResult(sum, match) {
 
-
   let nb_of_games = sum.wins + sum.loss; //number of games already played
   let isPlacement = nb_of_games < 5;
 
@@ -12,17 +11,17 @@ function processGameResult(sum, match) {
   //win => 1. Lose => -1 if not placements
 
   let placementFactor = 1;
-  switch(nb_of_games) {
+  switch (nb_of_games) {
     case 0: case 1: placementFactor = 3.5; break;
     case 2: case 3: placementFactor = 2.7; break;
     case 4: placementFactor = 2; break;
   }
-  if(!match.win && isPlacement)
+  if (!match.win && isPlacement)
     placementFactor = 0; 
 
 
   let R = 1;
-  if(!isPlacement) {
+  if (!isPlacement) {
     if(nb_of_games <20)
       R=2;
     else
@@ -31,7 +30,7 @@ function processGameResult(sum, match) {
       R = 1/R;
   }
 
-  let randomLP = Math.random() * 3 * R * Math.random()>0.5 ? 1 : -1;
+  let randomLP = Math.random() * 3 * R * (Math.random() > 0.5 ? 1 : -1);
   let Pf = 2.5 * match.poroFed ? 1 : -1;
   let kda = 0.5*(match.k - match.d + 0.2 * match.a);
   let mainFactor = sum.mainChampId == match.championId && match.win ? 2.5 : 1;
@@ -61,11 +60,11 @@ function processGameResult(sum, match) {
     lp = 100;
   if(lp < -100)
     lp = -100;
-  if( (match.win && lp<0) || (!match.win && lp>0) )
+  if ((match.win && lp<0) || (!match.win && lp>0))
     lp=0;
 
   //yuumi is a spectator. If the player decided to spectate, the game doesn't count.
-  if(match.championId == 350) {
+  if (match.championId == 350) {
     lp=0;
   } else {
     league.processLPchange(lp, sum, match, isPlacement);
@@ -73,7 +72,6 @@ function processGameResult(sum, match) {
 
   match.lpValue = lp;
   sum.history.push(match);
-
 }
 
 

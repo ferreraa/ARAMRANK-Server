@@ -15,7 +15,7 @@ const players_table = process.env.table_name || "players_S11_dev";
 const histories_table = process.env.histories_table || "Histories_S11_dev";
 const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S11_dev";
 
-const beginning_of_season = process.env.beginning_of_season || 1610076600000; //2021/01/08 - 04:30:00
+const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1610076600; //2021/01/08 - 04:30:00
 
 //Size of history to be stored in histories_table
 const maxHistorySize = 20;
@@ -75,28 +75,32 @@ function getSumHistory(id) {
 }
 
 function putNewSummoner(summoner) {
-
+  return new Promise(async (resolve, reject) => {
     summoner.date0 = Date.now();
     summoner.wins = 0;
     summoner.loss = 0;
-    summoner.lastGameTime = +beginning_of_season;
+    summoner.lastGameId = '';
+    summoner.rank = {
+      league: 0,
+      div: 0,
+      lp: 0,
+      bo: 'ooo',
+    };
 
     let dynamoItem = attr.wrap(summoner);
 
-    dynamoItem.rank = {"M": attr.wrap({
-      "league": 0,
-      "div": 0,
-      "lp": 0,
-      "bo": "ooo"
-    })};
-
-    var params = {
+    let params = {
       Item: dynamoItem, 
       TableName: players_table
     };
+
+    let promisesAwaitedCount = 3;
+    let unwrappedDBSummoner = attr.unwrap(dynamoItem);
+
     dynamodb.putItem(params, function(err, data) {
-       if (err) console.log(err, err.stack); // an error occurred
-       else     console.log(data);           // successful response
+       if (err) reject(err);
+       else     console.log(data);
+       if (--promisesAwaitedCount === 0) resolve(unwrappedDBSummoner);
     });
 
     //New row in players created. Now creating a new row in histories table
@@ -106,7 +110,7 @@ function putNewSummoner(summoner) {
     }
 
     dynamoItem = attr.wrap(historyObject);
-    dynamoItem.history = {"L": []}; //attr.wrap is bugged
+    dynamoItem.history = {"L": []}; //attr.wrap can't know if it's a list or a set
 
     params = {
       Item: dynamoItem,
@@ -114,18 +118,20 @@ function putNewSummoner(summoner) {
     };
 
     dynamodb.putItem(params, function(err, data) {
-       if (err) console.log(err, err.stack); // an error occurred
-       else     console.log(data);           // successful response
+       if (err) reject(err);
+       else     console.log(data);
+       if (--promisesAwaitedCount === 0) resolve(unwrappedDBSummoner);
     });
 
     //New row in histories created. Now creating a new row in archived histories table
     params.TableName = archived_histories_table;
 
     dynamodb.putItem(params, function(err, data) {
-       if (err) console.log(err, err.stack); // an error occurred
-       else     console.log(data);           // successful response
+       if (err) reject(err);
+       else     console.log(data);
+       if (--promisesAwaitedCount === 0) resolve(unwrappedDBSummoner);
     });
-
+  });
 }
 
 /**
@@ -168,7 +174,7 @@ function updateNameAndIcon(sum) {
  */
 function fullyUpdatePlayerRow(sum) {
   //if there are new games, push them
-  sum.lastGameTime = sum.history[sum.history.length-1].timestamp;
+  sum.lastGameId = sum.history[sum.history.length-1].gameId;
 
   let di = attr.wrap(sum);
 
@@ -180,8 +186,8 @@ function fullyUpdatePlayerRow(sum) {
      "#W": "wins",
      "#L": "loss",
      "#P": "profileIconId",
-     "#T": "lastGameTime",
-    }, 
+     "#I": "lastGameId",
+    },
     ExpressionAttributeValues: {
      ":r": di.rank,
      ":n": di.name,
@@ -189,37 +195,34 @@ function fullyUpdatePlayerRow(sum) {
      ":w": di.wins,
      ":l": di.loss,
      ":p": di.profileIconId,
-     ":t": di.lastGameTime,
-    }, 
+     ":i": di.lastGameId,
+    },
     Key: {
      "id": {
        S: sum.id
       }
-    }, 
-    TableName: players_table, 
-    UpdateExpression: "SET #R = :r, #N = :n, #M = :m, #W = :w, #L = :l, #P = :p, #T = :t"
+    },
+    TableName: players_table,
+    UpdateExpression: "SET #R = :r, #N = :n, #M = :m, #W = :w, #L = :l, #P = :p, #I = :i",
   };
-
-  let promises = [];
 
   return new Promise( (resolve, reject) => {
     dynamodb.updateItem(params, function(err, data) {
       if (err) reject(err); // an error occurred
-      else     resolve(console.log("updated data of", sum.name)); // successful response
+      else     resolve(console.log("updated player row of", sum.name)); // successful response
     });
   });
-
 }
 
 /**
  * limit history size in history table by erasing games older than the 20 first ones
  * takes the summoner's stats (sum) and the previous size of the history
  */
-function limitHistorySize(sum, oldHistorySize) {
-
+function limitHistorySize(sum, oldHistorySize)
+{
   let spotsLeft = maxHistorySize - oldHistorySize;
   spotsLeft = spotsLeft < 0 ? 0 : spotsLeft;
-  let totalGames2remove = sum.history.length - spotsLeft;
+  let totalGames2remove = sum.shortHist.length - spotsLeft;
 
   if(totalGames2remove <= 0) {
     return;
@@ -229,7 +232,6 @@ function limitHistorySize(sum, oldHistorySize) {
   let mostElementsRemovedAtOnce = 19;
 
   while(totalGames2remove > 0) {
-
     //build a remove expression conaining the right number of games for this call
     let games2remove = totalGames2remove > 19 ? 19 : totalGames2remove;
     let removeExpression = "REMOVE history[0]";
@@ -251,7 +253,7 @@ function limitHistorySize(sum, oldHistorySize) {
 
     dynamodb.updateItem(params, function(err, data) {
       if(err) console.error(err);
-      else console.log(data);
+      else console.log('remove executed: ', removeExpression);
     });
   }
 }
@@ -266,35 +268,14 @@ function updateSum(sum, oldHistorySize) {
   if(sum.history.length == 0) {
     //only push the name and profileIcon  
     updateNameAndIcon(sum);
-    return new Promise((res, rej) => res());
+    return new Promise(res => res());
   }
 
   let promises = [];
-
-  //if there are new games, push them
-  sum.lastGameTime = sum.history[sum.history.length-1].timestamp;
-
   promises.push(fullyUpdatePlayerRow(sum));
 
-  let di = attr.wrap(sum);
-
-  let recentHistory = getRecentHistory(di.history);
-
-  let params = {
-    ExpressionAttributeNames: {
-     "#H": "history", 
-    }, 
-    ExpressionAttributeValues: {
-     ":h": recentHistory,
-    }, 
-    Key: {
-     "id": {
-       S: sum.id
-      }
-    }, 
-    TableName: histories_table, 
-    UpdateExpression: "SET #H = list_append(#H,:h)"
-  };
+  sum.shortHist = sum.history.slice(-maxHistorySize);
+  let params = getShortHistoryParams(sum);
 
   promises.push(new Promise( (resolve, reject) => {
     dynamodb.updateItem(params, function(err, data) {
@@ -307,9 +288,7 @@ function updateSum(sum, oldHistorySize) {
     });
   }));
 
-  //Same thing for archived histories table
-  params.TableName = archived_histories_table;
-
+  params = getArchivedHistoryParams(sum);
   promises.push(new Promise( (resolve, reject) => {
     dynamodb.updateItem(params, function(err, data) {
       if (err) reject(err); // an error occurred
@@ -320,24 +299,9 @@ function updateSum(sum, oldHistorySize) {
   return Promise.all(promises);
 }
 
-/**
- *  @param dynamodbHistory an history of games in dynamoDB list format
- *  @returns the same history but only <maxHistorySize> most recent games
- *    whithout modifying the input array
- */
-function getRecentHistory(dynamodbHistory) {
-  const historyLength = dynamodbHistory.L.length;
-
-  if(historyLength > maxHistorySize) {
-    return {L : dynamodbHistory.L.slice(historyLength-20, historyLength)};
-  } else {
-    return dynamodbHistory;
-  }
-}
-
 async function getAllUsers() {
   let res = [];
-  await recScan(res, null).catch(err => console.error(err, err.stack));
+  await recScan(res, null).catch(console.error);
   return res;
 }
 
@@ -354,24 +318,62 @@ function recScan(prevData, lastEvaluatedKey) {
     dynamodb.scan(params, async function(err, data) {
       if (err) reject(err); // an error occurred
       else {   // successful response
-        if(typeof data.LastEvaluatedKey != "undefined") { //more items to scan
+        if (typeof data.LastEvaluatedKey != "undefined") { //more items to scan
           await recScan(prevData, data.LastEvaluatedKey).catch(err => reject(err));
         }
         resolve(
-          data.Items.forEach(function(e) {
+          data.Items.forEach(e => {
             prevData.push(attr.unwrap(e));
           })
         ); 
-      }          
+      }        
     });
   });
 }
 
+function getShortHistoryParams(sum) {
+  let shortHist = sum.shortHist;
+  let params = {
+    ExpressionAttributeNames: {
+     '#H': 'history', 
+    },
+    ExpressionAttributeValues: {
+      ':h': attr.wrap1(shortHist),
+    },
+    Key: {
+     "id": {
+       S: sum.id,
+      }
+    },
+    TableName: histories_table,
+    UpdateExpression: 'SET #H = ' +
+      (shortHist.length === maxHistorySize ? ':h' : 'list_append(#H,:h)'),
+  }
 
+  return params;
+}
 
+function getArchivedHistoryParams(sum) {
+  return {
+    ExpressionAttributeNames: {
+     '#H': 'history', 
+    },
+    ExpressionAttributeValues: {
+      ':h': attr.wrap1(sum.history),
+    },
+    Key: {
+     "id": {
+       S: sum.id,
+      }
+    },
+    TableName: archived_histories_table,
+    UpdateExpression: 'SET #H = list_append(#H,:h)',    
+  }  
+}
 
 module.exports.getAllUsers = getAllUsers;
 module.exports.getSumHistory = getSumHistory;
 module.exports.putNewSummoner = putNewSummoner;
 module.exports.getSumBySummonerId = getSumBySummonerId;
 module.exports.updateSum = updateSum;
+module.exports.BEGINNING_OF_SEASON = BEGINNING_OF_SEASON;

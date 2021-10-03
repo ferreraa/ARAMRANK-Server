@@ -1,9 +1,8 @@
 'use strict';
 
-var sumUtils = require("./summoner.js");
+const sumUtils = require("./summoner.js");
 const fs = require("fs");
-const champJSON = require("./champJSONManager");
-
+const BEGINNING_OF_SEASON = require('./dynamo').BEGINNING_OF_SEASON;
 const TeemoJS = require('teemojs');
 
 if (process.env.NODE_ENV !== 'production') {
@@ -33,36 +32,38 @@ async function getSumMain(id) {
   return data[0].championId;
 }
 
-//print MatchList by account Id
-function printMatchList(Accountid) {
-  let data = api.get('euw1', 'match.getMatchlist', Accountid, {queue: 450})
-    .then(data => console.log(data.matches[0]));
+//print MatchList by PUUID
+function printMatchList(puuid) {
+  let matches = api.get('europe', 'match.getMatchIdsByPUUID', puuid, {queue: 450})
+    .then(data => console.log(matches[0]));
 }
 
-//get MatchList by account Id since given beginTime
-async function getMatchList(Accountid, beginTime) {
+//get MatchList by PUUID since given last game id
+async function getMatchList(puuid, lastGameId) {
   let result = [];
+
   let parameters = {
     queue: 450, //ARAM
-    beginTime: beginTime,
-    season: 13, //season 2019
+    startTime: BEGINNING_OF_SEASON,
+    start: 0,
+    count: 3,
   };
-  do{
-    let data = await api.get('euw1', 'match.getMatchlist', Accountid, parameters);
-    if(data == null)
+
+  do {
+    var matchList = await api.get('europe', 'match.getMatchIdsByPUUID', puuid, parameters);
+    if(matchList == null)
       return [];
-    var nb_matches = data.matches.length;
-    
-    // Filter out matches not from EUW 
-    // because otherwise it won't fetch the right match data later on
-    data.matches = data.matches.filter(m => m.platformId == 'EUW1');
 
-    if(nb_matches == 100)
-      parameters.beginIndex = data.endIndex+1;
+    let indexOfLastGame = matchList.indexOf(lastGameId);
+    if (indexOfLastGame !== -1)
+      matchList = matchList.slice(0, indexOfLastGame);
 
-    result = result.concat(data.matches);    
+    result = result.concat(matchList);
 
-  } while(nb_matches == 100)
+    var againFlag = matchList.length === parameters.count;
+    parameters.start = result.length;
+    parameters.count = 100;
+  } while (againFlag)
 
   return result;
 }
@@ -71,78 +72,63 @@ async function getMatchList(Accountid, beginTime) {
 async function processAllMatches(matches, sum) {
   let newMatches = await getAllMatches(matches, sum);
 
-  var filteredMatches = newMatches.filter(function (el) {
+  let filteredMatches = newMatches.filter(function (el) {
     return el != null;
   });
 
-  //reverse 
+  //reverse
   for (let i = filteredMatches.length - 1; i >= 0; i--) {
     sumUtils.processGameResult(sum, filteredMatches[i]);  
   }
-
 }
 
 
 function getAllMatches(matches, sum) {
-  let res = Array();
+  let res = [];
 
-  for (let i = matches.length - 1; i >= 0; i--) {
-    res[i] = processMatch(matches[i], sum)
-  }
+  matches.forEach(match => res.push(processMatch(match, sum)));
 
   return Promise.all(res);
 }
 
-async function processMatch(match, sum) {
-  try{
-    var data = await api.get('euw1', 'match.getMatch', match.gameId);
-  } catch(error) {
-    console.error("processMatch error: ",error);
+
+async function processMatch(matchId, sum) {
+  try {
+    var match = await api.get('europe', 'match.getMatch', matchId);
+  } catch (error) {
+    console.error('processMatch error: ', error);
     return null;
   }
 
-  if(data == null || data.gameDuration < 360) {
+  if (match === null || match.info.gameDuration < 360000)
     return null;
-  }
 
-  let i = -1;
-  for (let j = data.participantIdentities.length - 1; j >= 0; j--) {
-    if(typeof data.participantIdentities[j].player === 'undefined') {
-      console.error(data.participantIdentities[j]);
-      continue;
-    }
-    if(data.participantIdentities[j].player.summonerId == sum.id) {
-      i = j;
-      break;
-    }
-  }
-
-  if(i == -1) {
+  let participant = match.info.participants.find(participant => participant.puuid === sum.puuid);
+  if(typeof participant === 'undefined') {
     fs.appendFile('logs/processMatchLogs', (new Date()).toISOString() +
-     '-could not find player '+sum.name+' in match '+match.gameId , function (err) {
+     '-could not find player ' + sum.name + ' in match ' + matchId , function (err) {
       if (err) throw err;
       console.log(new Date().toISOString() + '-could not find player '
-        + sum.name + ' in match ' + match.gameId);
+        + sum.name + ' in match ' + matchId);
       }
     );
     return null;
   }
 
   let newMatch = {};
-  newMatch.championId = data.participants[i].championId;
-  newMatch.gameId = match.gameId;
-  newMatch.timestamp = data.gameCreation;
+  newMatch.championId = participant.championId;
+  newMatch.gameId = matchId;
+  newMatch.timestamp = match.info.gameStartTimestamp + match.info.gameDuration;
 
-  newMatch.championName = champJSON.getChampName(newMatch.championId);
+  newMatch.championName = participant.championName;
 
-  let stats = data.participants[i].stats;
-  newMatch.pentaKills = stats.pentaKills;
-  newMatch.win = stats.win;
-  newMatch.k = stats.kills;
-  newMatch.d = stats.deaths;
-  newMatch.a = stats.assists;
-  newMatch.firstBlood = stats.firstBloodKill;
-  newMatch.poroFed = stats.item6 == 0;
+  newMatch.pentaKills = participant.pentaKills;
+  newMatch.win = participant.win;
+  newMatch.k = participant.kills;
+  newMatch.d = participant.deaths;
+  newMatch.a = participant.assists;
+  newMatch.firstBlood = participant.firstBloodKill;
+  newMatch.poroFed = participant.item6 == 0;
   return newMatch;
 }
 
