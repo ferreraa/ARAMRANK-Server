@@ -9,9 +9,11 @@ const ddragonManager = require('./server/ddragonManager');
 
 const i18n = require('i18n');
 const express = require('express');
-const app = express();
 const schedule = require('node-schedule');
 const cookieParser = require('cookie-parser');
+const secure = require('ssl-express-www');
+
+const app = express();
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -34,6 +36,9 @@ schedule.scheduleJob('0 */25 * * * *', function(){
     .catch(console.error);
 });
 
+
+//https redirect
+app.use(secure);
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
