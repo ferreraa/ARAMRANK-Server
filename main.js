@@ -11,7 +11,7 @@ const i18n = require('i18n');
 const express = require('express');
 const schedule = require('node-schedule');
 const cookieParser = require('cookie-parser');
-const secure = require('ssl-express-www');
+const redirectSSL = require('redirect-ssl');
 
 const app = express();
 
@@ -38,7 +38,9 @@ schedule.scheduleJob('0 0 * * * *', () => {
 
 
 //https redirect
-app.use(secure);
+app.use(redirectSSL.create({
+  enabled: process.env.NODE_ENV === 'production'
+}));
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
