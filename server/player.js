@@ -52,7 +52,6 @@ async function searchPlayer(req, res) {
     return;
   }
 
-
   if (sum == null) {
     res.render('404Sum');
     return;
@@ -65,68 +64,41 @@ async function searchPlayer(req, res) {
   res.locals.sum = sum;
   promises.push(ddragonManager.manageProfileIcon(sum.profileIconId));
 
-
-  sum.mainChampId = await teemo.getSumMain(sum.id).catch(err => console.log(err, err.stack)); 
-
   try {
+    sum.mainChampId = await teemo.getSumMain(sum.id) 
     var dbSum = await dynamo.getSumBySummonerId(sum.id);
-  } catch(err) {
+  } catch (err) {
     console.error(err, err.stack);
     res.render('error');
     return;
-  } 
+  }
 
-  if(dbSum == null) {
-    dynamo.putNewSummoner(sum);
-    await Promise.all(promises).catch(err => console.error(err, err.stack));
+  if (dbSum === null) {
+    dynamo.putNewSummoner(sum)
+      .then(dbSum => updatePlayer(dbSum, sum))
+      .catch(console.error);
+    await Promise.all(promises).catch(console.error);
     console.log('new summoner: '+ sum.name);
     res.render('first_time');
     return;
-  } 
+  }
 
-  sum.rank = dbSum.rank;
-  sum.wins = parseInt(dbSum.wins);
-  sum.loss = parseInt(dbSum.loss);
-  let lastTime = dbSum.lastGameTime+1;
-
-  if(lastTime == null) {
+  try {
+    sum = await updatePlayer(dbSum, sum);
+  } catch (error) {
+    console.error(error);
     res.render('error');
     return;
   }
 
-  let matches = [];
-
-  //matchList must be fetched if the sum isn't locked
-  if( !isLocked(sum.id) ) {
-    lock(sum.id);
-    matches = await teemo.getMatchList(sum.accountId, lastTime);
-
-    // no new game => no need to keep the lock
-    if (matches.length === 0)
-      free(sum.id);
-  }
-
-  sum.history = [];
-
-  let unchanged = true; //no need to update the db
-  if(matches.length > 0) {
-    unchanged = false; //new games => need to update the db
-    let newMatches = await teemo.processAllMatches(matches, sum);
-  } 
-  else if (sum.wins + sum.loss == 0) {
-    await promises;
+  if (sum.wins + sum.loss === 0) {
+    await Promise.all(promises).catch(console.error);
     res.render('first_time');
     return;
   }
 
-  if( !unchanged ) {
-    await dynamo.updateSum(sum, dbSum.wins+dbSum.loss)
-      .catch(err => console.error(err, err.stack))
-      .finally(free(sum.id)); //!unchanged => the lock was taken. Time to free it.
-  } 
-
   let match2print = await dynamo.getSumHistory(dbSum.id)
-                      .catch(err=>console.log(err, err.stack));
+                      .catch(console.error);
 
   match2print.reverse();
   sum.history2print = match2print;
@@ -143,84 +115,78 @@ async function searchPlayer(req, res) {
 }
 
 
-
-function updatePlayer(dbSum) {
-
-  return new Promise( async (resolve, reject) => {
-
-    let sum = await teemo.searchSummonerByID(dbSum.id);
+function updatePlayer(dbSum, sum = null) {
+  return new Promise(async (resolve, reject) => {
+    sum = sum ?? await teemo.searchSummonerByID(dbSum.id);
 
     if (sum == null) {
-      let message = new Date().toISOString() + ' - summoner not found';
-      reject(console.error(message));
+      reject(new Date().toISOString() + ' - summoner not found');
       return;
     } else if(typeof sum.id == 'undefined') {
-      let message = new Date().toISOString() + ' - an error occured with the teemo request';
-      reject(console.error(message));
+      reject(new Date().toISOString() + ' - an error occured with the teemo request');
       return;
     }
 
-    sum.mainChampId = await teemo.getSumMain(sum.id); 
+    sum.mainChampId = sum.mainChampId ?? await teemo.getSumMain(sum.id).catch(reject);
 
     sum.rank = dbSum.rank;
     sum.wins = parseInt(dbSum.wins);
     sum.loss = parseInt(dbSum.loss);
-    let lastTime = dbSum.lastGameTime +1;
+    let lastGameId = dbSum.lastGameId;
 
-    if(lastTime == null) {
-      let message = new Date().toISOString() + ' - lastTime == null within the row';
-      reject(console.error(message));
+    if (lastGameId == null) {
+      reject(new Date().toISOString() + ' - lastGameId == null within the row');
       return;
     }
 
     let matches = [];
-    
+
     //Only get matches if player free
-    if( !isLocked(sum.id) ) {
+    if (!isLocked(sum.id)) {
       lock(sum.id);
-      matches = await teemo.getMatchList(sum.accountId, lastTime);
-    
+      matches = await teemo.getMatchList(sum.puuid, lastGameId);
+
       // no new game => no need to lock
       if (matches.length === 0) 
         free(sum.id);
     }
 
-    sum.history = [];
-
     let unchanged = true; //no need to update the db
 
-    if(sum.name != dbSum.name) { //if the name changed, it will be necessary to update the DB
+    if (sum.name != dbSum.name) { //if the name changed, it will be necessary to update the DB
       unchanged = false;
       console.log(`A summoner changed his name: ${dbSum.name} -> ${sum.name}`);
     }
 
-    if(sum.profileIconId != dbSum.profileIconId) { //if the profile icon changed, it will be necessary to update the DB
+    if (sum.profileIconId != dbSum.profileIconId) { //if the profile icon changed, it will be necessary to update the DB
       unchanged = false;
       console.log(`A summoner changed his icon: ${dbSum.profileIconId} -> ${sum.profileIconId}`);
     }
 
-    if(matches.length > 0) {
+    sum.history = [];
+
+    if (matches.length > 0) {
+      await teemo.processAllMatches(matches, sum);
       unchanged = false; //new games => need to update the db
-      let newMatches = await teemo.processAllMatches(matches, sum);
     }
 
-    if( !unchanged )
+    if (!unchanged) {
       await dynamo.updateSum(sum, dbSum.wins + dbSum.loss)
-        .catch(console.log)
+        .catch(reject)
         .finally(() => {
           //matches.length > 0 => the lock was taken and must be freed
-          if(matches.length > 0) 
+          if (isLocked(sum.id))
             free(sum.id);
         });
+      }
       resolve(sum);
   });
 }
 
 
-
 function updatePlayers() {
   
-  return new Promise( async (resolve) => 
+  return new Promise( async (resolve, reject) => 
   {
     let dbUsers = await dynamo.getAllUsers();
     
@@ -230,7 +196,9 @@ function updatePlayers() {
       updatePromises.push(updatePlayer(e));
     });
 
-    Promise.all(updatePromises).then(resolve(dbUsers));
+    Promise.all(updatePromises)
+      .then(resolve(dbUsers))
+      .catch(reject);
   });
 }
 
