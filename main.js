@@ -97,7 +97,6 @@ function getLocaleCookie(request) {
 }
 
 app.all('*', function (req, res, next) {
-  req.url = req.url.replace(/\/$/, '');
   var arr_url = req.url.split('/');
   var loc = arr_url[1];
   if (loc === 'en' || loc === 'fr') {
@@ -138,7 +137,7 @@ app.param('name', function (req, res, next, name) {
 
 // set the home page route
 // (:lang[a-z]{2})|) uses the parameter :lang or no parameters. This is used in every query handler.
-app.get('(/:lang([a-z]{2})|)/', function(req, res) {
+app.get('(/:lang([a-z]{2})|)', function(req, res) {
   res.render('index.ejs');
 });
 
