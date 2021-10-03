@@ -30,7 +30,7 @@ schedule.scheduleJob('0 0 */2 * * *', async function(){
   console.log(new Date().toISOString() + ' - riot version = ' + process.env.RIOT_VERSION);
 });
 
-schedule.scheduleJob('0 */25 * * * *', function(){
+schedule.scheduleJob('*/1 * * * * *', function(){
   player.updatePlayers()
     .then(ladder.updateLadder)
     .catch(console.error);
