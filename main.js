@@ -97,7 +97,6 @@ function getLocaleCookie(request) {
 }
 
 app.all('*', function (req, res, next) {
-  req.url = req.url.replace(/\/$/, '');
   var arr_url = req.url.split('/');
   var loc = arr_url[1];
   if (loc === 'en' || loc === 'fr') {
