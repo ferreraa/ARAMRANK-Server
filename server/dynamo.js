@@ -99,7 +99,6 @@ function putNewSummoner(summoner) {
 
     dynamodb.putItem(params, function(err, data) {
        if (err) reject(err);
-       else     console.log(data);
        if (--promisesAwaitedCount === 0) resolve(unwrappedDBSummoner);
     });
 
@@ -119,7 +118,6 @@ function putNewSummoner(summoner) {
 
     dynamodb.putItem(params, function(err, data) {
        if (err) reject(err);
-       else     console.log(data);
        if (--promisesAwaitedCount === 0) resolve(unwrappedDBSummoner);
     });
 
@@ -128,7 +126,6 @@ function putNewSummoner(summoner) {
 
     dynamodb.putItem(params, function(err, data) {
        if (err) reject(err);
-       else     console.log(data);
        if (--promisesAwaitedCount === 0) resolve(unwrappedDBSummoner);
     });
   });
@@ -220,6 +217,10 @@ function fullyUpdatePlayerRow(sum) {
  */
 function limitHistorySize(sum, oldHistorySize)
 {
+  if (sum.shortHist === maxHistorySize) {
+    // The whole history was replaced => no need to remove old games
+    return;
+  }
   let spotsLeft = maxHistorySize - oldHistorySize;
   spotsLeft = spotsLeft < 0 ? 0 : spotsLeft;
   let totalGames2remove = sum.shortHist.length - spotsLeft;
@@ -253,7 +254,6 @@ function limitHistorySize(sum, oldHistorySize)
 
     dynamodb.updateItem(params, function(err, data) {
       if(err) console.error(err);
-      else console.log('remove executed: ', removeExpression);
     });
   }
 }
