@@ -30,7 +30,7 @@
         <button style="color:#e6dfdf" class="btn btn-primary" id="indexGo" onclick="search()">GO</button>
         <script type="text/javascript">
           var indexInput = document.getElementById("name");
-          indexInput.addEventListener("keyup", function(event) {
+          indexInput.addEventListener("keyup", event => {
             if (event.keyCode === 13) {
              event.preventDefault();
              document.getElementById("indexGo").click();
