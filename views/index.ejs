@@ -9,7 +9,7 @@
 <div class="container">
   <div class="jumbotron justify-content-center">
     <div class="container text-center">
-      <h1>ALL RANDOM ALL RANK!</h1>
+      <h1>RANKED ARAM!</h1>
       <script type="text/javascript">
         function search() {
           let name = document.getElementById('name').value;
@@ -17,7 +17,7 @@
             return;
 
           let lang = "<%= locale %>";
-          if(lang == 'en') 
+          if (lang === 'en') 
             window.location.href = '/player/'+name;
           else
             window.location.href = '/'+lang+'/player/'+name;
