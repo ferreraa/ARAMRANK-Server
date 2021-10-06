@@ -2,6 +2,7 @@
 	"meta_content": "Look up your summoner name to find out your true ARAM rank!",
 	"enter_sumName": "Who's a cute kitty cat...? ",
 	"pseudo": "Summoner name",
+	"pageSizeSelector": "results per page",
 	"about...": "ABOUT...",
 	"about_p1": "This website uses RIOT's API to provide an unofficial ranking service for the ARAM games.",
 	"about_p2": "The rules determining ranks were specifically conceived for this website. These rules involve several criteria that aren't necessarily serious. The ranking system will follow League of Legends' seasons.",

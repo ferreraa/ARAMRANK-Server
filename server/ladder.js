@@ -6,6 +6,8 @@ const db = require('./dynamo'),
 
 const path = './server/ladder.json';
 
+var ladder = null;
+
 /** Retrieve all the players, filter out those who played < 5 games and sort them.
 /*  update ./server/ladder.json, which will be used to render the Ladder page.
 /*  @param users List of players to sort by rank. If not provided, the database users will be taken
@@ -33,6 +35,7 @@ async function updateLadder(users = null) {
     data2write.push(e2write);
   });
 
+  ladder = data2write;
   data2write = JSON.stringify(data2write);
 
   try {
@@ -42,18 +45,34 @@ async function updateLadder(users = null) {
   }
 }
 
-
-function readLadder() {
-  try {
-    var data = fs.readFileSync(path);
-  }
-  catch( error ) {
-    console.error(error);
-  }
-
-  return JSON.parse(data);
-
+function getLength() {
+  if (ladder === null) 
+    return 0;
+  return ladder.length ?? 0;
 }
 
+function getLadderPage(page, pageSize) {
+  let indexA = (page - 1) * pageSize;
+  let indexB = page * pageSize;
+  return ladder.slice(indexA, indexB);
+}
+
+function readLadder(page, pageSize) {
+  if (ladder !== null)
+    return getLadderPage(page, pageSize);
+  
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf8', (err, data) => {
+      if (err) 
+        reject(err);
+      else {
+        ladder = JSON.parse(data);
+        resolve(getLadderPage(page, pageSize));
+      }
+    });
+  });
+}
+
+module.exports.getLength = getLength;
 module.exports.readLadder = readLadder;
 module.exports.updateLadder = updateLadder;

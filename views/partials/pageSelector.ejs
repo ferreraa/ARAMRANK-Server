@@ -1,0 +1,74 @@
+<div>
+
+  <select class="form-select" id="pageSizeSelector" onchange="selectPageSize(this)">
+    <option select="<%= pageSize === 20 ? 'selected' : '' %>">20</option>
+    <option select="<%= pageSize === 50 ? 'selected' : '' %>">50</option>
+    <option select="<%= pageSize === 100 ? 'selected' : '' %>">100</option>
+    <option select="<%= pageSize === 500 ? 'selected' : '' %>">500</option>
+  </select>
+  <label><%= __('pageSizeSelector') %></label>
+
+  <script type="text/javascript">
+    function selectPageSize(selector) {
+      let url = new URL(window.location.href);
+      url.searchParams.set('page', <%= page %>);
+      url.searchParams.set('pageSize', selector.value);
+      window.location.href = url.href;
+    }
+  </script>
+
+  <ul class="pagination">
+    
+    <li class="page-item <%= page === 1 ? 'disabled' : '' %>">
+      <a class="page-link" href="?page=<%= page-1 %>&pageSize=<%= pageSize %>">&laquo;</a>
+    </li>
+
+    <li class="page-item <%= page === 1 ? 'active' : '' %>">
+      <% if (page !== 1) { %>
+        <a class="page-link" href="?page=1&pageSize=<%= pageSize %>">1</a>
+      <% } else { %>
+        <div class="page-link">1</div>
+      <% } %>
+    </li>
+
+    <% var max = ladderLength%pageSize === 0 ? (ladderLength/pageSize) : (Math.floor(ladderLength/pageSize) + 1); %>
+    <% var pageIndex = (page - 2) < 2 ? 2 : (page - 2); %>
+    <% var up = ((page + 2) > max) ? max : (page + 2); %>
+    
+    <% if (pageIndex > 2) { %>
+    <% var lowDotsValue = Math.round(pageIndex/2); %>
+    <li class="page-item">
+      <a class="page-link" href="?page=<%= lowDotsValue %>&pageSize=<%= pageSize %>">...</a>
+    </li>
+    <% } %>
+
+    <% for(; pageIndex <= up ; pageIndex++) { %>
+      <li class="page-item <%= page === pageIndex ? 'active' : '' %>">
+        <%if (pageIndex !== page) { %>
+          <a class="page-link" href="?page=<%= pageIndex %>&pageSize=<%= pageSize %>"><%= pageIndex %></a>
+        <% } else { %>
+          <div class="page-link active"><%= pageIndex %></div>
+        <% } %>
+      </li>
+    <% } %>
+
+    <% if (up < (max - 1)) { %>
+    <% var highDotsValue = page + Math.round((max-page)/2); %>
+    <li class="page-item">
+      <a class="page-link" href="?page=<%= highDotsValue %>&pageSize=<%= pageSize %>">...</a>
+    </li>
+    <% } %>
+
+
+    <% if (up < max) { %>
+    <li class="page-item <%= page === max ? 'active' : '' %>">
+      <a class="page-link" href="?page=<%= max %>&pageSize=<%= pageSize %>"><%= max %></a>
+    </li>
+    <% } %>
+
+    <li class="page-item <%= page === max ? 'disabled' : '' %>">
+      <a class="page-link" href="?page=<%= page+1 %>&pageSize=<%= pageSize %>">&raquo;</a>
+    </li>
+
+  </ul>
+</div>

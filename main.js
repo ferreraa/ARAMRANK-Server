@@ -7,8 +7,10 @@ const ladder = require('./server/ladder');
 const league = require('./server/league');
 const ddragonManager = require('./server/ddragonManager');
 
+const urlUtils = require('url');
 const i18n = require('i18n');
 const express = require('express');
+const { query, validationResult } = require('express-validator');
 const schedule = require('node-schedule');
 const cookieParser = require('cookie-parser');
 const redirectSSL = require('redirect-ssl');
@@ -149,12 +151,32 @@ app.get('(/:lang([a-z]{2})|)/player/:name', function(req, res) {
 });
 
 
-app.get('(/:lang([a-z]{2})|)/ladder', function (req, res) {
-  getLadder(res);
+app.get('(/:lang([a-z]{2})|)/ladder',
+  [
+    query('page').isInt({min: 1}).optional().toInt(),
+    query('pageSize').isInt({min: 1}).optional().toInt(),
+  ],
+  (req, res) => {
+    let valRes = validationResult(req);
+    if (valRes.errors.length > 0) {
+      res.redirect(urlUtils.parse(req.url).pathname);
+      return;
+    }
+    let page = req.query.page ?? 1;
+    let pageSize = req.query.pageSize ?? 50;
+    res.locals.page = page;
+    res.locals.pageSize = pageSize;
+    getLadder(res, page, pageSize);
 });
 
-async function getLadder(res) {
-  res.locals.ladder = ladder.readLadder();
+async function getLadder(res, page, pageSize) {
+  try {
+    res.locals.ladder = await ladder.readLadder(page, pageSize);
+  } catch (error) {
+    res.render('error');
+    return;
+  }
+  res.locals.ladderLength = ladder.getLength();
   res.locals.leaguejs = league;
   let iconDownloadPromises = [];
   res.locals.ladder.forEach(e => {
