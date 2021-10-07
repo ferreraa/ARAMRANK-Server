@@ -6,6 +6,7 @@ const player = require('./server/player');
 const ladder = require('./server/ladder');
 const league = require('./server/league');
 const ddragonManager = require('./server/ddragonManager');
+const teemo = require('./server/teemo');
 
 const urlUtils = require('url');
 const i18n = require('i18n');
@@ -21,7 +22,7 @@ const app = express();
 // process.env.PORT lets the port be set by Heroku
 var port = process.env.PORT || 8080;
 
-ladder.updateLadder();
+(async () => await ladder.updateLadder())();
 
 champJSON.manageChampionJSON()
   .then((version) => {process.env.RIOT_VERSION = version});
@@ -151,12 +152,27 @@ app.get('(/:lang([a-z]{2})|)/player/:name', function(req, res) {
 });
 
 
+async function getSummonerPage(summonerName, pageSize) {
+  try {
+    let sum = await teemo.searchSummonerByName(summonerName);
+    if (typeof sum.name === 'undefined') {
+      return [null, 1];
+    }
+
+    return [sum.name, await ladder.getPlayerPage(sum.name, pageSize)];
+  } catch (err) {
+    console.error(err);
+    return [null, 1];
+  }
+}
+
 app.get('(/:lang([a-z]{2})|)/ladder',
   [
     query('page').isInt({min: 1}).optional().toInt(),
     query('pageSize').isInt({min: 1}).optional().toInt(),
+    query('summoner').optional().escape().trim(),
   ],
-  (req, res) => {
+  async (req, res) => {
     let valRes = validationResult(req);
     if (valRes.errors.length > 0) {
       res.redirect(urlUtils.parse(req.url).pathname);
@@ -164,26 +180,39 @@ app.get('(/:lang([a-z]{2})|)/ladder',
     }
     let page = req.query.page ?? 1;
     let pageSize = req.query.pageSize ?? 50;
+    let summonerName = req.query.summoner;
+
+    if (typeof summonerName !== 'undefined') {
+      [summonerName, page] = await getSummonerPage(summonerName, pageSize);
+    }
+
     res.locals.page = page;
     res.locals.pageSize = pageSize;
-    getLadder(res, page, pageSize);
+    res.locals.summonerName = summonerName;
+
+    try {
+      res.locals.ladder = await ladder.getLadderPage(page, pageSize);
+    } catch (error) {
+      res.render('error');
+      return;
+    }
+    res.locals.ladderLength = ladder.getLength();
+    res.locals.leaguejs = league;
+
+    downloadSummonerIcons(res.locals.ladder)
+      .then(() => {
+        res.render('ladder');
+        })
+      .catch(err => { console.error(err); res.render('ladder') });
 });
 
-async function getLadder(res, page, pageSize) {
-  try {
-    res.locals.ladder = await ladder.readLadder(page, pageSize);
-  } catch (error) {
-    res.render('error');
-    return;
-  }
-  res.locals.ladderLength = ladder.getLength();
-  res.locals.leaguejs = league;
+function downloadSummonerIcons(ladder) {
   let iconDownloadPromises = [];
-  res.locals.ladder.forEach(e => {
+  ladder.forEach(e => {
     iconDownloadPromises.push(ddragonManager.manageProfileIcon(e.iconId))
   });
-  await Promise.all(iconDownloadPromises).catch(console.error);
-  res.render('ladder');
+
+  return Promise.all(iconDownloadPromises).catch(console.error);
 }
 
 app.get('*/pico', function(req, res) {

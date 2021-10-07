@@ -13,7 +13,7 @@
           <%= __('ladder_update') %>
           <span id="ladderTimer">...</span>
         </p>
-        <%- include('./partials/pageSelector'); %>
+        <%- include('./partials/pageSelector', { includeId: 1 }); %>
         <div>
           <% var i = (page-1) * pageSize; %>
           <% ladder.forEach(e => { %>
@@ -21,7 +21,7 @@
             <%- include('./partials/ladderElement', {e: e, i: i}); %>
           <% }); %>
         </div>
-        <%- include('./partials/pageSelector'); %>
+        <%- include('./partials/pageSelector', { includeId: 2 }); %>
     </div>
 </div>
 

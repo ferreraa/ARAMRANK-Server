@@ -316,8 +316,8 @@ function recScan(prevData, lastEvaluatedKey) {
 
   return new Promise((resolve, reject) => {
     dynamodb.scan(params, async function(err, data) {
-      if (err) reject(err); // an error occurred
-      else {   // successful response
+      if (err) reject(err);
+      else {
         if (typeof data.LastEvaluatedKey != "undefined") { //more items to scan
           await recScan(prevData, data.LastEvaluatedKey).catch(err => reject(err));
         }

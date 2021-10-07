@@ -1,21 +1,57 @@
 <div>
 
-  <select class="form-select" id="pageSizeSelector" onchange="selectPageSize(this)">
-    <option select="<%= pageSize === 20 ? 'selected' : '' %>">20</option>
-    <option select="<%= pageSize === 50 ? 'selected' : '' %>">50</option>
-    <option select="<%= pageSize === 100 ? 'selected' : '' %>">100</option>
-    <option select="<%= pageSize === 500 ? 'selected' : '' %>">500</option>
-  </select>
-  <label><%= __('pageSizeSelector') %></label>
+  <div style="display: inline-flex;
+              flex-direction: row;
+              align-items: center;
+              margin-bottom: 8px;">
+    <select class="form-select" id="pageSizeSelector" onchange="selectPageSize(this)">
+      <option <%= pageSize === 5 ? 'selected=selected' : '' %>>5</option>      
+      <option <%= pageSize === 20 ? 'selected=selected' : '' %>>20</option>
+      <option <%= pageSize === 50 ? 'selected=selected' : '' %>>50</option>
+      <option <%= pageSize === 100 ? 'selected=selected' : '' %>>100</option>
+      <option <%= pageSize === 500 ? 'selected=selected' : '' %>>500</option>
+    </select>
+    <label style="white-space: nowrap; margin-left: 8px;"
+           class="col-form-label">
+             <%= __('pageSizeSelector') %>
+    </label>
 
-  <script type="text/javascript">
-    function selectPageSize(selector) {
-      let url = new URL(window.location.href);
-      url.searchParams.set('page', <%= page %>);
-      url.searchParams.set('pageSize', selector.value);
-      window.location.href = url.href;
-    }
-  </script>
+
+    <input class="form-control" 
+           style="margin-left: 20px;"
+           placeholder="<%= __('pseudo') %>"
+           id="summonerInput<%= includeId %>"></input>
+    <button style="color:#e6dfdf" class="btn btn-primary"
+            onclick="ladderSearch<%= includeId %>()"
+            id="searchInLadder<%= includeId %>">GO</button>
+
+    <script type="text/javascript">
+      function selectPageSize(selector) {
+        let url = new URL(window.location.href);
+        url.searchParams.set('page', <%= page %>);
+        url.searchParams.set('pageSize', selector.value);
+        window.location.href = url.href;
+      }
+
+      var navInput = document.getElementById('summonerInput<%= includeId %>');
+      navInput.addEventListener('keyup', function(event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          document.getElementById('searchInLadder<%= includeId %>').click();
+        }
+      });
+
+      function ladderSearch<%= includeId %>() {
+        let input = document.getElementById('summonerInput<%= includeId %>');
+        let url = new URL(window.location.href);
+        url.searchParams.set('pageSize', <%= pageSize %>);
+        url.searchParams.set('summoner', input.value);
+        window.location.href = url.href;
+      }
+    </script>
+
+
+  </div>
 
   <ul class="pagination">
     

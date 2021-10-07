@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="position:fixed; width:100%; top:0">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary"
+     style="position:fixed; width:100%; top:0; z-index: 9999;">
   
   <!-- HOME button -->
   <a class="navbar-brand" href="/<%= locale %>/">HOME</a>
@@ -7,18 +8,18 @@
   </button>
 
   <!-- Search Field -->
-  <div class="collapse navbar-collapse justify-content-between" id="navbarColor01">
-    <div class="form-inline my-2 my-lg-0" abineguid="A6DAF699A22A49E9B52DEC9A89F5014B">
+  <div class="collapse navbar-collapse justify-content-between">
+    <div class="form-inline my-2 my-lg-0">
       <script>
         function navSearch() {
           let name = document.getElementById('sumName').value;
           if(name != "") {
             let lang = "<%= locale %>";
-            if(lang == "en")
+            if (lang == "en")
               window.location.href = '/player/'+name;
             else
               window.location.href = '/'+lang+'/player/'+name;
-          }                
+          }
         }
       </script>
       <input class="form-control mr-sm-2" id="sumName" type="text" placeholder="<%= __('pseudo') %>" name="search">

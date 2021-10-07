@@ -38,11 +38,12 @@ async function updateLadder(users = null) {
   ladder = data2write;
   data2write = JSON.stringify(data2write);
 
-  try {
-    fs.writeFileSync(path, data2write);
-  } catch( error ) {
-    console.error(error);
-  }
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path, data2write, (err) => {
+      if (err) reject(err);
+      else     resolve();
+    });
+  });
 }
 
 function getLength() {
@@ -51,28 +52,38 @@ function getLength() {
   return ladder.length ?? 0;
 }
 
-function getLadderPage(page, pageSize) {
+async function getLadderPage(page, pageSize) {
+  let ladder = await readLadder();
   let indexA = (page - 1) * pageSize;
   let indexB = page * pageSize;
   return ladder.slice(indexA, indexB);
 }
 
-function readLadder(page, pageSize) {
+function readLadder() {
   if (ladder !== null)
-    return getLadderPage(page, pageSize);
+    return ladder;
   
   return new Promise((resolve, reject) => {
     fs.readFile(path, 'utf8', (err, data) => {
-      if (err) 
-        reject(err);
+      if (err) {
+        console.error(err);
+        reject([]);
+      }
       else {
         ladder = JSON.parse(data);
-        resolve(getLadderPage(page, pageSize));
+        resolve(ladder);
       }
     });
   });
 }
 
+async function getPlayerPage(summonerName, pageSize) {
+  let ladder = await readLadder();
+  let index = ladder.findIndex(sum => sum.name === summonerName);
+  return Math.floor(index/pageSize) + 1;
+}
+
+module.exports.getPlayerPage = getPlayerPage;
 module.exports.getLength = getLength;
-module.exports.readLadder = readLadder;
+module.exports.getLadderPage = getLadderPage;
 module.exports.updateLadder = updateLadder;
