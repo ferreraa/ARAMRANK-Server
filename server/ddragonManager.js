@@ -13,7 +13,7 @@ const profilePath = './public/ddragonData/img/profileicon/';
  */
 function manageChampionIcon(champName) {
   let path = champPath + champName +".png"
-  if( !fs.existsSync(path) ) {
+  if (!fs.existsSync(path)) {
     var ddragonURL = "https://ddragon.leagueoflegends.com/cdn/"+ process.env.RIOT_VERSION+"/img/";
     return downloadIcon(path, ddragonURL + "champion/"+champName+".png");
   }
@@ -27,7 +27,7 @@ function manageChampionIcon(champName) {
  */
 function manageProfileIcon(iconId) {
   let path = profilePath + iconId +".png"
-  if( !fs.existsSync(path) ) {
+  if (!fs.existsSync(path)) {
     var ddragonURL = "https://ddragon.leagueoflegends.com/cdn/"+ process.env.RIOT_VERSION+"/img/";
     return downloadIcon(path, ddragonURL + "profileicon/"+iconId+".png");
   }
@@ -35,18 +35,17 @@ function manageProfileIcon(iconId) {
   return Promise.resolve();
 }
 
-
 function downloadIcon(path, url) {
   console.log("downloading new Icon to: ", path);
   var file = fs.createWriteStream(path);
-  return new Promise((resolve, reject) => https.get(url,
-    response => {
-      response.pipe(file).on('finish', resolve)
-        .on('error', err => reject(err));
+  return new Promise((resolve, reject) =>
+    https.get(url, response => {
+      response.pipe(file)
+        .on('finish', resolve)
+        .on('error', reject);
     }
   ));
 }
-
 
 module.exports.manageProfileIcon = manageProfileIcon;
 module.exports.manageChampionIcon = manageChampionIcon;

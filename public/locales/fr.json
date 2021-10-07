@@ -2,6 +2,7 @@
 	"meta_content": "Entre ton nom d'invocateur pour découvrir ton véritable classement en ARAM !",
 	"enter_sumName": "Indique ton joli petit nom... ",
 	"pseudo": "Nom d'invocateur",
+	"pageSizeSelector": "résultats par page",
 	"about...": "A PROPOS...",
 	"about_p1": "Ce site offre un service de classement officieux en ARAM, grâce à l'API de Riot.",
 	"about_p2": "Les règles régissant les ligues et les gains/pertes de lp (points de league) ont été conçues spécifiquement pour ce site et sont basées sur différents critères, sérieux ou non. Le système de classement suivra les saisons de League of Legends.",

@@ -13,14 +13,15 @@
           <%= __('ladder_update') %>
           <span id="ladderTimer">...</span>
         </p>
+        <%- include('./partials/pageSelector', { includeId: 1 }); %>
         <div>
-          <% var i = 0; %>
+          <% var i = (page-1) * pageSize; %>
           <% ladder.forEach(e => { %>
             <% i++; %>
             <%- include('./partials/ladderElement', {e: e, i: i}); %>
           <% }); %>
-
         </div>
+        <%- include('./partials/pageSelector', { includeId: 2 }); %>
     </div>
 </div>
 
@@ -38,7 +39,7 @@
   
     if(timeLeft < 1) {
       clearInterval(x);
-      document.getElementById('ladderTimer').innerHTML = `<a href="${window.location.href}"><%= __('clickHere2Reload_2') %></a>`;
+      document.getElementById('ladderTimer').innerHTML = `<a href=""><%= __('clickHere2Reload_2') %></a>`;
     }
   }, 1000);
 </script>
