@@ -72,7 +72,7 @@ async function getMatchList(puuid, lastGameId) {
 async function processAllMatches(matches, sum) {
   let newMatches = await getAllMatches(matches, sum);
 
-  let filteredMatches = newMatches.filter(function (el) {
+  let filteredMatches = newMatches.filter(el => {
     return el != null;
   });
 
@@ -100,7 +100,7 @@ async function processMatch(matchId, sum) {
     return null;
   }
 
-  if (match === null || match.info.gameDuration < 360000)
+  if (match === null || match.info.gameDuration < 360)
     return null;
 
   let participant = match.info.participants.find(participant => participant.puuid === sum.puuid);
