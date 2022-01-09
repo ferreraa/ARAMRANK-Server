@@ -11,11 +11,11 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const players_table = process.env.table_name || "players_S11_dev";
-const histories_table = process.env.histories_table || "Histories_S11_dev";
-const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S11_dev";
+const players_table = process.env.table_name || "players_S12_dev";
+const histories_table = process.env.histories_table || "Histories_S12_dev";
+const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S12_dev";
 
-const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1610076600; //2021/01/08 - 04:30:00
+const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1641614400; //2022/01/08 - 04:00:00
 
 //Size of history to be stored in histories_table
 const maxHistorySize = 20;
