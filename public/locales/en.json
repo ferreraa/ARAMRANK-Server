@@ -7,6 +7,7 @@
   "about_p1": "This website uses RIOT's API to provide an unofficial ranking service for the ARAM games.",
   "about_p2": "The rules determining ranks were specifically conceived for this website. These rules involve several criteria that aren't necessarily serious. The ranking system will follow League of Legends' seasons.",
   "about_p3": "Online since August 2019.",
+  "about_p4": "or use the top search bar to find out your rank!",
   "about": "ABOUT",
   "contact": "CONTACT",
   "contact_p1": "For any request/note/suggestion, you can reach me by email.",
@@ -31,5 +32,6 @@
   "clickHere2Reload": "Click here to check your rank!",
   "spectator": "SPECTATOR",
   "ladder_update": "The ladder will be updated in: ",
-  "clickHere2Reload_2": "Click here to update the ladder"
+  "clickHere2Reload_2": "Click here to update the ladder",
+  "clickHere": "Click here"
 }

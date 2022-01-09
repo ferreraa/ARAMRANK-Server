@@ -7,6 +7,7 @@
   "about_p1": "Ce site offre un service de classement officieux en ARAM, grâce à l'API de Riot.",
   "about_p2": "Les règles régissant les ligues et les gains/pertes de lp (points de league) ont été conçues spécifiquement pour ce site et sont basées sur différents critères, sérieux ou non. Le système de classement suivra les saisons de League of Legends.",
   "about_p3": "Mise en ligne en août 2019.",
+  "about_p4": "ou utilise la barre de recherche en haut pour décrouvrir ton classement !",
   "about": "A PROPOS",
   "contact": "CONTACT",
   "defeat": "Défaite !",
@@ -31,5 +32,6 @@
   "clickHere2Reload": "Cliquez ici pour voir votre rang !",
   "spectator": "SPECTATEUR",
   "ladder_update": "Le ladder sera mis à jour dans : ",
-  "clickHere2Reload_2": "Cliquez ici pour rafraichir le ladder"
+  "clickHere2Reload_2": "Cliquez ici pour rafraichir le ladder",
+  "clickHere": "Clique ici"
 }
