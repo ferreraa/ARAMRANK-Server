@@ -20,7 +20,7 @@ async function updateLadder(users = null) {
     return sum.wins + sum.loss >= 5;
   }).sort((sum1, sum2) => {
     return league.compare(sum1.rank, sum2.rank) == 1 ? -1 : 1;
-  })
+  });
 
   let data2write = [];
 
