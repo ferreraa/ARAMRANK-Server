@@ -123,8 +123,7 @@ app.all('*', function (req, res, next) {
   }
   res.locals.locale = 'en';
   res.locals.version = process.env.RIOT_VERSION;
-  if (!manageBlackList(req, res))
-    next();
+  next();
 });
 
 //the 'lang' parameter defines the locale used on client side.
