@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400.8mm" height="451.6mm" clip-rule="evenodd" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" version="1.1" viewBox="0 0 26558.606 29924.329"><defs><style type="text/css">
+    .fil3 {fill:none}
+    .fil8 {fill:#714B3C}
+    .fil2 {fill:#947451}
+    .fil9 {fill:#A58869}
+    .fil11 {fill:#A98966}
+    .fil4 {fill:#A98C6D}
+    .fil0 {fill:#B3926F}
+    .fil5 {fill:#C09F7D}
+    .fil1 {fill:#D0B08E}
+    .fil6 {fill:#DDC5AC}
+    .fil7 {fill:white}
+    .fil12 {fill:#675341;fill-rule:nonzero}
+    .fil10 {fill:#9B7B58;fill-rule:nonzero}
+   </style></defs><g transform="matrix(8.851 0 0 8.851 -.1381 0)"><polygon class="fil0" points="1537 1691 0 803 18 2398 1537 3378" fill="#b3926f"/><polygon class="fil1" points="1537 3 2998 847 1537 1691 638 1172 0 803" fill="#d0b08e"/><path class="fil2" d="m2995 2529-1134 655 1134-655zl-3-1686-1458 842v1687l9 2 1452-845z" fill="#947451"/><line class="fil3" x1="2267" x2="939" y1="1269" y2="502" fill="none"/><line class="fil3" x1="2267" x2="2271" y1="1269" y2="1307" fill="none"/><polygon class="fil4" points="1537 1716 2998 879 2998 847 2983 839 1537 1674" fill="#a98c6d"/><polygon class="fil5" points="17 794 1537 1674 1537 1716 0 833" fill="#c09f7d"/><polygon class="fil6" points="628 476 942 310 2426 1177 2113 1358" fill="#ddc5ac"/><path class="fil7" d="m2259 1239 28-22c27-21 36-23 68-30-30 24-64 41-91 62-7-4-9-8-6-10z" fill="#fff"/><path class="fil7" d="m2121 1321 28-22c27-21 36-23 68-30-30 24-64 41-91 62-7-4-9-8-6-10z" fill="#fff"/><polygon class="fil8" points="1548 1710 2998 879 2998 875 2995 858 1540 1698" fill="#714b3c"/><polygon class="fil9" points="2382 1583 2349 1656 2300 1624 2271 1684 2228 1660 2195 1734 2159 1699 2123 1772 2113 1358 2426 1177 2426 1597" fill="#a58869"/><polygon class="fil10" points="781 402 2275 1264 2263 1271 772 409" fill="#9b7b58" fill-rule="nonzero"/><polygon class="fil11" points="1527 3372 1522 1707 1537 1683 1564 1700 1564 3358" fill="#a98966"/><path class="fil12" d="m3001 849v1677c0 4-1 7-6 10l-1463 845-1515-982 1515 969 1457-841v-1684l12 7z" fill="#675341" fill-rule="nonzero"/><polygon class="fil12" points="1537 10 11 810 0 803 1531 0 1543 0 1899 206 1900 213 1894 216" fill="#675341" fill-rule="nonzero"/></g></svg>
