@@ -219,6 +219,9 @@ app.get('*/pico', function(req, res) {
   res.render('pico');
 })
 
+app.get('(/:lang([a-z]{2})|)/leagues', function (req, res) {
+  res.render('leagues');
+});
 
 app.get('(/:lang([a-z]{2})|)/about', function (req, res) {
   res.render('about');
