@@ -104,6 +104,7 @@ async function searchPlayer(req, res) {
   sum.history2print = match2print;
 
   res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
+  res.locals.rankIconSrc = league.getRankIconSrc(sum.rank);
 
   sum.history2print.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
