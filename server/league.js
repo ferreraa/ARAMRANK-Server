@@ -239,33 +239,33 @@ function getRankIconSrc(rank) {
 
     case 1:
       switch(rank.div) {
-        case 0: return "/img/noob-1.png";
+        case 0: return "/img/noob-3.png";
         case 1: return "/img/noob-2.png";
-        case 2: return "/img/noob-3.png";
+        case 2: return "/img/noob-1.png";
       }
     case 2:
       switch(rank.div) {
-        case 0: return "/img/paper-1.png";
+        case 0: return "/img/paper-3.png";
         case 1: return "/img/paper-2.png";
-        case 2: return "/img/paper-3.png";
+        case 2: return "/img/paper-1.png";
       }
     case 3:
       switch(rank.div) {
-        case 0: return "/img/cardboard-1.png";
+        case 0: return "/img/cardboard-3.png";
         case 1: return "/img/cardboard-2.svg";
-        case 2: return "/img/cardboard-3.svg";
+        case 2: return "/img/cardboard-1.svg";
       }
     case 4:
       switch(rank.div) {
-        case 0: return "/img/wood-1.png";
-        case 1: return "/img/wood-2.png";
-        case 2: return "/img/wood-3.png";
+        case 0: return "/img/plaster-3.png";
+        case 1: return "/img/plaster-2.png";
+        case 2: return "/img/plaster-1.png";
       }
     case 5:
       switch(rank.div) {
-        case 0: return "/img/plaster-1.png";
-        case 1: return "/img/plaster-2.png";
-        case 2: return "/img/plaster-3.png";
+        case 0: return "/img/wood-3.png";
+        case 1: return "/img/wood-2.png";
+        case 2: return "/img/wood-1.png";
       }
     case 6:
       return "/img/plastic-1.svg";
