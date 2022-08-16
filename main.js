@@ -33,7 +33,7 @@ schedule.scheduleJob('0 0 */2 * * *', async () => {
   console.log(new Date().toISOString() + ' - riot version = ' + process.env.RIOT_VERSION);
 });
 
-schedule.scheduleJob('0 0 * * * *', () => {
+schedule.scheduleJob('0 0 5 * * *', () => {
   player.updatePlayers()
     .then(ladder.updateLadder)
     .catch(console.error);
