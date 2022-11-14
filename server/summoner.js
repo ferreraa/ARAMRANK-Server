@@ -3,9 +3,9 @@
 const league = require("./league.js");
 
 function processGameResult(sum, match) {
-
-  let nb_of_games = sum.wins + sum.loss; //number of games already played
-  let isPlacement = nb_of_games < 5;
+  const baseValue = 20;
+  const nb_of_games = sum.wins + sum.loss; //number of games already played
+  const isPlacement = nb_of_games < 5;
 
   let winFactor = match.win ? 1 : -1;
   //win => 1. Lose => -1 if not placements
@@ -17,7 +17,7 @@ function processGameResult(sum, match) {
     case 4: placementFactor = 2; break;
   }
   if (!match.win && isPlacement)
-    placementFactor = 0; 
+    placementFactor = 0;
 
 
   let R = 1;
@@ -29,18 +29,17 @@ function processGameResult(sum, match) {
       }
     }
     else {
-      R = getLeagueMultiplicator(sum.rank.league);
+      R = getLeagueMultiplicator(sum.rank.league, match.win);
     }
   }
 
-  let randomLP = Math.random() * 3 * R * (Math.random() > 0.5 ? 1 : -1);
-  let Pf = 2.5 * match.poroFed ? 1 : -1;
-  let kda = 0.5*(match.k - match.d + 0.2 * match.a);
+  const Pf = match.poroFed ? 1 : -1;
+  const kda = 0.5*(match.k - match.d + 0.2 * match.a);
   const mainFactor = sum.mainChampId == match.championId && match.win ? 2.5 : 1;
-  let penta = match.pentaKills * 5;
-  let fb = match.firstBlood ? 3 : 0;
+  const penta = match.pentaKills * 5;
+  const fb = match.firstBlood ? 1.5 : 0;
 
-  let lp = (R*20 + randomLP) * mainFactor * winFactor;
+  let lp = (R * baseValue) * mainFactor * winFactor;
   lp += kda + Pf + penta + fb;
   lp *= placementFactor;
   lp = Math.round(lp);
@@ -53,21 +52,21 @@ function processGameResult(sum, match) {
 
 
   //blackList
-   switch (match.championId) {
-    case 412: case 103: case 114: case 202: case 141: lp -= 5;
+  switch (match.championId) {
+    case 412: case 103: case 114: case 202: case 141: lp -= 2;
   }
   //noble list
   if (match.championId == 136) {
     lp += 3;
   }
 
-  if(lp > 100)
+  if (lp > 100)
     lp = 100;
-  if(lp < -100)
+  if (lp < -100)
     lp = -100;
   if (match.win && lp <= 0)
     lp = 1;
-  else if (!match.win && lp>=0)
+  else if (!match.win && lp>=0 && !isPlacement)
     lp = -1;
 
   //yuumi is a spectator. If the player decided to spectate, the game doesn't count.
@@ -81,17 +80,17 @@ function processGameResult(sum, match) {
   sum.history.push(match);
 }
 
-function getLeagueMultiplicator(league) {
-  switch(league) {
-    case 0: return 2.0;
-    case 1: return 1.9;
-    case 2: return 1.8;
-    case 3: return 1.7;
-    case 4: return 1.5;
-    case 5: return 1.3;
-    case 6: return 1.0;
-    case 7: return 0.7;
-    case 8: return 0.5;
+function getLeagueMultiplicator(league, win) {
+  switch (league) {
+    case 0: return win ? 2.0 : 1.8;
+    case 1: return win ? 1.8 : 1.8;
+    case 2: return win ? 1.6 : 1.65;
+    case 3: return win ? 1.5 : 1.6;
+    case 4: return win ? 1.3 : 1.45;
+    case 5: return win ? 1.1 : 1.3;
+    case 6: return win ? 0.8 : 1.0;
+    case 7: return win ? 0.5 : 0.7;
+    case 8: return win ? 0.4 : 0.5;
     default: return 1.0;
   }
 }
