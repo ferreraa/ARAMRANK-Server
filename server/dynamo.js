@@ -11,11 +11,11 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const players_table = process.env.table_name || "players_S12_dev";
-const histories_table = process.env.histories_table || "Histories_S12_dev";
-const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S12_dev";
+const players_table = process.env.table_name || "players_S13_dev";
+const histories_table = process.env.histories_table || "Histories_S13_dev";
+const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S13_dev";
 
-const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1641614400; //2022/01/08 - 04:00:00
+const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1668466740; //2022/11/14 - 23:59:00 GMT
 
 //Size of history to be stored in histories_table
 const maxHistorySize = 20;
@@ -155,7 +155,7 @@ function updateNameAndIcon(sum) {
     UpdateExpression: "SET #N = :n, #P = :p"
   };
 
-  
+
   dynamodb.updateItem(params, function(err, data) {
     if (err) console.error(err); // an error occurred - array
     else     console.log("updated data of", sum.name); // successful response
