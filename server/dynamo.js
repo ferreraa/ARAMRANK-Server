@@ -3,11 +3,20 @@
 const AWS = require('aws-sdk');
 const attr = require('dynamodb-data-types').AttributeValue;
 
-AWS.config.update({
- "region": "eu-west-3",
- "accessKeyId": process.env.AKI,
- "secretAccessKey": process.env.SAK
-});
+if (process.env.NODE_ENV == 'development') {
+  AWS.config.update({
+    "region": "localhost",
+    endpoint: process.env.db_host,
+    "accessKeyId": 'dev',
+    "secretAccessKey": 'dev'
+  });
+} else {
+  AWS.config.update({
+   "region": "eu-west-3",
+   "accessKeyId": process.env.AKI,
+   "secretAccessKey": process.env.SAK
+  });
+}
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 

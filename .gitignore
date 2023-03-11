@@ -7,3 +7,5 @@ clients.json
 .env
 /server/ladder.json
 /public/ddragonData/img/profileicon
+/db-data
+.idea

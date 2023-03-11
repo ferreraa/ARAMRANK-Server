@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - .:/app
+    environment:
+      - table_name=players
+      - histories_table=histories
+      - archived_histories_table=archived_histories
+      - beginning_of_season=1673395200 # 11 01 2023, s13.
+      - db_host=http://database:8000
+      - NODE_ENV=development
+  database:
+    image: amazon/dynamodb-local
+    container_name: database
+    hostname: database
+    restart: always
+    volumes:
+      - ./db-data:/app/db-data
+    ports:
+      - '8000:8000'
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /app/db-data"
