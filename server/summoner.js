@@ -55,9 +55,9 @@ function processGameResult(sum, match) {
   switch (match.championId) {
     case 412: case 103: case 114: case 202: case 141: lp -= 2;
   }
-  //noble list
+  //noble list, not noble anymore, it's broken
   if (match.championId == 136) {
-    lp += 3;
+    lp -= 3;
   }
 
   if (lp > 100)
