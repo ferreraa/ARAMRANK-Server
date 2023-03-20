@@ -2,7 +2,7 @@ FROM node:19
 
 WORKDIR /app
 
-RUN npm install -g npm
+RUN npm install -g dynamodb-admin
 
 COPY ["./", "./"]
 

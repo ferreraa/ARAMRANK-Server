@@ -39,6 +39,10 @@ schedule.scheduleJob('0 0 5 * * *', () => {
     .catch(console.error);
 });
 
+if (process.env.NODE_ENV === 'development' && process.env.DEV_DB) {
+  const init_dev_db = require('./init_dev_db.js');
+  init_dev_db.initDevDb();
+}
 
 //https redirect
 app.use(redirectSSL.create({

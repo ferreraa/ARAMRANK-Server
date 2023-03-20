@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - database
     ports:
       - '8080:8080'
     volumes:
@@ -17,6 +19,7 @@ services:
       - beginning_of_season=1673395200 # 11 01 2023, s13.
       - db_host=http://database:8000
       - NODE_ENV=development
+      - DEV_DB=true
   database:
     image: amazon/dynamodb-local
     container_name: database
@@ -27,3 +30,12 @@ services:
     ports:
       - '8000:8000'
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /app/db-data"
+  db_admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8001
+    command: dynamodb-admin
+    environment:
+      - DYNAMO_ENDPOINT=http://database:8000
