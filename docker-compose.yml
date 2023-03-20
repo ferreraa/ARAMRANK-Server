@@ -20,6 +20,7 @@ services:
       - db_host=http://database:8000
       - NODE_ENV=development
       - DEV_DB=true
+      - RITO='TODO:REPLACE BY RIOT API KEY TO DEV'
   database:
     image: amazon/dynamodb-local
     container_name: database
