@@ -11,11 +11,11 @@ AWS.config.update({
 
 let dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-const players_table = process.env.table_name || "players_S13_dev";
-const histories_table = process.env.histories_table || "Histories_S13_dev";
-const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S13_dev";
+const players_table = process.env.table_name || "Players_S13.5_dev";
+const histories_table = process.env.histories_table || "Histories_S13.5_dev";
+const archived_histories_table = process.env.archived_histories_table || "Archived_Histories_S13.5_dev";
 
-const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1668466740; //2022/11/14 - 23:59:00 GMT
+const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1689631200; //2022/11/14 - 23:59:00 GMT
 
 //Size of history to be stored in histories_table
 const maxHistorySize = 20;
@@ -26,7 +26,7 @@ function getSumBySummonerId(id) {
      "id": {
        S: id
       }
-    }, 
+    },
     TableName: players_table,
     ConsistentRead: true,
   };
