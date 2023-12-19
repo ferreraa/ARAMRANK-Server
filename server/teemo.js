@@ -25,8 +25,8 @@ function searchSummonerByID(id) {
 }
 
 //Get highest mastery score champ by summoner Id
-async function getSumMain(id) {
-  let data = await api.get('euw1', 'championMastery.getAllChampionMasteries', id);
+async function getChampionWithHighestMastery(puuid) {
+  let data = await api.get('euw1', 'championMastery.getTopChampionMasteriesByPUUID', puuid, { count: 1 });
   if(data.length == 0)
     return -1;
   return data[0].championId;
@@ -135,7 +135,7 @@ async function processMatch(matchId, sum) {
 
 module.exports.searchSummonerByID = searchSummonerByID;
 module.exports.searchSummonerByName = searchSummonerByName;
-module.exports.getSumMain = getSumMain;
+module.exports.getChampionWithHighestMastery = getChampionWithHighestMastery;
 module.exports.printMatchList = printMatchList;
 module.exports.getMatchList = getMatchList;
 module.exports.processAllMatches = processAllMatches;

@@ -65,7 +65,7 @@ async function searchPlayer(req, res) {
   promises.push(ddragonManager.manageProfileIcon(sum.profileIconId));
 
   try {
-    sum.mainChampId = await teemo.getSumMain(sum.id) 
+    sum.mainChampId = await teemo.getChampionWithHighestMastery(sum.puuid);
     var dbSum = await dynamo.getSumBySummonerId(sum.id);
   } catch (err) {
     console.error(err, err.stack);
@@ -128,7 +128,7 @@ function updatePlayer(dbSum, sum = null) {
       return;
     }
 
-    sum.mainChampId = sum.mainChampId ?? await teemo.getSumMain(sum.id).catch(reject);
+    sum.mainChampId = sum.mainChampId ?? await teemo.getChampionWithHighestMastery(sum.puuid).catch(reject);
 
     sum.rank = dbSum.rank;
     sum.wins = parseInt(dbSum.wins);
