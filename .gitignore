@@ -2,7 +2,6 @@
 npm-debug.log
 .DS_Store
 /*.env
-clients.json
 /server/champ.json
 .env
 /server/ladder.json

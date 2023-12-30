@@ -1,6 +1,5 @@
 'use strict';
 
-const visit = require("./server/visitors");
 const champJSON = require("./server/champJSONManager");
 const player = require('./server/player');
 const ladder = require('./server/ladder');
@@ -75,17 +74,6 @@ i18n.configure({
   // i18n init parses req for language headers, cookies, etc.
 app.use(i18n.init);
 
-
-function manageBlackList(req, res) {
-  let daily = visit.storeVisit(req.connection.remoteAddress);
-
-  if(daily > 100 && process.env.NODE_ENV == 'production') {
-    console.log("user ignored: ", req.connection.remoteAddress);
-    return true;//Blacklisted for today
-  }
-
-  return false;
-}
 
 /**
  *  set cookie 'locale' using the given response object
