@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('./partials/head'); %>
+</head>
+<body>
+<%- include('./partials/myNavbar'); %>
+
+<div class="container">
+    <div class="jumbotron">
+        <h1>Ladder</h1>
+        <p>
+          <%= __('ladder_update') %>
+        </p>
+        <%- include('./partials/pageSelector', { includeId: 1 }); %>
+        <div>
+          <% var i = (page-1) * pageSize; %>
+          <% ladder.forEach(e => { %>
+            <% i++; %>
+            <%- include('./partials/ladderElement', {e: e, i: i}); %>
+          <% }); %>
+        </div>
+        <%- include('./partials/pageSelector', { includeId: 2 }); %>
+    </div>
+</div>
+
+<%- include('./partials/myFooter'); %>
+</body>
+</html>

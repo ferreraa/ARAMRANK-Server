@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('./partials/head'); %>
+</head>
+<body>
+<%- include('./partials/myNavbar'); %>
+
+<div class="container">
+  <div class="jumbotron">
+    
+    <h1 class="player-header">
+      <img 
+        src="/ddragonData/img/profileicon/<%= sum.profileIconId %>.png" 
+        class="player-header--summoner-icon">
+      <div><%= sum.name %></div>
+      <div class="player-header--rank-icon">
+        <img
+          id="rank-image"
+          src="<%= rankIconSrc %>"
+          class="image-auto-resize">
+      </div>
+    </h1>
+    <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.loss %>&nbsp;&nbsp;&nbsp;
+      <% let tot = sum.wins + sum.loss; %>
+      <%= tot < 5 ? " --  placements : "+ tot+"/5" : ""; %>
+    </p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="jumbotron">
+    <% sum.history2print.forEach(function(match){ %>
+      <%- include('./partials/historyElement', {match: match, version: version}); %>
+    <% }); %>
+  </div>
+</div>
+<%- include('./partials/myFooter'); %>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('./partials/head'); %>
+</head>
+<body>
+  <a id="link"></a>
+  <script type="text/javascript">
+    var base_url = window.location.origin;
+
+    var img = document.createElement("img");
+    img.alt = "waf";
+    img.width = 1154;
+    img.height = 866;
+    img.src = base_url + "/img/pico.jpg";
+
+    var link = document.getElementById('link');
+    link.href = base_url + "/ladder";
+    link.appendChild(img); 
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary"
+     style="position:fixed; width:100%; top:0; z-index: 9999;">
+  
+  <!-- HOME button -->
+  <a class="navbar-brand" href="/<%= locale %>/">HOME</a>
+  <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#collapsedContent" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Search Field -->
+  <div class="collapse navbar-collapse justify-content-between" id="collapsedContent">
+    <div class="form-inline my-2 my-lg-0">
+      <script>
+        function navSearch() {
+          let name = document.getElementById('sumName').value;
+          if(name != "") {
+            let lang = "<%= locale %>";
+            if (lang == "en")
+              window.location.href = '/player/'+name;
+            else
+              window.location.href = '/'+lang+'/player/'+name;
+          }
+        }
+      </script>
+      <input class="form-control mr-sm-2" id="sumName" type="text" placeholder="<%= __('pseudo') %>" name="search">
+      <button class="btn btn-secondary my-2 my-sm-0" id="navGo" onclick="navSearch()">GO</button>
+      <script>
+        var navInput = document.getElementById("sumName");
+        navInput.addEventListener("keyup", function(event) {
+          if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("navGo").click();
+          }
+        });
+      </script>
+    </div>
+    
+      <ul class="nav navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/<%= locale %>/ladder">LADDER</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/<%= locale %>/leagues">LEAGUES</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/<%= locale %>/about">ABOUT</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/<%= locale %>/contact"><%= __('contact') %></a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><%= locale.toUpperCase(); %></a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="<%= '/en' + currentURL %>">EN</a>
+            <a class="dropdown-item" href="<%= '/fr' + currentURL %>">FR</a>
+        </li>
+        <li class="nav-item">
+          <a href="https://github.com/ferreraa/ARAMRANK-Server"><img src="/img/github.webp" width=35 height=35></a>
+        </li>
+      </ul>
+    
+  </div>
+</nav>
+

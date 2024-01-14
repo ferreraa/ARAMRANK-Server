@@ -2,7 +2,9 @@
 npm-debug.log
 .DS_Store
 /*.env
-/server/champ.json
+/src/server/champ.json
 .env
-/server/ladder.json
+/src/server/ladder.json
 /public/ddragonData/img/profileicon
+
+/dev/localDB

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('./partials/head'); %>
+</head>
+<body>
+
+<%- include('./partials/myNavbar'); %>
+<div class="container">
+    <div class="jumbotron">
+        <h1><%= __('contact') %></h1>
+        <p><%= __('contact_p1') %></p>
+        <a href = "mailto:all.random.all.rank@gmail.com?subject=<%= __('mail') %>">
+            all.random.all.rank@gmail.com
+        </a>
+    </div>
+</div>
+
+
+<%- include('./partials/myFooter'); %>
+
+</body>
+</html>
