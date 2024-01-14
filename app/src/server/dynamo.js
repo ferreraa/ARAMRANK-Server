@@ -16,7 +16,7 @@ const dynamodbConfig = {
 };
 
 if (process.env.NODE_ENV !== 'production') {
-  dynamodbConfig.endpoint = 'http://localhost:8000';
+  dynamodbConfig.endpoint = 'http://dynamodb-local:8000';
 }
 
 const dynamodb = new AWS.DynamoDB(dynamodbConfig);

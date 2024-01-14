@@ -1,12 +1,27 @@
 version: '3.8'
 services:
- dynamodb-local:
-   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-   image: "amazon/dynamodb-local:latest"
-   container_name: dynamodb-local
-   ports:
-     - "8000:8000"
-   volumes:
-     - "./localDB/:/home/dynamodblocal/data"
-   working_dir: /home/dynamodblocal
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./localDB/:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+  main-app:
+    depends_on: [dynamodb-local]
+    image: "node:20-alpine"
+    container_name: main-app
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    env_file:
+      - app.env
+    environment:
+      AKI: "DUMMYEXAMPLE"
+      SAK: "DUMMYEXAMPLE"
+    volumes:
+      - "../app:/app"
+    command: sh -c "npm i && npm run live"
 

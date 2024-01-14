@@ -1,10 +1,12 @@
-/node_modules
+*/node_modules
 npm-debug.log
 .DS_Store
 /*.env
-/src/server/champ.json
 .env
-/src/server/ladder.json
-/public/ddragonData/img/profileicon
+app/src/server/champ.json
+app/src/server/ladder.json
+app/public/ddragonData/img/profileicon
+
+/scripts
 
 /dev/localDB

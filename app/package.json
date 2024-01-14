@@ -20,10 +20,13 @@
     "redirect-ssl": "^3.0.0",
     "teemojs": "^1.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "live": "nodemon src/main.js --legacy-watch --config nodemon.config.json"
   },
   "repository": {
     "type": "git",
