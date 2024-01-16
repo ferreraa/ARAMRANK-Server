@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "help heroku locate the project root as it is nested in the app folder",
   "scripts": {
-    "build": "cd app && npm i",
-    "start": "cd app && npm start"
+    "build": "npm i --prefix app",
+    "start": "npm start --prefix app"
   },
   "repository": {
     "type": "git",
