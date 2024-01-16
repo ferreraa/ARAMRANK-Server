@@ -1,0 +1,23 @@
+{
+  "name": "heroku-prebuild",
+  "version": "1.0.0",
+  "description": "help heroku locate the project root as it is nested in the app folder",
+  "scripts": {
+    "build": "cd app && npm i",
+    "start": "cd app && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ferreraa/ARAMRANK-Server.git"
+  },
+  "keywords": [
+    "heroku",
+    "prebuild"
+  ],
+  "author": "ferreraa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ferreraa/ARAMRANK-Server/issues"
+  },
+  "homepage": "https://github.com/ferreraa/ARAMRANK-Server#readme"
+}
