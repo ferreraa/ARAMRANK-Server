@@ -6,13 +6,24 @@ const fs = require('fs');
 const champPath = './public/ddragonData/img/champion/';
 const profilePath = './public/ddragonData/img/profileicon/';
 
+/**
+ * used on app boot so the existsSync is not an issue
+ */
+async function createIconStorageDirectories() {
+  if (!fs.existsSync(champPath)) {
+    await fs.promises.mkdir(champPath).catch(console.error);
+  }
+  if (!fs.existsSync(profilePath)) {
+    await fs.promises.mkdir(profilePath).catch(console.error);
+  }
+}
 
 /**
  * downloads champion icon according to given champion name if necessary
  * @champName name of the champion
  */
 function manageChampionIcon(champName) {
-  let path = champPath + champName +".png"
+  const path = champPath + champName +".png";
   if (!fs.existsSync(path)) {
     var ddragonURL = "https://ddragon.leagueoflegends.com/cdn/"+ process.env.RIOT_VERSION+"/img/";
     return downloadIcon(path, ddragonURL + "champion/"+champName+".png");
@@ -26,7 +37,7 @@ function manageChampionIcon(champName) {
  * @iconId id of the profile icon
  */
 function manageProfileIcon(iconId) {
-  let path = profilePath + iconId +".png"
+  const path = profilePath + iconId +".png";
   if (!fs.existsSync(path)) {
     var ddragonURL = "https://ddragon.leagueoflegends.com/cdn/"+ process.env.RIOT_VERSION+"/img/";
     return downloadIcon(path, ddragonURL + "profileicon/"+iconId+".png");
@@ -37,6 +48,7 @@ function manageProfileIcon(iconId) {
 
 function downloadIcon(path, url) {
   console.log("downloading new Icon to: ", path);
+
   var file = fs.createWriteStream(path);
   return new Promise((resolve, reject) =>
     https.get(url, response => {
@@ -49,3 +61,4 @@ function downloadIcon(path, url) {
 
 module.exports.manageProfileIcon = manageProfileIcon;
 module.exports.manageChampionIcon = manageChampionIcon;
+module.exports.createIconStorageDirectories = createIconStorageDirectories;
