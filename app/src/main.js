@@ -15,6 +15,7 @@ const schedule = require('node-schedule');
 const cookieParser = require('cookie-parser');
 const redirectSSL = require('redirect-ssl');
 const path = require("path");
+const {blackListHandler} = require('./middlewares/blackList');
 
 const app = express();
 
@@ -41,6 +42,9 @@ schedule.scheduleJob('0 0 5 * * *', () => {
     .catch(console.error);
 });
 
+if (process.env.NODE_ENV === 'production') {
+  app.enable('trust proxy');
+}
 
 //https redirect
 app.use(redirectSSL.create({
@@ -139,9 +143,12 @@ app.get('(/:lang([a-z]{2})|)', function(req, res) {
 });
 
 
-app.get('(/:lang([a-z]{2})|)/player/:name', function(req, res) {
-  player.searchPlayer(req, res);
-});
+app.get('(/:lang([a-z]{2})|)/player/:name',
+  blackListHandler,
+  function(req, res) {
+    player.searchPlayer(req, res);
+  },
+);
 
 
 async function getSummonerPage(summonerName, pageSize) {
@@ -164,6 +171,7 @@ app.get('(/:lang([a-z]{2})|)/ladder',
     query('pageSize').isInt({min: 1}).optional().toInt(),
     query('summoner').optional().escape().trim(),
   ],
+  blackListHandler,
   async (req, res) => {
     let valRes = validationResult(req);
     if (valRes.errors.length > 0) {
@@ -196,7 +204,8 @@ app.get('(/:lang([a-z]{2})|)/ladder',
         res.render('ladder');
         })
       .catch(err => { console.error(err); res.render('ladder') });
-});
+  },
+);
 
 function downloadSummonerIcons(ladder) {
   let iconDownloadPromises = [];

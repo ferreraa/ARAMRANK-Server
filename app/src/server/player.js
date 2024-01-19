@@ -2,10 +2,8 @@
 
 const teemo = require("./teemo");
 const dynamo = require("./dynamo");
-const sumUtils = require("./summoner");
 const league = require("./league");
 const ddragonManager = require("./ddragonManager");
-const fs = require('fs');
 
 // Map of individual locks in order to prevent a specific player from getting updated
 var locksMap = new Map();
@@ -187,20 +185,17 @@ function updatePlayer(dbSum, sum = null) {
 
 function updatePlayers() {
   
-  return new Promise( async (resolve, reject) => 
-  {
-    let dbUsers = await dynamo.getAllUsers();
-    
-    let updatePromises = [];
+  return new Promise(async (resolve, reject) => 
+    {
+      const dbUsers = await dynamo.getAllUsers();
+      
+      const updatePromises = dbUsers.map(updatePlayer);
 
-    dbUsers.forEach(e => {
-      updatePromises.push(updatePlayer(e));
-    });
-
-    Promise.all(updatePromises)
-      .then(resolve(dbUsers))
-      .catch(reject);
-  });
+      Promise.all(updatePromises)
+        .then(resolve(dbUsers))
+        .catch(reject);
+    }
+  );
 }
 
 module.exports.updatePlayers = updatePlayers;
