@@ -10,29 +10,7 @@
   <!-- Search Field -->
   <div class="collapse navbar-collapse justify-content-between" id="collapsedContent">
     <div class="form-inline my-2 my-lg-0">
-      <script>
-        function navSearch() {
-          let name = document.getElementById('sumName').value;
-          if(name != "") {
-            let lang = "<%= locale %>";
-            if (lang == "en")
-              window.location.href = '/player/'+name;
-            else
-              window.location.href = '/'+lang+'/player/'+name;
-          }
-        }
-      </script>
-      <input class="form-control mr-sm-2" id="sumName" type="text" placeholder="<%= __('pseudo') %>" name="search">
-      <button class="btn btn-secondary my-2 my-sm-0" id="navGo" onclick="navSearch()">GO</button>
-      <script>
-        var navInput = document.getElementById("sumName");
-        navInput.addEventListener("keyup", function(event) {
-          if (event.keyCode === 13) {
-            event.preventDefault();
-            document.getElementById("navGo").click();
-          }
-        });
-      </script>
+      <%- include('./fullGameTagInput', {context: 'nav', goButtonColor: '#e6dfdf', goButtonClasses: 'btn btn-secondary my-2 my-sm-0', inputClasses: 'mr-sm-2'}) %>
     </div>
     
       <ul class="nav navbar-nav">

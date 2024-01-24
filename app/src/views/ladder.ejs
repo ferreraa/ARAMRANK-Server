@@ -15,9 +15,9 @@
         <%- include('./partials/pageSelector', { includeId: 1 }); %>
         <div>
           <% var i = (page-1) * pageSize; %>
-          <% ladder.forEach(e => { %>
+          <% ladder.forEach(ladderElement => { %>
             <% i++; %>
-            <%- include('./partials/ladderElement', {e: e, i: i}); %>
+            <%- include('./partials/ladderElement', {ladderElement, i}); %>
           <% }); %>
         </div>
         <%- include('./partials/pageSelector', { includeId: 2 }); %>

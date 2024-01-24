@@ -11,41 +11,19 @@
       <option <%= pageSize === 100 ? 'selected=selected' : '' %>>100</option>
       <option <%= pageSize === 500 ? 'selected=selected' : '' %>>500</option>
     </select>
-    <label style="white-space: nowrap; margin-left: 8px;"
+    <label style="white-space: nowrap; margin-left: 8px; margin-right: 1rem;"
            class="col-form-label">
              <%= __('pageSizeSelector') %>
     </label>
 
 
-    <input class="form-control" 
-           style="margin-left: 20px;"
-           placeholder="<%= __('pseudo') %>"
-           id="summonerInput<%= includeId %>"></input>
-    <button style="color:#e6dfdf" class="btn btn-primary"
-            onclick="ladderSearch<%= includeId %>()"
-            id="searchInLadder<%= includeId %>">GO</button>
+    <%- include('./fullGameTagInput', {context: 'ladder' + includeId, goButtonColor: '#e6dfdf', goButtonClasses: 'btn btn-primary', inputClasses: 'full-game-tag-input__input--ladder', pageSize: pageSize}) %>
 
     <script type="text/javascript">
       function selectPageSize(selector) {
         let url = new URL(window.location.href);
         url.searchParams.set('page', <%= page %>);
         url.searchParams.set('pageSize', selector.value);
-        window.location.href = url.href;
-      }
-
-      var navInput = document.getElementById('summonerInput<%= includeId %>');
-      navInput.addEventListener('keyup', function(event) {
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          document.getElementById('searchInLadder<%= includeId %>').click();
-        }
-      });
-
-      function ladderSearch<%= includeId %>() {
-        let input = document.getElementById('summonerInput<%= includeId %>');
-        let url = new URL(window.location.href);
-        url.searchParams.set('pageSize', <%= pageSize %>);
-        url.searchParams.set('summoner', input.value);
         window.location.href = url.href;
       }
     </script>

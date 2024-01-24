@@ -1,0 +1,81 @@
+<div class="full-game-tag-input <%= inputClasses %>">
+  <input
+    type="text"
+    class="form-control <%= inputClasses %>"
+    placeholder="<%= __('pseudo') %>"
+    id="<%= context %>NameInput"
+  />
+  <span
+    class="full-game-tag-input__separator"
+    id="<%= context %>-game-tag-separator"
+    style="display: none"
+    >#EUW</span
+  >
+</div>
+<button
+  style="color: #e6dfdf"
+  class="<%= goButtonClasses %>"
+  id="<%= context %>Go"
+  onclick="<%= context %>Search()"
+>
+  GO
+</button>
+<script type="text/javascript">
+  const <%= context %>Input = document.getElementById("<%= context %>NameInput");
+
+  // create invisible span to compute the input text width so we can display the # right after it
+  const <%= context %>fakeSpan = document.createElement('span');
+  <%= context %>fakeSpan.style.fontSize = <%= context %>Input.style.fontSize;
+  <%= context %>fakeSpan.style.width = 'auto';
+  <%= context %>fakeSpan.style.display = 'inline-block';
+  <%= context %>fakeSpan.style.visibility = 'hidden';
+  <%= context %>fakeSpan.style.position = 'fixed';
+  <%= context %>fakeSpan.style.overflow = 'auto';
+  document.body.append(<%= context %>fakeSpan);
+
+  const <%= context %>getInputInnerTextWidth = (textToMeasure) => {
+    <%= context %>fakeSpan.innerText = textToMeasure;
+    return <%= context %>fakeSpan.clientWidth;
+  }
+
+  <%= context %>Input.addEventListener("keyup", (event) => {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      document.getElementById("<%= context %>Go").click();
+    }
+  });
+
+  <%= context %>Input.addEventListener("input", (event) => {
+    const separator = document.getElementById("<%= context %>-game-tag-separator");
+    const separatorBaseOffset = 12.9;
+
+    if (event.target.value === "" || event.target.value.includes("#")) {
+      separator.style.display = "none";
+    } else {
+      separator.style.display = "inline";
+      separator.style.left = `${separatorBaseOffset + <%= context %>getInputInnerTextWidth(event.target.value)}px`;
+    }
+  });
+
+  function <%= context %>Search() {
+    const splittedName = <%= context %>NameInput.value.split('#');
+    if (splittedName.length === 1) {
+      splittedName.push('EUW');
+    }
+    if(splittedName.length !== 2 || splittedName.includes('')) {
+      return;
+    }
+
+    <% if(context.startsWith('ladder')) { %> 
+      const url = new URL(window.location.href);
+      url.searchParams.set('pageSize', <%= pageSize %>);
+      url.searchParams.set('summoner', splittedName[0]);
+      url.searchParams.set('tag', splittedName[1]);
+      window.location.href = url.href;
+    <% } else { %>
+      const lang = '<%= locale %>';
+      window.location.href = `/${lang === 'en' ? '' : `${lang}/`}player/${splittedName[0]}/${splittedName[1]}`;
+    <% } %>
+  }
+
+</script>

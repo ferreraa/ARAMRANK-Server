@@ -39,7 +39,7 @@ const blackListHandler = async (req, res, next) => {
 
 
 function shouldBlackList(spamCheckResponse) {
-  return spamCheckResponse.appears || spamCheckResponse.in_antispam || spamCheckResponse.spam_rate > 0.7 || spamCheckResponse.frequency > 5;
+  return spamCheckResponse.appears || spamCheckResponse.in_antispam || (spamCheckResponse.spam_rate > 0.7 && spamCheckResponse.frequency > 8);
 }
 
 
