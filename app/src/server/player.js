@@ -123,11 +123,11 @@ function updatePlayer(dbSum, sum = null) {
   return new Promise(async (resolve, reject) => {
     const riotAccountPromise = teemo.searchRiotAccountByPUUID(dbSum.puuid); 
     sum = sum ?? await teemo.searchSummonerByPUUID(dbSum.puuid);
-    if (sum.history === undefined) {
+    if (sum?.history === undefined) {
       sum.history = dbSum.history;
     }
 
-    if (Math.random() > 0.5) {
+    if (sum == null) {
       dynamo.removePlayer(dbSum.puuid);
       reject(`${new Date().toISOString()} - summoner ${dbSum.name}/${dbSum.puuid} not found. Removing it from DB`);
       return;
