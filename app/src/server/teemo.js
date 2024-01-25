@@ -12,15 +12,20 @@ if (process.env.NODE_ENV !== 'production') {
 const api = TeemoJS(process.env.RITO);
 
 
-//search Summoner data from summoner name
-function searchSummonerByName(name) {
-  let data = api.get('euw1', 'summoner.getBySummonerName', name);
-  return data;
+//search Summoner data from summoner name + tagline
+function searchRiotAccountByName(gameName, tagLine) {
+  return api.get('EUROPE', 'account.getByRiotId', gameName, tagLine);
 }
 
 //search Summoner data from summoner id
 function searchSummonerByID(id) {
   let data = api.get('euw1', 'summoner.getBySummonerId', id);
+  return data;
+}
+
+//search Summoner data from puuid
+function searchSummonerByPUUID(puuid) {
+  let data = api.get('euw1', 'summoner.getByPUUID', puuid);
   return data;
 }
 
@@ -134,7 +139,8 @@ async function processMatch(matchId, sum) {
 
 
 module.exports.searchSummonerByID = searchSummonerByID;
-module.exports.searchSummonerByName = searchSummonerByName;
+module.exports.searchSummonerByPUUID = searchSummonerByPUUID;
+module.exports.searchRiotAccountByName = searchRiotAccountByName;
 module.exports.getChampionWithHighestMastery = getChampionWithHighestMastery;
 module.exports.printMatchList = printMatchList;
 module.exports.getMatchList = getMatchList;

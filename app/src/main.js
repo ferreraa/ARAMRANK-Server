@@ -7,7 +7,6 @@ const league = require('./server/league');
 const ddragonManager = require('./server/ddragonManager');
 const teemo = require('./server/teemo');
 
-const urlUtils = require('url');
 const i18n = require('i18n');
 const express = require('express');
 const { query, validationResult } = require('express-validator');
@@ -135,6 +134,11 @@ app.param('name', function (req, res, next, name) {
   next();
 });
 
+//The 'tag' parameter corresponds to the tagLine associated to the player's name.
+app.param('tag', function (req, res, next, tag) {
+  res.locals.tag = tag;
+  next();
+});
 
 // set the home page route
 // (:lang[a-z]{2})|) uses the parameter :lang or no parameters. This is used in every query handler.
@@ -142,8 +146,7 @@ app.get('(/:lang([a-z]{2})|)', function(req, res) {
   res.render('index.ejs');
 });
 
-
-app.get('(/:lang([a-z]{2})|)/player/:name',
+app.get('(/:lang([a-z]{2})|)/player/:name/:tag',
   blackListHandler,
   function(req, res) {
     player.searchPlayer(req, res);
@@ -151,14 +154,14 @@ app.get('(/:lang([a-z]{2})|)/player/:name',
 );
 
 
-async function getSummonerPage(summonerName, pageSize) {
+async function getSummonerPage(summonerName, tag, pageSize) {
   try {
-    let sum = await teemo.searchSummonerByName(summonerName);
-    if (typeof sum.name === 'undefined') {
+    const riotAccount = await teemo.searchRiotAccountByName(summonerName, tag);
+    if (riotAccount.gameName === undefined || riotAccount.tagLine === undefined) {
       return [null, 1];
     }
-
-    return [sum.name, await ladder.getPlayerPage(sum.name, pageSize)];
+    const fullName = `${riotAccount.gameName}#${riotAccount.tagLine}` 
+    return [fullName, await ladder.getPlayerPage(fullName, pageSize)];
   } catch (err) {
     console.error(err);
     return [null, 1];
@@ -170,20 +173,23 @@ app.get('(/:lang([a-z]{2})|)/ladder',
     query('page').isInt({min: 1}).optional().toInt(),
     query('pageSize').isInt({min: 1}).optional().toInt(),
     query('summoner').optional().escape().trim(),
+    query('tag').optional().escape().trim(),
   ],
   blackListHandler,
   async (req, res) => {
-    let valRes = validationResult(req);
+    const valRes = validationResult(req);
     if (valRes.errors.length > 0) {
-      res.redirect(urlUtils.parse(req.url).pathname);
+      res.redirect(new URL(req.url).pathname);
       return;
     }
     let page = req.query.page ?? 1;
-    let pageSize = req.query.pageSize ?? 50;
-    let summonerName = req.query.summoner;
+    const pageSize = req.query.pageSize ?? 50;
+    const summonerName = req.query.summoner;
+    const tag = req.query.tag;
+    let fullName;
 
-    if (typeof summonerName !== 'undefined') {
-      [summonerName, page] = await getSummonerPage(summonerName, pageSize);
+    if (summonerName !== undefined && tag !== undefined) {
+      [fullName, page] = await getSummonerPage(summonerName, tag, pageSize);
     }
 
     res.locals.page = page;
@@ -202,7 +208,7 @@ app.get('(/:lang([a-z]{2})|)/ladder',
     downloadSummonerIcons(res.locals.ladder)
       .then(() => {
         res.render('ladder');
-        })
+      })
       .catch(err => { console.error(err); res.render('ladder') });
   },
 );

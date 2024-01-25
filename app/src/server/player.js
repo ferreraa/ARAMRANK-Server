@@ -40,31 +40,38 @@ function free(sumId) {
  */
 async function searchPlayer(req, res) {
   //promises that need to be awaited before rendering first_time or player
-  let promises = [];
+  const promises = [];
 
   try {
-    var sum = await teemo.searchSummonerByName(res.locals.name)
+    const playerAccount = await teemo.searchRiotAccountByName(res.locals.name, res.locals.tag);
+    if (playerAccount === null) {
+      res.render('404Sum');
+      return;
+    }
+    var summoner = await teemo.searchSummonerByPUUID(playerAccount.puuid);
+    summoner.name = `${playerAccount.gameName}#${playerAccount.tagLine}`;
   } catch(error) {
     console.error(error);
     res.render('riotKO');
     return;
   }
 
-  if (sum == null) {
+  if (summoner === null) {
+    console.error('summoner not found despite account existing with tagline');
     res.render('404Sum');
     return;
-  } else if(typeof sum.id == 'undefined') {
-    console.error('sum id undefined');
+  } else if (summoner.puuid === undefined) {
+    console.error('account puuid undefined');
     res.render('error');
     return;
   }
 
-  res.locals.sum = sum;
-  promises.push(ddragonManager.manageProfileIcon(sum.profileIconId));
+  res.locals.sum = summoner;
+  promises.push(ddragonManager.manageProfileIcon(summoner.profileIconId));
 
   try {
-    sum.mainChampId = await teemo.getChampionWithHighestMastery(sum.puuid);
-    var dbSum = await dynamo.getSumBySummonerId(sum.id);
+    summoner.mainChampId = await teemo.getChampionWithHighestMastery(summoner.puuid);
+    var dbSum = await dynamo.getSumBySummonerId(summoner.id);
   } catch (err) {
     console.error(err, err.stack);
     res.render('error');
@@ -72,39 +79,38 @@ async function searchPlayer(req, res) {
   }
 
   if (dbSum === null) {
-    dynamo.putNewSummoner(sum)
-      .then(dbSum => updatePlayer(dbSum, sum))
+    dynamo.putNewSummoner(summoner)
+      .then(dbSum => updatePlayer(dbSum, summoner))
       .catch(console.error);
     await Promise.all(promises).catch(console.error);
-    console.log('new summoner: '+ sum.name);
+    console.log('new summoner: '+ summoner.name);
     res.render('first_time');
     return;
   }
 
   try {
-    sum = await updatePlayer(dbSum, sum);
+    var databasePlayerItem = await updatePlayer(dbSum, summoner);
   } catch (error) {
     console.error(error);
     res.render('error');
     return;
   }
 
-  if (sum.wins + sum.loss === 0) {
+  if (databasePlayerItem.wins + databasePlayerItem.loss === 0) {
     await Promise.all(promises).catch(console.error);
     res.render('first_time');
     return;
   }
 
-  let match2print = await dynamo.getSumHistory(dbSum.id)
-                      .catch(console.error);
+  let match2print = await dynamo.getSumHistory(dbSum.id).catch(console.error);
 
   match2print.reverse();
-  sum.history2print = match2print;
+  databasePlayerItem.history2print = match2print;
 
-  res.locals.rankString = league.rank2string(sum.rank, res.locals.__)
-  res.locals.rankIconSrc = league.getRankIconSrc(sum.rank);
+  res.locals.rankString = league.rank2string(databasePlayerItem.rank, res.locals.__)
+  res.locals.rankIconSrc = league.getRankIconSrc(databasePlayerItem.rank);
 
-  sum.history2print.forEach(e => {
+  databasePlayerItem.history2print.forEach(e => {
     promises.push(ddragonManager.manageChampionIcon(e.championName));
   });
 
@@ -116,7 +122,7 @@ async function searchPlayer(req, res) {
 
 function updatePlayer(dbSum, sum = null) {
   return new Promise(async (resolve, reject) => {
-    sum = sum ?? await teemo.searchSummonerByID(dbSum.id);
+    sum = sum ?? await teemo.searchSummonerByPUUID(dbSum.puuid);
 
     if (sum == null) {
       reject(new Date().toISOString() + ' - summoner not found');
@@ -188,7 +194,7 @@ function updatePlayers() {
   return new Promise(async (resolve, reject) => 
     {
       const dbUsers = await dynamo.getAllUsers();
-      
+
       const updatePromises = dbUsers.map(updatePlayer);
 
       Promise.all(updatePromises)

@@ -10,33 +10,10 @@
   <div class="jumbotron justify-content-center">
     <div class="container text-center">
       <h1>RANKED ARAM!</h1>
-      <script type="text/javascript">
-        function search() {
-          let name = document.getElementById('name').value;
-          if(name === "")
-            return;
-
-          let lang = "<%= locale %>";
-          if (lang === 'en') 
-            window.location.href = '/player/'+name;
-          else
-            window.location.href = '/'+lang+'/player/'+name;
-        }
-      </script>
 
       <div style="display:flex ; flex-direction:row ; justify-content:center ; align-items:center" class="form-group">
         <label style="margin-right:2px" class="col-form-label" for="name"><%= __('enter_sumName') %></label>
-        <input style="width:240px ; margin-right:2px" type="text" class="form-control" placeholder="<%= __('pseudo') %>" id="name"/>
-        <button style="color:#e6dfdf" class="btn btn-primary" id="indexGo" onclick="search()">GO</button>
-        <script type="text/javascript">
-          var indexInput = document.getElementById("name");
-          indexInput.addEventListener("keyup", event => {
-            if (event.keyCode === 13) {
-             event.preventDefault();
-             document.getElementById("indexGo").click();
-            }
-          });
-        </script>
+        <%- include('./partials/fullGameTagInput', {context: 'index', goButtonColor: '#e6dfdf', goButtonClasses: 'btn btn-primary', inputClasses: 'full-game-tag-input__input--index'}) %>
       </div>
 
     </div>
