@@ -121,19 +121,20 @@ async function searchPlayer(req, res) {
 
 function updatePlayer(dbSum, sum = null) {
   return new Promise(async (resolve, reject) => {
-    const riotAccountPromise = teemo.searchRiotAccountByPUUID(dbSum.puuid); 
+    const riotAccountPromise = teemo.searchRiotAccountByPUUID(dbSum.puuid);
     sum = sum ?? await teemo.searchSummonerByPUUID(dbSum.puuid);
-    if (sum?.history === undefined) {
-      sum.history = dbSum.history;
-    }
 
     if (sum == null) {
       dynamo.removePlayer(dbSum.puuid);
       reject(`${new Date().toISOString()} - summoner ${dbSum.name}/${dbSum.puuid} not found. Removing it from DB`);
       return;
-    } else if(sum.puuid === undefined) {
+    } else if (sum?.puuid === undefined) {
       reject(new Date().toISOString() + ' - an error occured with the teemo request');
       return;
+    }
+
+    if (sum?.history === undefined) {
+      sum.history = dbSum.history;
     }
 
     sum.mainChampId = sum.mainChampId ?? await teemo.getChampionWithHighestMastery(sum.puuid).catch(reject);
