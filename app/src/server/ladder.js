@@ -77,7 +77,7 @@ function readLadder() {
 
 async function getPlayerPage(summonerName, pageSize) {
   let ladder = await readLadder();
-  let index = ladder.findIndex(sum => sum.name === (summonerName + tag));
+  let index = ladder.findIndex(sum => sum.name === (summonerName));
   return Math.floor(index/pageSize) + 1;
 }
 
