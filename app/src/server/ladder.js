@@ -17,7 +17,7 @@ async function updateLadder(users = null) {
   if(list == null)
     list = await db.getAllUsers();
   list = list.filter((sum) => {
-    return sum.wins + sum.loss >= 5;
+    return sum.wins + sum.losses >= 5;
   }).sort((sum1, sum2) => {
     return league.compare(sum1.rank, sum2.rank) == 1 ? -1 : 1;
   });
@@ -47,9 +47,7 @@ async function updateLadder(users = null) {
 }
 
 function getLength() {
-  if (ladder === null) 
-    return 0;
-  return ladder.length ?? 0;
+  return ladder?.length ?? 0;
 }
 
 async function getLadderPage(page, pageSize) {

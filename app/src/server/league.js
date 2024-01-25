@@ -79,7 +79,7 @@ function demote(sum) {
   }
 }
 
-//climb with league BO promote and 3 loss demote
+//climb with league BO promote and 3 losses demote
 function slowClimbing(sum, lp) {
   let maxLp = maxLeagueLP(sum.rank.league);
   sum.rank.lp = +sum.rank.lp + lp;

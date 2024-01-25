@@ -71,7 +71,7 @@ async function searchPlayer(req, res) {
 
   try {
     summoner.mainChampId = await teemo.getChampionWithHighestMastery(summoner.puuid);
-    var dbSum = await dynamo.getSumBySummonerId(summoner.id);
+    var dbSum = await dynamo.getSumBySummonerPUUID(summoner.puuid);
   } catch (err) {
     console.error(err, err.stack);
     res.render('error');
@@ -96,13 +96,13 @@ async function searchPlayer(req, res) {
     return;
   }
 
-  if (databasePlayerItem.wins + databasePlayerItem.loss === 0) {
+  if (databasePlayerItem.wins + databasePlayerItem.losses === 0) {
     await Promise.all(promises).catch(console.error);
     res.render('first_time');
     return;
   }
 
-  let match2print = await dynamo.getSumHistory(dbSum.id).catch(console.error);
+  const match2print = [...dbSum.history];
 
   match2print.reverse();
   databasePlayerItem.history2print = match2print;
@@ -119,15 +119,19 @@ async function searchPlayer(req, res) {
   res.render('player');
 }
 
-
 function updatePlayer(dbSum, sum = null) {
   return new Promise(async (resolve, reject) => {
+    const riotAccountPromise = teemo.searchRiotAccountByPUUID(dbSum.puuid); 
     sum = sum ?? await teemo.searchSummonerByPUUID(dbSum.puuid);
+    if (sum.history === undefined) {
+      sum.history = dbSum.history;
+    }
 
-    if (sum == null) {
-      reject(new Date().toISOString() + ' - summoner not found');
+    if (Math.random() > 0.5) {
+      dynamo.removePlayer(dbSum.puuid);
+      reject(`${new Date().toISOString()} - summoner ${dbSum.name}/${dbSum.puuid} not found. Removing it from DB`);
       return;
-    } else if(typeof sum.id == 'undefined') {
+    } else if(sum.puuid === undefined) {
       reject(new Date().toISOString() + ' - an error occured with the teemo request');
       return;
     }
@@ -136,10 +140,10 @@ function updatePlayer(dbSum, sum = null) {
 
     sum.rank = dbSum.rank;
     sum.wins = parseInt(dbSum.wins);
-    sum.loss = parseInt(dbSum.loss);
-    let lastGameId = dbSum.lastGameId;
+    sum.losses = parseInt(dbSum.losses);
+    const lastGameId = dbSum.lastGameId;
 
-    if (lastGameId == null) {
+    if (lastGameId === null || lastGameId === undefined) {
       reject(new Date().toISOString() + ' - lastGameId == null within the row');
       return;
     }
@@ -156,27 +160,30 @@ function updatePlayer(dbSum, sum = null) {
         free(sum.id);
     }
 
-    let unchanged = true; //no need to update the db
+    let mustUpdatePlayer = false;
 
-    if (sum.name != dbSum.name) { //if the name changed, it will be necessary to update the DB
-      unchanged = false;
-      console.log(`A summoner changed his name: ${dbSum.name} -> ${sum.name}`);
-    }
-
-    if (sum.profileIconId != dbSum.profileIconId) { //if the profile icon changed, it will be necessary to update the DB
-      unchanged = false;
+    riotAccountPromise.then((riotAccount) => {
+      const currentRiotAccountName = `${riotAccount.gameName}#${riotAccount.tagLine}`;
+      if (dbSum.name !== currentRiotAccountName) {
+        mustUpdatePlayer = true;
+        sum.name = currentRiotAccountName;
+        console.log(`A summoner changed his name: ${dbSum.name} -> ${currentRiotAccountName}`);
+      }
+    }).catch((error) => console.log('error when fetching riotAccount: ', error));
+    
+    if (sum.profileIconId !== dbSum.profileIconId) { //if the profile icon changed, it will be necessary to update the DB
+      mustUpdatePlayer = true;
       console.log(`A summoner changed his icon: ${dbSum.profileIconId} -> ${sum.profileIconId}`);
     }
 
-    sum.history = [];
-
     if (matches.length > 0) {
       await teemo.processAllMatches(matches, sum);
-      unchanged = false; //new games => need to update the db
+      sum.history = sum.history.slice(-dynamo.maxHistorySize);
+      mustUpdatePlayer = true; //new games => need to update the db
     }
 
-    if (!unchanged) {
-      await dynamo.updateSum(sum, dbSum.wins + dbSum.loss)
+    if (await riotAccountPromise && mustUpdatePlayer) {
+      await dynamo.updateSum(sum, lastGameId)
         .catch(reject)
         .finally(() => {
           //matches.length > 0 => the lock was taken and must be freed
@@ -188,17 +195,17 @@ function updatePlayer(dbSum, sum = null) {
   });
 }
 
-
 function updatePlayers() {
-  
   return new Promise(async (resolve, reject) => 
     {
-      const dbUsers = await dynamo.getAllUsers();
+      const dbUsers = await dynamo.getAllUsers(false);
+      const updatePromises = dbUsers.map((dbUser) => updatePlayer(dbUser));
 
-      const updatePromises = dbUsers.map(updatePlayer);
-
-      Promise.all(updatePromises)
-        .then(resolve(dbUsers))
+      Promise.allSettled(updatePromises)
+        .then((updatedSummoners) => {
+          const onlyValidSummoners = updatedSummoners.filter(promise => promise.status === 'fulfilled').map(fulfilledPromise => fulfilledPromise.value);
+          resolve(onlyValidSummoners);
+        })
         .catch(reject);
     }
   );
