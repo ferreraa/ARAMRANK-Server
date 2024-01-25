@@ -194,7 +194,7 @@ app.get('(/:lang([a-z]{2})|)/ladder',
 
     res.locals.page = page;
     res.locals.pageSize = pageSize;
-    res.locals.summonerName = summonerName;
+    res.locals.summonerName = fullName;
 
     try {
       res.locals.ladder = await ladder.getLadderPage(page, pageSize);
