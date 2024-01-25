@@ -4,7 +4,7 @@ const league = require("./league.js");
 
 function processGameResult(sum, match) {
   const baseValue = 20;
-  const nb_of_games = sum.wins + sum.loss; //number of games already played
+  const nb_of_games = sum.wins + sum.losses; //number of games already played
   const isPlacement = nb_of_games < 5;
 
   let winFactor = match.win ? 1 : -1;
@@ -47,7 +47,7 @@ function processGameResult(sum, match) {
   if (match.win) {
     sum.wins++;
   } else {
-    sum.loss++;
+    sum.losses++;
   }
 
 

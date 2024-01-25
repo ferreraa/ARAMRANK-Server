@@ -19,8 +19,8 @@
             height="80">
           <div><%= sum.name %></div>        
         </h1>
-        <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.loss %>&nbsp;&nbsp;&nbsp;
-          <% let tot = sum.wins + sum.loss; %>
+        <p><%= rankString %> &nbsp;&nbsp;&nbsp;&nbsp; w: <%= sum.wins %> - l: <%= sum.losses %>&nbsp;&nbsp;&nbsp;
+          <% let tot = sum.wins + sum.losses; %>
           <%= tot < 5 ? " --  placements : "+ tot+"/5" : ""; %>
         </p>
       </div>

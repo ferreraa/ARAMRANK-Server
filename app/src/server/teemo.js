@@ -2,7 +2,7 @@
 
 const sumUtils = require("./summoner.js");
 const fs = require("fs");
-const BEGINNING_OF_SEASON = require('./dynamo').BEGINNING_OF_SEASON;
+const { BEGINNING_OF_SEASON, maxHistorySize } = require('./dynamo');
 const TeemoJS = require('teemojs');
 
 if (process.env.NODE_ENV !== 'production') {
@@ -15,6 +15,10 @@ const api = TeemoJS(process.env.RITO);
 //search Summoner data from summoner name + tagline
 function searchRiotAccountByName(gameName, tagLine) {
   return api.get('EUROPE', 'account.getByRiotId', gameName, tagLine);
+}
+
+function searchRiotAccountByPUUID(puuid) {
+  return api.get('EUROPE', 'account.getByPuuid', puuid);
 }
 
 //search Summoner data from summoner id
@@ -51,17 +55,18 @@ async function getMatchList(puuid, lastGameId) {
     queue: 450, //ARAM
     startTime: BEGINNING_OF_SEASON,
     start: 0,
-    count: 3,
+    count: maxHistorySize,
   };
 
   do {
     var matchList = await api.get('europe', 'match.getMatchIdsByPUUID', puuid, parameters);
-    if(matchList == null)
+    if (matchList === null)
       return [];
 
     let indexOfLastGame = matchList.indexOf(lastGameId);
-    if (indexOfLastGame !== -1)
+    if (indexOfLastGame !== -1) {
       matchList = matchList.slice(0, indexOfLastGame);
+    }
 
     result = result.concat(matchList);
 
@@ -75,9 +80,9 @@ async function getMatchList(puuid, lastGameId) {
 
 
 async function processAllMatches(matches, sum) {
-  let newMatches = await getAllMatches(matches, sum);
+  const newMatches = await getAllMatches(matches, sum);
 
-  let filteredMatches = newMatches.filter(el => {
+  const filteredMatches = newMatches.filter(el => {
     return el != null;
   });
 
@@ -89,11 +94,8 @@ async function processAllMatches(matches, sum) {
 
 
 function getAllMatches(matches, sum) {
-  let res = [];
-
-  matches.forEach(match => res.push(processMatch(match, sum)));
-
-  return Promise.all(res);
+  const allMatchProcessingPromises = matches.map(match => processMatch(match, sum))
+  return Promise.all(allMatchProcessingPromises);
 }
 
 
@@ -108,7 +110,7 @@ async function processMatch(matchId, sum) {
   if (match === null || match.info.gameDuration < 360)
     return null;
 
-  let participant = match.info.participants.find(participant => participant.puuid === sum.puuid);
+  const participant = match.info.participants.find(participant => participant.puuid === sum.puuid);
   if(typeof participant === 'undefined') {
     fs.appendFile('logs/processMatchLogs', (new Date()).toISOString() +
      '-could not find player ' + sum.name + ' in match ' + matchId , function (err) {
@@ -120,7 +122,7 @@ async function processMatch(matchId, sum) {
     return null;
   }
 
-  let newMatch = {};
+  const newMatch = {};
   newMatch.championId = participant.championId;
   newMatch.gameId = matchId;
   newMatch.timestamp = match.info.gameStartTimestamp + match.info.gameDuration;
@@ -133,7 +135,7 @@ async function processMatch(matchId, sum) {
   newMatch.d = participant.deaths;
   newMatch.a = participant.assists;
   newMatch.firstBlood = participant.firstBloodKill;
-  newMatch.poroFed = participant.item6 == 0;
+  newMatch.poroFed = participant.item6 === 0;
   return newMatch;
 }
 
@@ -141,6 +143,7 @@ async function processMatch(matchId, sum) {
 module.exports.searchSummonerByID = searchSummonerByID;
 module.exports.searchSummonerByPUUID = searchSummonerByPUUID;
 module.exports.searchRiotAccountByName = searchRiotAccountByName;
+module.exports.searchRiotAccountByPUUID = searchRiotAccountByPUUID;
 module.exports.getChampionWithHighestMastery = getChampionWithHighestMastery;
 module.exports.printMatchList = printMatchList;
 module.exports.getMatchList = getMatchList;
