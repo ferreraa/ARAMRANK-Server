@@ -25,7 +25,7 @@ async function updateLadder(users = null) {
   let data2write = [];
 
   list.forEach(e => {
-    let e2write = { 
+    let e2write = {
       iconId: e.profileIconId,
       rank: e.rank,
       name: e.name,

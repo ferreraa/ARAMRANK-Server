@@ -24,7 +24,10 @@ const port = process.env.PORT || 8080;
 
 (async () => ddragonManager.createIconStorageDirectories())();;
 
-(async () => await ladder.updateLadder())();
+(async () => await   player.updatePlayers()
+.then(ladder.updateLadder)
+.catch(console.error)
+)();
 
 champJSON.manageChampionJSON()
   .then((version) => {process.env.RIOT_VERSION = version});
