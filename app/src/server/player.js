@@ -164,14 +164,14 @@ function updatePlayer(dbSum, sum = null) {
     let mustUpdatePlayer = false;
 
     riotAccountPromise.then((riotAccount) => {
-      const currentRiotAccountName = `${riotAccount.gameName}#${riotAccount.tagLine}`;
-      if (dbSum.name !== currentRiotAccountName) {
+      sum.name = `${riotAccount.gameName}#${riotAccount.tagLine}`;
+      if (dbSum.name !== sum.name) {
         mustUpdatePlayer = true;
-        sum.name = currentRiotAccountName;
-        console.log(`A summoner changed his name: ${dbSum.name} -> ${currentRiotAccountName}`);
+        sum.name = sum.name;
+        console.log(`A summoner changed his name: ${dbSum.name} -> ${sum.name}`);
       }
     }).catch((error) => console.log('error when fetching riotAccount: ', error));
-    
+
     if (sum.profileIconId !== dbSum.profileIconId) { //if the profile icon changed, it will be necessary to update the DB
       mustUpdatePlayer = true;
       console.log(`A summoner changed his icon: ${dbSum.profileIconId} -> ${sum.profileIconId}`);
@@ -191,8 +191,8 @@ function updatePlayer(dbSum, sum = null) {
           if (isLocked(sum.id))
             free(sum.id);
         });
-      }
-      resolve(sum);
+    }
+    resolve(sum);
   });
 }
 

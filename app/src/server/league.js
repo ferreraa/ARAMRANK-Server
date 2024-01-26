@@ -235,7 +235,7 @@ function RomanNumbers(arabNum) {
 
 function getRankIconSrc(rank) {
   switch(rank.league) {
-    case 0: return ""; break;
+    case 0: return "";
 
     case 1:
       switch(rank.div) {

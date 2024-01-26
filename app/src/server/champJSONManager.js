@@ -12,9 +12,11 @@ function createNewMyChampionJS(championJS) {
     data2write.champions[v.key] = v.id;
   }
 
-  fs.writeFile('./server/champ.json', JSON.stringify(data2write),
-   function(){ console.log("new champ.json file"); });
-
+  fs.writeFile(
+    './server/champ.json',
+    JSON.stringify(data2write),
+    () => console.log("new champ.json file"),
+  );
 }
 
 function readMyChampionJS() {
