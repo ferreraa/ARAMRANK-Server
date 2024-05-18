@@ -22,9 +22,9 @@ if (process.env.NODE_ENV !== 'production') {
 const dynamodb = new AWS.DynamoDB(dynamodbConfig);
 
 
-const players_table = process.env.table_name || "Players_S14_dev";
+const players_table = process.env.table_name || "Players_S14.5_dev";
 
-const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1704888000; //2024/01/10 - 12:00:00 GMT
+const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1715767200; //2024/05/15 - 12:00:00 GMT
 
 //Size of history to be stored in histories_table
 const maxHistorySize = 20;
