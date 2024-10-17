@@ -88,7 +88,7 @@ async function processAllMatches(matches, sum) {
 
   //reverse
   for (let i = filteredMatches.length - 1; i >= 0; i--) {
-    sumUtils.processGameResult(sum, filteredMatches[i]);  
+    sumUtils.processGameResult(sum, filteredMatches[i]);
   }
 }
 
@@ -100,43 +100,51 @@ function getAllMatches(matches, sum) {
 
 
 async function processMatch(matchId, sum) {
-  try {
-    var match = await api.get('europe', 'match.getMatch', matchId);
-  } catch (error) {
-    console.error('processMatch error: ', error);
-    return null;
-  }
+    try {
+        var match = await api.get('europe', 'match.getMatch', matchId);
+    } catch (error) {
+        console.error('processMatch error: ', error);
+        return null;
+    }
 
-  if (match === null || match.info.gameDuration < 360)
-    return null;
+    if (match === null || match.info.gameDuration < 360)
+        return null;
 
-  const participant = match.info.participants.find(participant => participant.puuid === sum.puuid);
-  if(typeof participant === 'undefined') {
-    fs.appendFile('logs/processMatchLogs', (new Date()).toISOString() +
-     '-could not find player ' + sum.name + ' in match ' + matchId , function (err) {
-      if (err) throw err;
-      console.log(new Date().toISOString() + '-could not find player '
-        + sum.name + ' in match ' + matchId);
-      }
-    );
-    return null;
-  }
+    const participant = match.info.participants.find(participant => participant.puuid === sum.puuid);
+    let teamKills = 0;
+    match.info.participants.forEach(part => {
+        if (part.teamId === participant.teamId) {
+            teamKills += part.kills;
+        }
+    })
 
-  const newMatch = {};
-  newMatch.championId = participant.championId;
-  newMatch.gameId = matchId;
-  newMatch.timestamp = match.info.gameStartTimestamp + match.info.gameDuration;
+    if (typeof participant === 'undefined') {
+        fs.appendFile('logs/processMatchLogs', (new Date()).toISOString() +
+            '-could not find player ' + sum.name + ' in match ' + matchId, function (err) {
+                if (err) throw err;
+                console.log(new Date().toISOString() + '-could not find player '
+                    + sum.name + ' in match ' + matchId);
+            }
+        );
+        return null;
+    }
 
-  newMatch.championName = participant.championName;
+    const newMatch = {};
+    newMatch.championId = participant.championId;
+    newMatch.gameId = matchId;
+    newMatch.timestamp = match.info.gameStartTimestamp + match.info.gameDuration;
 
-  newMatch.pentaKills = participant.pentaKills;
-  newMatch.win = participant.win;
-  newMatch.k = participant.kills;
-  newMatch.d = participant.deaths;
-  newMatch.a = participant.assists;
-  newMatch.firstBlood = participant.firstBloodKill;
-  newMatch.poroFed = participant.item6 === 0;
-  return newMatch;
+    newMatch.championName = participant.championName;
+
+    newMatch.pentaKills = participant.pentaKills;
+    newMatch.win = participant.win;
+    newMatch.k = participant.kills;
+    newMatch.d = participant.deaths;
+    newMatch.a = participant.assists;
+    newMatch.firstBlood = participant.firstBloodKill;
+    newMatch.poroSnacks = participant.item6;
+    newMatch.teamKills = teamKills;
+    return newMatch;
 }
 
 

@@ -16,9 +16,7 @@ services:
     ports:
       - "8080:8080"
     working_dir: /app
-    environment:
-      AKI: "DUMMYEXAMPLE"
-      SAK: "DUMMYEXAMPLE"
+    env_file: ".env"
     volumes:
       - "../app:/app"
     command: sh -c "npm i && npm run live"

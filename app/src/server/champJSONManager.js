@@ -2,6 +2,7 @@
 
 const https = require('https');
 const fs = require('fs');
+const {supportsCache} = require("./cache");
 
 function createNewMyChampionJS(championJS) {
   let data2write = {};
@@ -15,7 +16,10 @@ function createNewMyChampionJS(championJS) {
   fs.writeFile(
     './server/champ.json',
     JSON.stringify(data2write),
-    () => console.log("new champ.json file"),
+    () => {
+      console.log("new champ.json file")
+      updateSupports(championJS.data);
+    },
   );
 }
 
@@ -99,6 +103,19 @@ function getChampName(id) {
 
 function getLocalVersion() {
   return readMyChampionJS().version;
+}
+
+function updateSupports(champions) {
+  let total = 0;
+
+  for (const [k, v] of Object.entries(champions)) {
+    if (v.tags.includes('Support')) {
+      supportsCache.set(parseInt(v.key), v.key);
+      total++;
+    }
+  }
+
+  console.log("Cached " + total + " supports");
 }
 
 module.exports.getLocalVersion = getLocalVersion;

@@ -22,7 +22,7 @@ if (process.env.NODE_ENV !== 'production') {
 const dynamodb = new AWS.DynamoDB(dynamodbConfig);
 
 
-const players_table = process.env.table_name || "players_S14.5_dev";
+const players_table = process.env.table_name || "Players_S14.5_dev";
 
 const BEGINNING_OF_SEASON = process.env.beginning_of_season || 1715767200; //2024/05/15 - 12:00:00 GMT
 
@@ -49,7 +49,7 @@ function getSumBySummonerPUUID(puuid) {
           resolve(attr.unwrap(data.Item));           // successful response
         else
           resolve(null);
-        } 
+        }
     });
   });
 }
@@ -110,17 +110,17 @@ function updateNameAndIcon(sum) {
     ExpressionAttributeNames: {
      "#N": "name",
      "#P": "profileIconId"
-    }, 
+    },
     ExpressionAttributeValues: {
      ":n": di.name,
      ":p": di.profileIconId
-    }, 
+    },
     Key: {
      "puuid": {
        S: sum.puuid
       }
-    }, 
-    TableName: players_table, 
+    },
+    TableName: players_table,
     UpdateExpression: "SET #N = :n, #P = :p"
   };
 
@@ -133,11 +133,11 @@ function updateNameAndIcon(sum) {
 
 
 /**
- * Called when new games are being pushed. Uptades the given summoner 
+ * Called when new games are being pushed. Uptades the given summoner
  * in the players database.
- * 
+ *
  * sum.history must be defined and contain the maxHistorySize last games
- * 
+ *
  * returns a promise resolving into console logs or rejects as an error
  */
 function fullyUpdatePlayerRow(sum) {
@@ -200,7 +200,7 @@ function updateSum(sum, lastGameId) {
     sum.history.length === 0
     || lastGameId === sum.history[sum.history.length - 1].gameId
   ) {
-    //only push the name and profileIcon  
+    //only push the name and profileIcon
     updateNameAndIcon(sum);
     return Promise.resolve();
   }
@@ -215,13 +215,13 @@ async function getAllUsers(ladderValuesOnly = true) {
 }
 
 function recScan(prevData, lastEvaluatedKey, ladderValuesOnly) {
-  var params = { 
+  var params = {
     TableName: players_table,
     ConsistentRead: true,
   };
 
   if (ladderValuesOnly) {
-    params.ExpressionAttributeNames = { 
+    params.ExpressionAttributeNames = {
       '#r': 'rank',
       '#n': 'name',
     };
@@ -242,8 +242,8 @@ function recScan(prevData, lastEvaluatedKey, ladderValuesOnly) {
           data.Items.forEach(e => {
             prevData.push(attr.unwrap(e));
           })
-        ); 
-      }        
+        );
+      }
     });
   });
 }

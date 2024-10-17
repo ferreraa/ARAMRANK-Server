@@ -26,7 +26,7 @@ class Cache {
             this.#cacheData.set(key, value);
             return true;
         }
-        
+
         console.log(`cache maximum size reached (${this.#maxItems})`);
         return false;
     }
@@ -41,5 +41,7 @@ class Cache {
 }
 
 const blackListCache = new Cache(5000);
+const supportsCache = new Cache(5000);
 
 module.exports.blackListCache = blackListCache;
+module.exports.supportsCache = supportsCache;

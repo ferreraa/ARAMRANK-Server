@@ -1,9 +1,18 @@
 const {blackListCache} = require('../server/cache');
 const Cleantalk = require('cleantalk');
 
-const cleantalkConnection = new Cleantalk({auth_key: process.env.CLEANTALK});
+let cleantalkConnection = null
 
 const blackListHandler = async (req, res, next) => {
+
+  if (process.env.NODE_ENV === 'development') {
+    next();
+    return;
+  }
+  if (process.env.NODE_ENV === 'production' && !cleantalkConnection) {
+    cleantalkConnection = new Cleantalk({auth_key: process.env.CLEANTALK});
+  }
+
   const requestIP = req.ip;
   const blackListed = blackListCache.get(requestIP);
 
@@ -19,7 +28,7 @@ const blackListHandler = async (req, res, next) => {
   const spamCheckResponse = cleantalkConnection.spamCheck(requestIP);
 
   try {
-    await spamCheckResponse; 
+    await spamCheckResponse;
   }
   catch (error) {
     console.error('spamCheckError: ' + error);
